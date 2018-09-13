@@ -15,7 +15,7 @@ nbproject/*
 .mtj.tmp/
 
 # Package Files #
-# *.jar
+*.jar
 *.war
 *.nar
 *.ear
@@ -66,9 +66,6 @@ cmake-build-*/
 
 # IntelliJ
 out/
-
-# Library folder
-# lib/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
