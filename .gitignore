@@ -68,7 +68,7 @@ cmake-build-*/
 out/
 
 # Library folder
-lib/
+# lib/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
