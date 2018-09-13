@@ -28,7 +28,7 @@ public class GameWindow {
     private long windowHandle; // Stores the GLFW Window Object
     
     // Defaults
-    private final String DEFAULT_WINDOW_TITLE = "A first LWJGL game by Cas";
+    private final String DEFAULT_WINDOW_TITLE = "Dungeons And Drawings";
     private final int DEFAULT_WINDOW_WIDTH = 1280;
     private final int DEFAULT_WINDOW_HEIGHT = 720;
     

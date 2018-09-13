@@ -28,7 +28,7 @@ import org.joml.Vector3f;
  * 
  * @author Cas Wognum (TU/e, 1012585)
  */
-public class DummyGame implements IGameLogic {
+public class DungeonsAndDrawings implements IGameLogic {
     
     private final Camera camera;
     
@@ -52,7 +52,7 @@ public class DummyGame implements IGameLogic {
     private static final float CAMERA_POS_STEP = 0.10f;
     private static final float MOUSE_SENSITIVITY = 0.2f;
     
-    public DummyGame() {
+    public DungeonsAndDrawings() {
         renderer = new Renderer();
         camera = new Camera(); 
         cameraInc = new Vector3f(0.0f, 0.0f, 0.0f);
