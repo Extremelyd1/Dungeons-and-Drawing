@@ -43,12 +43,19 @@ public class GameEngine implements Runnable {
      * Calls {@link GameEngine.run()}
      */
     public synchronized void start() {
+
         if (isRunning) {
             return; 
         }
         isRunning = true; 
         thread = new Thread(this, "GAME_LOOP_THREAD");
-        thread.start(); // Execute GameEngine.run()
+
+        String osName = System.getProperty("os.name");
+        if ( osName.contains("Mac") ) {
+            thread.run();
+        } else {
+            thread.start();
+        }
     }
 
     /**
@@ -63,9 +70,9 @@ public class GameEngine implements Runnable {
             initialize();
             loop();
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            e.printStackTrace();
         } finally {
-            terminate();
+//            terminate();
         }        
     }
     
@@ -75,8 +82,9 @@ public class GameEngine implements Runnable {
             System.out.println("Debugging enabled: LWJGL " + 
                     Version.getVersion() + "!");
         }
-        
+
         window = GameWindow.getGameWindow();
+
         timer.init();
         mouseInput.init(window);
         gameLogic.init(window);

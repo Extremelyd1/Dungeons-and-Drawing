@@ -1,6 +1,6 @@
 package engine;
 
-import game.DummyGame;
+import game.DungeonsAndDrawings;
 
 /**
  * Main class of this Java Application to test the Light Weight Java Gaming 
@@ -17,8 +17,13 @@ import game.DummyGame;
  * <b> PNG Decoder </b>
  * To load and process a PNG image and its attributes to be used as a texture
  * 
- * 
+ * @author Yannick Scheepers (TU/e, 1002370)
+ * @author Erik Ussin (TU/e, 1034012)
+ * @author Casper Smits(TU/e, 1034012)
+ * @author Koen Degeling (TU/e, 1018025)
+ * @author Valeriya Prokopova (TU/e, 1033287)
  * @author Cas Wognum (TU/e, 1012585)
+ *
  */
 public class Launcher {
     
@@ -32,7 +37,7 @@ public class Launcher {
      */
     public static void main(String[] args) {
         try {
-            IGameLogic gameLogic = new DummyGame(); 
+            IGameLogic gameLogic = new DungeonsAndDrawings();
             (new GameEngine(gameLogic)).start();
         } catch (Exception e) {
             e.printStackTrace(System.out);

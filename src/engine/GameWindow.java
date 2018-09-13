@@ -8,9 +8,8 @@ import java.nio.*;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.opengl.GL;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glEnable;
+
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -28,7 +27,7 @@ public class GameWindow {
     private long windowHandle; // Stores the GLFW Window Object
     
     // Defaults
-    private final String DEFAULT_WINDOW_TITLE = "A first LWJGL game by Cas";
+    private final String DEFAULT_WINDOW_TITLE = "Dungeons And Drawings";
     private final int DEFAULT_WINDOW_WIDTH = 1280;
     private final int DEFAULT_WINDOW_HEIGHT = 720;
     
@@ -49,6 +48,7 @@ public class GameWindow {
      */
     public static GameWindow getGameWindow() {
         if (gameWindow == null) {
+
             gameWindow = new GameWindow();
         }
         return gameWindow;
@@ -75,14 +75,19 @@ public class GameWindow {
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-        
+
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
         // Create the window
         windowHandle = glfwCreateWindow(
                 DEFAULT_WINDOW_WIDTH, 
                 DEFAULT_WINDOW_HEIGHT, 
                 DEFAULT_WINDOW_TITLE, 
                 NULL, NULL);
-        
+
        // Check if window creation is succesful
         if (windowHandle == NULL) {
             throw new RuntimeException("engine.io.GameWindow.initialize(): "
@@ -96,7 +101,7 @@ public class GameWindow {
                 glfwSetWindowShouldClose(windowParam, true);
             }
         });
-        
+
         // Get the thread stack and push a new frame
         try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1); // int*
