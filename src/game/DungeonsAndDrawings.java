@@ -1,14 +1,10 @@
 package game;
 
+import engine.*;
 import graphics.Mesh;
-import engine.Camera;
-import engine.GameEngine;
-import engine.GameEntity;
+
 import static org.lwjgl.glfw.GLFW.*;
-import engine.GameWindow;
-import engine.IGameLogic;
-import engine.MouseInput;
-import engine.OBJLoader;
+
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
@@ -57,84 +53,91 @@ public class DungeonsAndDrawings implements IGameLogic {
         camera = new Camera(); 
         cameraInc = new Vector3f(0.0f, 0.0f, 0.0f);
         
-        camera.setRotation(45.0f, 0.0f, 0.0f);
+        camera.setRotation(0.0f, 0.0f, 0.0f);
     }
     
     @Override
     public void init(GameWindow window) throws Exception {
         renderer.init(window);
         
-        float reflectance = 0.1f;
-        Mesh mesh = OBJLoader.loadMesh("/models/cube.obj");
-        Texture texture = new Texture("/textures/texture_wall.png");
-        Material material = new Material(texture, reflectance);
-        mesh.setMaterial(material);
-        
-        int sizeX = 10;
-        int sizeY = 12;
-        
-        int[][] heightMap = new int[][] {
-            new int[]{3, 3, 3, 3, 3, 3, 3, 3, 1, 3},
-            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-            new int[]{3, 1, 3, 3, 3, 3, 3, 3, 3, 3},
-        };
-        
-        int size = 0;
-        for (int i = 0; i < sizeX; i++) {          
-            for (int j = 0; j < sizeY; j++) {
-                size += heightMap[j][i];
-            }
-        }
-        
-        gameEntities = new GameEntity[size];
-        
-        int count = 0; 
-        for (int i = 0; i < sizeX; i++) {          
-            for (int j = 0; j < sizeY; j++) {
-                for (int k = 0; k < heightMap[j][i]; k++) {
-                    gameEntities[count] = new GameEntity(mesh);
-                    gameEntities[count].setScale(0.5f);
-                    gameEntities[count].setPosition(
-                            -4.5f + 1.0f * i,   // x
-                            -8.0f + 1.0f * k,   // y
-                            -4.0f - 1.0f * j    // z
-                    );
-                    count++;
-                }
-            }
-        }
-        
-        ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
+//        float reflectance = 0.1f;
+//        Mesh mesh = OBJLoader.loadMesh("/models/cube.obj");
+//        Texture texture = new Texture("/textures/texture_wall.png");
+//        Material material = new Material(texture, reflectance);
+//        mesh.setMaterial(material);
 
-        // Point Light
-        Vector3f lightPosition = new Vector3f(0.5f, -6.0f, -9.0f);
-        float lightIntensity = 1.0f;
-        PointLight pointLight = new PointLight(new Vector3f(1, 0, 0), lightPosition, lightIntensity);
-        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
-        pointLight.setAttenuation(att);
-        pointLightList = new PointLight[]{pointLight};
-        
-        // Spot Light
-        lightPosition = new Vector3f(0.5f, -6.0f, -9.0f);
-        pointLight = new PointLight(new Vector3f(0.2f, 0.2f, 1), lightPosition, lightIntensity);
-        att = new PointLight.Attenuation(0.0f, 0.0f, 0.01f);
-        pointLight.setAttenuation(att);
-        Vector3f coneDir = new Vector3f(0f, 0, -1);
-        float cutoff = (float) Math.cos(Math.toRadians(180));
-        SpotLight spotLight = new SpotLight(pointLight, coneDir, cutoff);
-        spotLightList = new SpotLight[]{spotLight, new SpotLight(spotLight)};
+        Mesh mesh = PLYLoader.loadMesh("/models/PLY/tree.ply");
 
-        lightPosition = new Vector3f(-1, 0, 0);
-        directionalLight = new DirectionalLight(new Vector3f(0f, 0.3f, 0f), lightPosition, lightIntensity);
+//        int sizeX = 10;
+//        int sizeY = 12;
+//
+//        int[][] heightMap = new int[][] {
+//            new int[]{3, 3, 3, 3, 3, 3, 3, 3, 1, 3},
+//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+//            new int[]{3, 1, 3, 3, 3, 3, 3, 3, 3, 3},
+//        };
+//
+//        int size = 0;
+//        for (int i = 0; i < sizeX; i++) {
+//            for (int j = 0; j < sizeY; j++) {
+//                size += heightMap[j][i];
+//            }
+//        }
+//
+//        gameEntities = new GameEntity[size];
+//
+//        int count = 0;
+//        for (int i = 0; i < sizeX; i++) {
+//            for (int j = 0; j < sizeY; j++) {
+//                for (int k = 0; k < heightMap[j][i]; k++) {
+//                    gameEntities[count] = new GameEntity(mesh);
+//                    gameEntities[count].setScale(0.5f);
+//                    gameEntities[count].setRotation(90f, 0f, 0f);
+//                    gameEntities[count].setPosition(
+//                            -4.5f + 1.0f * i,   // x
+//                            0.0f + 1.0f * k,   // y
+//                            -4.0f - 1.0f * j    // z
+//                    );
+//                    count++;
+//                }
+//            }
+//        }
+//
+//        ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
+//
+//        // Point Light
+//        Vector3f lightPosition = new Vector3f(0.5f, -6.0f, -9.0f);
+//        float lightIntensity = 1.0f;
+//        PointLight pointLight = new PointLight(new Vector3f(1, 0, 0), lightPosition, lightIntensity);
+//        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
+//        pointLight.setAttenuation(att);
+//        pointLightList = new PointLight[]{pointLight};
+//
+//        // Spot Light
+//        lightPosition = new Vector3f(0.5f, -6.0f, -9.0f);
+//        pointLight = new PointLight(new Vector3f(0.2f, 0.2f, 1), lightPosition, lightIntensity);
+//        att = new PointLight.Attenuation(0.0f, 0.0f, 0.01f);
+//        pointLight.setAttenuation(att);
+//        Vector3f coneDir = new Vector3f(0f, 0, -1);
+//        float cutoff = (float) Math.cos(Math.toRadians(180));
+//        SpotLight spotLight = new SpotLight(pointLight, coneDir, cutoff);
+//        spotLightList = new SpotLight[]{spotLight, new SpotLight(spotLight)};
+//
+//        lightPosition = new Vector3f(-1, 0, 0);
+//        directionalLight = new DirectionalLight(new Vector3f(0f, 0.3f, 0f), lightPosition, lightIntensity);
+
+        GameEntity g = new GameEntity(mesh);
+        g.setPosition(0.0f, 0.0f, -5.0f);
+        gameEntities = new GameEntity[] {g};
     }
     
     @Override

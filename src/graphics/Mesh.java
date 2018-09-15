@@ -42,22 +42,22 @@ public class Mesh {
     private final List<Integer> vboIdList;
     private final int vertexCount; // Amount of vertices we are rendering
     private Material material;
-    
-    
+
     /**
      * Constructor for the Mesh class. Creates all VBOs and the VAO. 
      * 
      * @param positions floats that give the position of the vertices
-     * @param textCoords textures to map the texture to the mesh
+     * @param material textures to map the texture to the mesh
      * @param normals
      * @param indices   integers that give the order of how to draw the vertices
      */
-    public Mesh(float[] positions, float[] textCoords, float[] normals, int[] indices) {
+    public Mesh(float[] positions, float[] material, float[] normals, int[] indices, boolean hasTexture) {
         
         // FloatBuffers and IntBuffers need to be used to transfer data to the GPU
         FloatBuffer posBuffer = null;
         FloatBuffer textCoordsBuffer = null;
-        FloatBuffer vecNormalsBuffer = null;
+        FloatBuffer colorBuffer = null;
+        FloatBuffer normalsBuffer = null;
         IntBuffer indicesBuffer = null;
         
         try {
@@ -67,49 +67,23 @@ public class Mesh {
             vaoId = glGenVertexArrays();
             glBindVertexArray(vaoId);
             
-            vboIdList = new ArrayList();
-            
-            /* Structure of the creation of the VBOs is similar
-             * -> Allocate memory off-heap: memAllocxxx()
-             * -> Put the data in it: put()
-             * -> Flip the pointer back to position 0: flip()
-             * -> Explain the structure of the data: glVertexAtrribPointer()
-             */
-            
+            vboIdList = new ArrayList<>();
+
             // Position VBO
-            int vboId = glGenBuffers();
-            vboIdList.add(vboId);
-            posBuffer = MemoryUtil.memAllocFloat(positions.length);
-            posBuffer.put(positions).flip();
-            glBindBuffer(GL_ARRAY_BUFFER, vboId);
-            glBufferData(GL_ARRAY_BUFFER, posBuffer, GL_STATIC_DRAW);
-            glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+            posBuffer = createVBO(positions, 0, 3);
 
-            // Texture coordinates VBO
-            vboId = glGenBuffers();
-            vboIdList.add(vboId);
-            textCoordsBuffer = MemoryUtil.memAllocFloat(textCoords.length);
-            textCoordsBuffer.put(textCoords).flip();
-            glBindBuffer(GL_ARRAY_BUFFER, vboId);
-            glBufferData(GL_ARRAY_BUFFER, textCoordsBuffer, GL_STATIC_DRAW);
-            glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
-            
-            // Vertex normals VBO
-            vboId = glGenBuffers();
-            vboIdList.add(vboId);
-            vecNormalsBuffer = MemoryUtil.memAllocFloat(normals.length);
-            vecNormalsBuffer.put(normals).flip();
-            glBindBuffer(GL_ARRAY_BUFFER, vboId);
-            glBufferData(GL_ARRAY_BUFFER, vecNormalsBuffer, GL_STATIC_DRAW);
-            glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
+            if (hasTexture) {
+                // Texture Coordinates VBO
+                textCoordsBuffer = createVBO(material, 1, 2);
+            } else {
+                colorBuffer = createVBO(material, 1, 3);
+            }
 
-            // Index VBO
-            vboId = glGenBuffers();
-            vboIdList.add(vboId);
-            indicesBuffer = MemoryUtil.memAllocInt(indices.length);
-            indicesBuffer.put(indices).flip();
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+            // Normals VBO
+            normalsBuffer = createVBO(normals, 2, 3);
+
+            // Indices (for more efficient face drawing) VBO
+            indicesBuffer = createVBO(indices);
 
             // Bind the VAO
             glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -124,18 +98,56 @@ public class Mesh {
             if (posBuffer != null) {
                 MemoryUtil.memFree(posBuffer);
             }
+            if (colorBuffer != null) {
+                MemoryUtil.memFree(colorBuffer);
+            }
             if (textCoordsBuffer != null) {
                 MemoryUtil.memFree(textCoordsBuffer);
             }
-            if (vecNormalsBuffer != null) {
-                MemoryUtil.memFree(vecNormalsBuffer);
+            if (normalsBuffer != null) {
+                MemoryUtil.memFree(normalsBuffer);
             }
             if (indicesBuffer != null) {
                 MemoryUtil.memFree(indicesBuffer);
             }
         }
     }
-    
+
+    /**
+     * Creates a buffer object to transfer data to the GPU
+     *
+     * @param data data to transfer
+     * @param index index of the VBO
+     * @param size size of each attribute (so vec3f has size 3)
+     * @return handler for the FloatBuffer
+     */
+    private FloatBuffer createVBO(float[] data, int index, int size) {
+        int vboId = glGenBuffers();
+        vboIdList.add(vboId);
+        FloatBuffer buffer = MemoryUtil.memAllocFloat(data.length);
+        buffer.put(data).flip();
+        glBindBuffer(GL_ARRAY_BUFFER, vboId);
+        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+        glVertexAttribPointer(index, size, GL_FLOAT, false, 0, 0);
+        return buffer;
+    }
+
+    /**
+     * Creates a buffer object to transfer data to the GPU
+     *
+     * @param data data to transfer
+     * @return handler for the IntBuffer
+     */
+    private IntBuffer createVBO(int[] data) {
+        int vboId = glGenBuffers();
+        vboIdList.add(vboId);
+        IntBuffer buffer = MemoryUtil.memAllocInt(data.length);
+        buffer.put(data).flip();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+        return buffer;
+    }
+
     public Material getMaterial() {
         return material;
     }
@@ -148,28 +160,40 @@ public class Mesh {
      * Renders the mesh
      */
     public void render() {
-        Texture texture = material.getTexture();
-        if (texture != null) {
-            // Activate firs texture bank
-            glActiveTexture(GL_TEXTURE0);
-            // Bind the texture
-            glBindTexture(GL_TEXTURE_2D, texture.getId());
-        }
-        
+//        Texture texture = material.getTexture();
+//        if (texture != null) {
+//            // Activate firs texture bank
+//            glActiveTexture(GL_TEXTURE0);
+//            // Bind the texture
+//            glBindTexture(GL_TEXTURE_2D, texture.getId());
+//        }
+//
+//        // Draw the mesh
+//        glBindVertexArray(getVaoId());
+//        glEnableVertexAttribArray(0);
+//        glEnableVertexAttribArray(1);
+//        glEnableVertexAttribArray(2);
+//
+//        glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
+//
+//        // Restore state
+//        glDisableVertexAttribArray(0);
+//        glDisableVertexAttribArray(1);
+//        glDisableVertexAttribArray(2);
+//        glBindVertexArray(0);
+//        glBindTexture(GL_TEXTURE_2D, 0);
+
         // Draw the mesh
         glBindVertexArray(getVaoId());
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
-        glEnableVertexAttribArray(2);
 
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
 
         // Restore state
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
-        glDisableVertexAttribArray(2);
         glBindVertexArray(0);
-        glBindTexture(GL_TEXTURE_2D, 0);
         
     }
 

@@ -42,24 +42,24 @@ public class Renderer {
 
         // Create a shader program
         shader = new Shader();
-        shader.createVertexShader(Utilities.loadResource("/shaders/vertex.vs"));
-        shader.createFragmentShader(Utilities.loadResource("/shaders/fragment.fs"));
+        shader.createVertexShader(Utilities.loadResource("/shaders/vertex_simple.vs"));
+        shader.createFragmentShader(Utilities.loadResource("/shaders/fragment_simple.fs"));
         shader.link();
 
         // Create uniforms
         shader.createUniform("projectionMatrix");
         shader.createUniform("modelViewMatrix");
-        shader.createUniform("texture_sampler");
-        
-        // Create uniform for material
-        shader.createMaterialUniform("material");
-        
-        // Create lighting related uniforms
-        shader.createUniform("specularPower");
-        shader.createUniform("ambientLight");
-        shader.createPointLightListUniform("pointLights", MAX_POINT_LIGHTS);
-        shader.createSpotLightListUniform("spotLights", MAX_SPOT_LIGHTS);
-        shader.createDirectionalLightUniform("directionalLight");
+//        shader.createUniform("texture_sampler");
+//
+//        // Create uniform for material
+//        shader.createMaterialUniform("material");
+//
+//        // Create lighting related uniforms
+//        shader.createUniform("specularPower");
+//        shader.createUniform("ambientLight");
+//        shader.createPointLightListUniform("pointLights", MAX_POINT_LIGHTS);
+//        shader.createSpotLightListUniform("spotLights", MAX_SPOT_LIGHTS);
+//        shader.createDirectionalLightUniform("directionalLight");
         
         
         window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -79,32 +79,51 @@ public class Renderer {
 
         shader.bind();   
         
+//        // Update projection Matrix
+//        Matrix4f projectionMatrix = transformation.getProjectionMatrix(
+//                FOV, window.getWindowWidth(), window.getWindowHeight(),
+//                Z_NEAR, Z_FAR );
+//
+//        shader.setUniform("projectionMatrix", projectionMatrix);
+//
+//        // Update view Matrix
+//        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+//
+//        // Update Light Uniforms
+//        renderLights(viewMatrix, ambientLight, pointLightList, spotLightList, directionalLight);
+//
+//        shader.setUniform("texture_sampler", 0);
+//        for (GameEntity entity : entities) {
+//
+//            Mesh mesh = entity.getMesh();
+//
+//            // Set model view matrix for this item
+//            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(entity, viewMatrix);
+//            shader.setUniform("modelViewMatrix", modelViewMatrix);
+//
+//            // Render the mes for this game item
+//            shader.setUniform("material", mesh.getMaterial());
+//
+//            mesh.render();
+//        }
+
         // Update projection Matrix
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(
-                FOV, window.getWindowWidth(), window.getWindowHeight(), 
+                FOV, window.getWindowWidth(), window.getWindowHeight(),
                 Z_NEAR, Z_FAR );
-        
+
         shader.setUniform("projectionMatrix", projectionMatrix);
-                
-        // Update view Matrix
+
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
 
-        // Update Light Uniforms
-        renderLights(viewMatrix, ambientLight, pointLightList, spotLightList, directionalLight);
-        
-        shader.setUniform("texture_sampler", 0);
-        for (GameEntity entity : entities) {
-            
-            Mesh mesh = entity.getMesh();
-            
+        // Render each gameItem
+        for(GameEntity entity : entities) {
             // Set model view matrix for this item
             Matrix4f modelViewMatrix = transformation.getModelViewMatrix(entity, viewMatrix);
             shader.setUniform("modelViewMatrix", modelViewMatrix);
-            
+
             // Render the mes for this game item
-            shader.setUniform("material", mesh.getMaterial());
-            
-            mesh.render();
+            entity.getMesh().render();
         }
 
         shader.unbind();
