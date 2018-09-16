@@ -12,6 +12,7 @@ import graphics.Material;
 import graphics.Texture;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 /**
  * === NOTES ===
@@ -66,53 +67,11 @@ public class DungeonsAndDrawings implements IGameLogic {
 //        Material material = new Material(texture, reflectance);
 //        mesh.setMaterial(material);
 
-        Mesh mesh = PLYLoader.loadMesh("/models/PLY/tree.ply");
+        Mesh mesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
+        Material material = new Material(new Vector4f(1.0f, 0.0f, 0.0f, 1.0f), 1.0f);
+        mesh.setMaterial(material);
 
-//        int sizeX = 10;
-//        int sizeY = 12;
-//
-//        int[][] heightMap = new int[][] {
-//            new int[]{3, 3, 3, 3, 3, 3, 3, 3, 1, 3},
-//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-//            new int[]{3, 1, 1, 1, 1, 1, 1, 1, 1, 3},
-//            new int[]{3, 1, 3, 3, 3, 3, 3, 3, 3, 3},
-//        };
-//
-//        int size = 0;
-//        for (int i = 0; i < sizeX; i++) {
-//            for (int j = 0; j < sizeY; j++) {
-//                size += heightMap[j][i];
-//            }
-//        }
-//
-//        gameEntities = new GameEntity[size];
-//
-//        int count = 0;
-//        for (int i = 0; i < sizeX; i++) {
-//            for (int j = 0; j < sizeY; j++) {
-//                for (int k = 0; k < heightMap[j][i]; k++) {
-//                    gameEntities[count] = new GameEntity(mesh);
-//                    gameEntities[count].setScale(0.5f);
-//                    gameEntities[count].setRotation(90f, 0f, 0f);
-//                    gameEntities[count].setPosition(
-//                            -4.5f + 1.0f * i,   // x
-//                            0.0f + 1.0f * k,   // y
-//                            -4.0f - 1.0f * j    // z
-//                    );
-//                    count++;
-//                }
-//            }
-//        }
-//
-//        ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
+        ambientLight = new Vector3f(1f, 1f, 1f);
 //
 //        // Point Light
 //        Vector3f lightPosition = new Vector3f(0.5f, -6.0f, -9.0f);
@@ -120,7 +79,7 @@ public class DungeonsAndDrawings implements IGameLogic {
 //        PointLight pointLight = new PointLight(new Vector3f(1, 0, 0), lightPosition, lightIntensity);
 //        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
 //        pointLight.setAttenuation(att);
-//        pointLightList = new PointLight[]{pointLight};
+        pointLightList = new PointLight[]{};
 //
 //        // Spot Light
 //        lightPosition = new Vector3f(0.5f, -6.0f, -9.0f);
@@ -130,10 +89,10 @@ public class DungeonsAndDrawings implements IGameLogic {
 //        Vector3f coneDir = new Vector3f(0f, 0, -1);
 //        float cutoff = (float) Math.cos(Math.toRadians(180));
 //        SpotLight spotLight = new SpotLight(pointLight, coneDir, cutoff);
-//        spotLightList = new SpotLight[]{spotLight, new SpotLight(spotLight)};
+        spotLightList = new SpotLight[]{};
 //
 //        lightPosition = new Vector3f(-1, 0, 0);
-//        directionalLight = new DirectionalLight(new Vector3f(0f, 0.3f, 0f), lightPosition, lightIntensity);
+//        directionalLight = new DirectionalLight();
 
         GameEntity g = new GameEntity(mesh);
         g.setPosition(0.0f, 0.0f, -5.0f);
