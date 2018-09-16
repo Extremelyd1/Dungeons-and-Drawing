@@ -76,11 +76,11 @@ public class Mesh {
                 // Texture Coordinates VBO
                 textCoordsBuffer = createVBO(material, 1, 2);
             } else {
-                colorBuffer = createVBO(material, 1, 3);
+                colorBuffer = createVBO(material, 2, 3);
             }
 
             // Normals VBO
-            normalsBuffer = createVBO(normals, 2, 3);
+            normalsBuffer = createVBO(normals, 3, 3);
 
             // Indices (for more efficient face drawing) VBO
             indicesBuffer = createVBO(indices);
@@ -160,40 +160,30 @@ public class Mesh {
      * Renders the mesh
      */
     public void render() {
-//        Texture texture = material.getTexture();
-//        if (texture != null) {
-//            // Activate firs texture bank
-//            glActiveTexture(GL_TEXTURE0);
-//            // Bind the texture
-//            glBindTexture(GL_TEXTURE_2D, texture.getId());
-//        }
-//
-//        // Draw the mesh
-//        glBindVertexArray(getVaoId());
-//        glEnableVertexAttribArray(0);
-//        glEnableVertexAttribArray(1);
-//        glEnableVertexAttribArray(2);
-//
-//        glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
-//
-//        // Restore state
-//        glDisableVertexAttribArray(0);
-//        glDisableVertexAttribArray(1);
-//        glDisableVertexAttribArray(2);
-//        glBindVertexArray(0);
-//        glBindTexture(GL_TEXTURE_2D, 0);
+        Texture texture = material.getTexture();
+        if (texture != null) {
+            // Activate firs texture bank
+            glActiveTexture(GL_TEXTURE0);
+            // Bind the texture
+            glBindTexture(GL_TEXTURE_2D, texture.getId());
+        }
 
         // Draw the mesh
         glBindVertexArray(getVaoId());
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
+        glEnableVertexAttribArray(3);
 
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
 
         // Restore state
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
+        glDisableVertexAttribArray(3);
         glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
         
     }
 

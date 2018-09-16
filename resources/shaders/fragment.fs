@@ -4,6 +4,7 @@ const int MAX_POINT_LIGHTS = 5;
 const int MAX_SPOT_LIGHTS = 5;
 
 in vec2 outTexCoord;
+in vec4 color;
 in vec3 mvVertexNormal;
 in vec3 mvVertexPos;
 
@@ -70,9 +71,9 @@ void setupColours(Material material, vec2 textCoord)
     }
     else
     {
-        ambientC = material.ambient;
-        diffuseC = material.diffuse;
-        speculrC = material.specular;
+        ambientC = color;
+        diffuseC = color;
+        speculrC = color;
     }
 }
 

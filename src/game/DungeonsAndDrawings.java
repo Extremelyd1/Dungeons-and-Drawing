@@ -68,19 +68,19 @@ public class DungeonsAndDrawings implements IGameLogic {
 //        mesh.setMaterial(material);
 
         Mesh mesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
-        Material material = new Material(new Vector4f(1.0f, 0.0f, 0.0f, 1.0f), 1.0f);
+        Material material = new Material(new Vector4f(1.0f, 0.3f, 0.0f, 1.0f), 0.1f);
         mesh.setMaterial(material);
 
-        ambientLight = new Vector3f(1f, 1f, 1f);
-//
-//        // Point Light
-//        Vector3f lightPosition = new Vector3f(0.5f, -6.0f, -9.0f);
-//        float lightIntensity = 1.0f;
-//        PointLight pointLight = new PointLight(new Vector3f(1, 0, 0), lightPosition, lightIntensity);
-//        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
-//        pointLight.setAttenuation(att);
-        pointLightList = new PointLight[]{};
-//
+        ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
+
+        // Point Light
+        Vector3f lightPosition = new Vector3f(1.5f, 0.5f, -5.0f);
+        float lightIntensity = 1.0f;
+        PointLight pointLight = new PointLight(new Vector3f(1, 0.3f, 0.0f), lightPosition, lightIntensity);
+        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
+        pointLight.setAttenuation(att);
+        pointLightList = new PointLight[]{pointLight};
+
 //        // Spot Light
 //        lightPosition = new Vector3f(0.5f, -6.0f, -9.0f);
 //        pointLight = new PointLight(new Vector3f(0.2f, 0.2f, 1), lightPosition, lightIntensity);
@@ -89,10 +89,10 @@ public class DungeonsAndDrawings implements IGameLogic {
 //        Vector3f coneDir = new Vector3f(0f, 0, -1);
 //        float cutoff = (float) Math.cos(Math.toRadians(180));
 //        SpotLight spotLight = new SpotLight(pointLight, coneDir, cutoff);
-        spotLightList = new SpotLight[]{};
+//        spotLightList = new SpotLight[]{};
 //
 //        lightPosition = new Vector3f(-1, 0, 0);
-//        directionalLight = new DirectionalLight();
+//        directionalLight = new DirectionalLight(new Vector3f(0, 1, 0), lightPosition, lightIntensity);
 
         GameEntity g = new GameEntity(mesh);
         g.setPosition(0.0f, 0.0f, -5.0f);

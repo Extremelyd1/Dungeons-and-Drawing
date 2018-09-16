@@ -93,6 +93,7 @@ public class Renderer {
         renderLights(viewMatrix, ambientLight, pointLightList, spotLightList, directionalLight);
 
         shader.setUniform("texture_sampler", 0);
+
         for (GameEntity entity : entities) {
 
             Mesh mesh = entity.getMesh();
