@@ -67,19 +67,30 @@ public class DungeonsAndDrawings implements IGameLogic {
 //        Material material = new Material(texture, reflectance);
 //        mesh.setMaterial(material);
 
-        Mesh mesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
+        Mesh mesh = PLYLoader.loadMesh("/models/PLY/tree.ply");
         Material material = new Material(new Vector4f(1.0f, 0.3f, 0.0f, 1.0f), 0.1f);
         mesh.setMaterial(material);
 
         ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
 
         // Point Light
-        Vector3f lightPosition = new Vector3f(1.5f, 0.5f, -5.0f);
-        float lightIntensity = 1.0f;
+        Vector3f lightPosition = new Vector3f(1.0f, 1.0f, -7.0f);
+        float lightIntensity = 2.0f;
         PointLight pointLight = new PointLight(new Vector3f(1, 0.3f, 0.0f), lightPosition, lightIntensity);
         PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
         pointLight.setAttenuation(att);
         pointLightList = new PointLight[]{pointLight};
+
+        GameEntity light;
+        if (GameEngine.DEBUG_MODE) {
+            Mesh mesh_light = PLYLoader.loadMesh("/models/PLY/light.ply");
+            Material material_light = new Material(new Vector4f(pointLight.getColor(), 1), 0.1f);
+            mesh_light.setMaterial(material_light);
+
+            light = new GameEntity(mesh_light);
+            light.setPosition(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z);
+            light.setScale(0.05f * lightIntensity);
+        }
 
 //        // Spot Light
 //        lightPosition = new Vector3f(0.5f, -6.0f, -9.0f);
@@ -95,8 +106,14 @@ public class DungeonsAndDrawings implements IGameLogic {
 //        directionalLight = new DirectionalLight(new Vector3f(0, 1, 0), lightPosition, lightIntensity);
 
         GameEntity g = new GameEntity(mesh);
-        g.setPosition(0.0f, 0.0f, -5.0f);
-        gameEntities = new GameEntity[] {g};
+        g.setPosition(0.0f, -2.0f, -7.0f);
+        g.setRotation(90, 0f, 0f);
+
+        if (GameEngine.DEBUG_MODE) {
+            gameEntities = new GameEntity[]{g, light};
+        } else {
+            gameEntities = new GameEntity[]{g};
+        }
     }
     
     @Override

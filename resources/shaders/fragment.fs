@@ -110,6 +110,7 @@ vec4 calcPointLight(PointLight light, vec3 position, vec3 normal)
     return light_colour / attenuationInv;
 }
 
+
 vec4 calcSpotLight(SpotLight light, vec3 position, vec3 normal)
 {
     vec3 light_direction = light.pl.position - position;
