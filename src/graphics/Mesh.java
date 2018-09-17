@@ -47,11 +47,11 @@ public class Mesh {
      * Constructor for the Mesh class. Creates all VBOs and the VAO. 
      * 
      * @param positions floats that give the position of the vertices
-     * @param material textures to map the texture to the mesh
-     * @param normals
+     * @param textCoords textures coordinates to map the texture to the mesh
+     * @param normals  normal vectors used in light calculations
      * @param indices   integers that give the order of how to draw the vertices
      */
-    public Mesh(float[] positions, float[] material, float[] normals, int[] indices, boolean hasTexture) {
+    public Mesh(float[] positions, float[] textCoords, float[] vertexColors, float[] normals, int[] indices) {
         
         // FloatBuffers and IntBuffers need to be used to transfer data to the GPU
         FloatBuffer posBuffer = null;
@@ -72,15 +72,17 @@ public class Mesh {
             // Position VBO
             posBuffer = createVBO(positions, 0, 3);
 
-            if (hasTexture) {
+            if (textCoords.length > 0) {
                 // Texture Coordinates VBO
-                textCoordsBuffer = createVBO(material, 1, 2);
-            } else {
-                colorBuffer = createVBO(material, 1, 3);
+                textCoordsBuffer = createVBO(textCoords, 1, 2);
+            }
+
+            if (vertexColors.length > 0) {
+                colorBuffer = createVBO(vertexColors, 2, 3);
             }
 
             // Normals VBO
-            normalsBuffer = createVBO(normals, 2, 3);
+            normalsBuffer = createVBO(normals, 3, 3);
 
             // Indices (for more efficient face drawing) VBO
             indicesBuffer = createVBO(indices);
@@ -160,40 +162,32 @@ public class Mesh {
      * Renders the mesh
      */
     public void render() {
-//        Texture texture = material.getTexture();
-//        if (texture != null) {
-//            // Activate firs texture bank
-//            glActiveTexture(GL_TEXTURE0);
-//            // Bind the texture
-//            glBindTexture(GL_TEXTURE_2D, texture.getId());
-//        }
-//
-//        // Draw the mesh
-//        glBindVertexArray(getVaoId());
-//        glEnableVertexAttribArray(0);
-//        glEnableVertexAttribArray(1);
-//        glEnableVertexAttribArray(2);
-//
-//        glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
-//
-//        // Restore state
-//        glDisableVertexAttribArray(0);
-//        glDisableVertexAttribArray(1);
-//        glDisableVertexAttribArray(2);
-//        glBindVertexArray(0);
-//        glBindTexture(GL_TEXTURE_2D, 0);
+
+        if (material.isTextured()) {
+            //Get the texture
+            Texture texture = material.getTexture();
+            // Activate firs texture bank
+            glActiveTexture(GL_TEXTURE0);
+            // Bind the texture
+            glBindTexture(GL_TEXTURE_2D, texture.getId());
+        }
 
         // Draw the mesh
         glBindVertexArray(getVaoId());
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
+        glEnableVertexAttribArray(3);
 
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
 
         // Restore state
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
+        glDisableVertexAttribArray(3);
         glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
         
     }
 

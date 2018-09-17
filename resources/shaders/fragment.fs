@@ -4,6 +4,7 @@ const int MAX_POINT_LIGHTS = 5;
 const int MAX_SPOT_LIGHTS = 5;
 
 in vec2 outTexCoord;
+in vec4 color;
 in vec3 mvVertexNormal;
 in vec3 mvVertexPos;
 
@@ -45,6 +46,7 @@ struct Material
     vec4 diffuse;
     vec4 specular;
     int hasTexture;
+    int isColored;
     float reflectance;
 };
 
@@ -67,6 +69,12 @@ void setupColours(Material material, vec2 textCoord)
         ambientC = texture(texture_sampler, textCoord);
         diffuseC = ambientC;
         speculrC = ambientC;
+    }
+    else if (material.isColored == 0)
+    {
+        ambientC = color;
+        diffuseC = color;
+        speculrC = color;
     }
     else
     {
@@ -108,6 +116,7 @@ vec4 calcPointLight(PointLight light, vec3 position, vec3 normal)
         light.att.exponent * distance * distance;
     return light_colour / attenuationInv;
 }
+
 
 vec4 calcSpotLight(SpotLight light, vec3 position, vec3 normal)
 {
