@@ -232,7 +232,7 @@ public class PLYLoader {
      * @param line the line all the data is on
      * @return Face object
      */
-    private static Face parseFace(String line) {
+    private static Face parseFace(String line) throws Exception {
         String[] tokens = line.split("\\s");
 
         int noOfVertices = Integer.parseInt(tokens[0]);
@@ -253,8 +253,10 @@ public class PLYLoader {
     private static class Face {
         int[] indices;
 
-        private Face(int[] idx) {
-            if (idx.length == 3) {
+        private Face(int[] idx) throws Exception{
+            if (idx.length > 4) {
+                throw new Exception("PLYLoader.loadMesh().Face(): Polygon of length > 4");
+            } else if (idx.length == 3) {
                 this.indices = idx;
             } else {
                 this.indices = new int[6];
