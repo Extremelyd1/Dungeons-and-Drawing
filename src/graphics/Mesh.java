@@ -47,11 +47,11 @@ public class Mesh {
      * Constructor for the Mesh class. Creates all VBOs and the VAO. 
      * 
      * @param positions floats that give the position of the vertices
-     * @param material textures to map the texture to the mesh
-     * @param normals
+     * @param textCoords textures coordinates to map the texture to the mesh
+     * @param normals  normal vectors used in light calculations
      * @param indices   integers that give the order of how to draw the vertices
      */
-    public Mesh(float[] positions, float[] material, float[] normals, int[] indices, boolean hasTexture) {
+    public Mesh(float[] positions, float[] textCoords, float[] vertexColors, float[] normals, int[] indices) {
         
         // FloatBuffers and IntBuffers need to be used to transfer data to the GPU
         FloatBuffer posBuffer = null;
@@ -72,11 +72,13 @@ public class Mesh {
             // Position VBO
             posBuffer = createVBO(positions, 0, 3);
 
-            if (hasTexture) {
+            if (textCoords.length > 0) {
                 // Texture Coordinates VBO
-                textCoordsBuffer = createVBO(material, 1, 2);
-            } else {
-                colorBuffer = createVBO(material, 2, 3);
+                textCoordsBuffer = createVBO(textCoords, 1, 2);
+            }
+
+            if (vertexColors.length > 0) {
+                colorBuffer = createVBO(vertexColors, 2, 3);
             }
 
             // Normals VBO
@@ -160,8 +162,10 @@ public class Mesh {
      * Renders the mesh
      */
     public void render() {
-        Texture texture = material.getTexture();
-        if (texture != null) {
+
+        if (material.isTextured()) {
+            //Get the texture
+            Texture texture = material.getTexture();
             // Activate firs texture bank
             glActiveTexture(GL_TEXTURE0);
             // Bind the texture

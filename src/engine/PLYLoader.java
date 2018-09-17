@@ -189,7 +189,7 @@ public class PLYLoader {
         }
 
         int[] indices = indicesList.stream().mapToInt((Integer v) -> v).toArray();
-        return new Mesh(positions, colors, normals, indices, false);
+        return new Mesh(positions, new float[0], colors, normals, indices );
     }
 
     /**

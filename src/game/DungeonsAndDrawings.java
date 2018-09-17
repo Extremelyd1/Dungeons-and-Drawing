@@ -68,7 +68,7 @@ public class DungeonsAndDrawings implements IGameLogic {
 //        mesh.setMaterial(material);
 
         Mesh mesh = PLYLoader.loadMesh("/models/PLY/tree.ply");
-        Material material = new Material(new Vector4f(1.0f, 0.3f, 0.0f, 1.0f), 0.1f);
+        Material material = new Material(0.1f);
         mesh.setMaterial(material);
 
         ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
@@ -76,7 +76,7 @@ public class DungeonsAndDrawings implements IGameLogic {
         // Point Light
         Vector3f lightPosition = new Vector3f(1.0f, 1.0f, -7.0f);
         float lightIntensity = 2.0f;
-        PointLight pointLight = new PointLight(new Vector3f(1, 0.3f, 0.0f), lightPosition, lightIntensity);
+        PointLight pointLight = new PointLight(new Vector3f(1.0f, 0.3f, 0.0f), lightPosition, lightIntensity);
         PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
         pointLight.setAttenuation(att);
         pointLightList = new PointLight[]{pointLight};

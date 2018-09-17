@@ -46,6 +46,7 @@ struct Material
     vec4 diffuse;
     vec4 specular;
     int hasTexture;
+    int isColored;
     float reflectance;
 };
 
@@ -69,11 +70,17 @@ void setupColours(Material material, vec2 textCoord)
         diffuseC = ambientC;
         speculrC = ambientC;
     }
-    else
+    else if (material.isColored == 0)
     {
         ambientC = color;
         diffuseC = color;
         speculrC = color;
+    }
+    else
+    {
+        ambientC = material.ambient;
+        diffuseC = material.diffuse;
+        speculrC = material.specular;
     }
 }
 
