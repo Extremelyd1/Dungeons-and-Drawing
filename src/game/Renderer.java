@@ -50,10 +50,10 @@ public class Renderer {
         shader.createUniform("projectionMatrix");
         shader.createUniform("modelViewMatrix");
         shader.createUniform("texture_sampler");
-        
+
         // Create uniform for material
         shader.createMaterialUniform("material");
-        
+
         // Create lighting related uniforms
         shader.createUniform("specularPower");
         shader.createUniform("ambientLight");
@@ -81,29 +81,30 @@ public class Renderer {
         
         // Update projection Matrix
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(
-                FOV, window.getWindowWidth(), window.getWindowHeight(), 
+                FOV, window.getWindowWidth(), window.getWindowHeight(),
                 Z_NEAR, Z_FAR );
-        
+
         shader.setUniform("projectionMatrix", projectionMatrix);
-                
+
         // Update view Matrix
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
 
         // Update Light Uniforms
         renderLights(viewMatrix, ambientLight, pointLightList, spotLightList, directionalLight);
-        
+
         shader.setUniform("texture_sampler", 0);
+
         for (GameEntity entity : entities) {
-            
+
             Mesh mesh = entity.getMesh();
-            
+
             // Set model view matrix for this item
             Matrix4f modelViewMatrix = transformation.getModelViewMatrix(entity, viewMatrix);
             shader.setUniform("modelViewMatrix", modelViewMatrix);
-            
+
             // Render the mes for this game item
             shader.setUniform("material", mesh.getMaterial());
-            
+
             mesh.render();
         }
 
