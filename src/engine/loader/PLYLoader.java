@@ -1,5 +1,7 @@
-package engine;
+package engine.loader;
 
+import engine.Utilities;
+import engine.loader.data.PLYData;
 import graphics.Mesh;
 import org.joml.Vector3f;
 
@@ -20,21 +22,21 @@ import java.util.List;
  * but this is for now not supported. The file is organised in two parts.
  *
  * <ol>
- *     <li> A header that specifies the elements of the mesh and their types </li>
- *     <li> The body which contains a list of said elements (e.g. vertices and faces) </li>
+ * <li> A header that specifies the elements of the mesh and their types </li>
+ * <li> The body which contains a list of said elements (e.g. vertices and faces) </li>
  * </ol>
  *
  * <h2> The header </h2>
  * <ol>
- *     <li>The first line starts with {@code ply}</li>
- *     <li>The second line indicates the version. For us, this should always be {@code format ascii 1.0}</li>
- *     <li>In the header, a comment can be added by starting the line with {@code comment}</li>
- *     <li>An element is introduced with the {@code element <name> <amount>} line. <amount> is the amount of elements
- *     there are of this type and <name> is, as can be expected, the name of this type of element (e.g. 'vertex').</li>
- *     <li>An property of an element is introduced with the {@code property <type> <name>} line. Where the <type> is the
- *     type of the variable (either char, uchar, short, ushort, int, uint, float, or double) and <name> is the name of
- *     the property. The {@code list <amount>} keyword can be used to indicate a list of <amount> values.</li>
- *     <li>The header is ended with the {@code end_header} keyword</li>
+ * <li>The first line starts with {@code ply}</li>
+ * <li>The second line indicates the version. For us, this should always be {@code format ascii 1.0}</li>
+ * <li>In the header, a comment can be added by starting the line with {@code comment}</li>
+ * <li>An element is introduced with the {@code element <name> <amount>} line. <amount> is the amount of elements
+ * there are of this type and <name> is, as can be expected, the name of this type of element (e.g. 'vertex').</li>
+ * <li>An property of an element is introduced with the {@code property <type> <name>} line. Where the <type> is the
+ * type of the variable (either char, uchar, short, ushort, int, uint, float, or double) and <name> is the name of
+ * the property. The {@code list <amount>} keyword can be used to indicate a list of <amount> values.</li>
+ * <li>The header is ended with the {@code end_header} keyword</li>
  * </ol>
  *
  * <h2> The body </h2>
@@ -111,7 +113,7 @@ public class PLYLoader {
         for (String line : header) {
             String[] tokens = line.split("\\s+");
 
-            switch(tokens[0]) {
+            switch (tokens[0]) {
                 case "ply":
                 case "comment":
                 case "end_header":
@@ -152,7 +154,7 @@ public class PLYLoader {
     /**
      * Reorders the data we gathered from the .ply file such that the Mesh class understands it
      *
-     * @param facesList A list of faces that were parsed from the file
+     * @param facesList    A list of faces that were parsed from the file
      * @param verticesList A list of vertices that were parsed from the file
      * @return A mesh with the data from the .ply file
      */
@@ -189,7 +191,8 @@ public class PLYLoader {
         }
 
         int[] indices = indicesList.stream().mapToInt((Integer v) -> v).toArray();
-        return new Mesh(positions, new float[0], colors, normals, indices );
+
+        return new Mesh(new PLYData(positions, normals, colors, indices));
     }
 
     /**
@@ -253,7 +256,7 @@ public class PLYLoader {
     private static class Face {
         int[] indices;
 
-        private Face(int[] idx) throws Exception{
+        private Face(int[] idx) throws Exception {
             if (idx.length > 4) {
                 throw new Exception("PLYLoader.loadMesh().Face(): Polygon of length > 4");
             } else if (idx.length == 3) {
