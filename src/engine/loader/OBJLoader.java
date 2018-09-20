@@ -1,19 +1,21 @@
-package engine;
+package engine.loader;
 
+import engine.util.Utilities;
+import engine.loader.data.OBJData;
 import graphics.Mesh;
-import java.util.ArrayList;
-import java.util.List;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author Cas Wognum (TU/e, 1012585)
  */
 public class OBJLoader {
     public static Mesh loadMesh(String fileName) throws Exception {
         List<String> lines = Utilities.readAllLines(fileName);
-        
+
         List<Vector3f> vertices = new ArrayList<>();
         List<Vector2f> textures = new ArrayList<>();
         List<Vector3f> normals = new ArrayList<>();
@@ -58,7 +60,7 @@ public class OBJLoader {
     }
 
     private static Mesh reorderLists(List<Vector3f> posList, List<Vector2f> textCoordList,
-            List<Vector3f> normList, List<Face> facesList) {
+                                     List<Vector3f> normList, List<Face> facesList) {
 
         List<Integer> indices = new ArrayList();
         // Create position array in the order it has been declared
@@ -82,12 +84,17 @@ public class OBJLoader {
         }
 
         int[] indicesArr = indices.stream().mapToInt((Integer v) -> v).toArray();
-        return new Mesh(posArr, textCoordArr, new float[10], normArr, indicesArr );
+        return new Mesh(new OBJData(posArr, normArr, textCoordArr, indicesArr));
     }
 
-    private static void processFaceVertex(IdxGroup indices, List<Vector2f> textCoordList,
-            List<Vector3f> normList, List<Integer> indicesList,
-            float[] texCoordArr, float[] normArr) {
+    private static void processFaceVertex(
+            IdxGroup indices,
+            List<Vector2f> textCoordList,
+            List<Vector3f> normList,
+            List<Integer> indicesList,
+            float[] texCoordArr,
+            float[] normArr
+    ) {
 
         // Set index for vertex coordinates
         int posIndex = indices.idxPos;
@@ -149,11 +156,8 @@ public class OBJLoader {
     protected static class IdxGroup {
 
         public static final int NO_VALUE = -1;
-
         public int idxPos;
-
         public int idxTextCoord;
-
         public int idxVecNormal;
 
         public IdxGroup() {

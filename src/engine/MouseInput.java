@@ -2,24 +2,20 @@ package engine;
 
 import org.joml.Vector2d;
 import org.joml.Vector2f;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 /**
- * 
  * @author Cas Wognum (TU/e, 1012585)
  */
 public class MouseInput {
 
     private final Vector2d previousPos;
-
     private final Vector2d currentPos;
-
     private final Vector2f displVec;
 
     private boolean inWindow = false;
-
     private boolean leftButtonPressed = false;
-
     private boolean rightButtonPressed = false;
 
     public MouseInput() {
@@ -33,11 +29,11 @@ public class MouseInput {
             currentPos.x = xpos;
             currentPos.y = ypos;
         });
-        
+
         glfwSetCursorEnterCallback(window.getWindowHandle(), (windowHandle, entered) -> {
             inWindow = entered;
         });
-        
+
         glfwSetMouseButtonCallback(window.getWindowHandle(), (windowHandle, button, action, mode) -> {
             leftButtonPressed = button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS;
             rightButtonPressed = button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS;

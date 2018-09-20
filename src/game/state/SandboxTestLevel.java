@@ -1,72 +1,65 @@
-package game;
+package game.state;
 
 import engine.*;
-import graphics.Mesh;
-
-import static org.lwjgl.glfw.GLFW.*;
-
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
+import engine.loader.PLYLoader;
+import game.Renderer;
 import graphics.Material;
-import graphics.Texture;
+import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import static org.lwjgl.glfw.GLFW.*;
+
 /**
  * === NOTES ===
- * 
- *   1) Did not understand why a 2D shape did not scale past a certain point.
- *      Had to do with the fact that the z was scaled as fast in the negative
- *      direction as the scale was applied in the positive direction
- * 
+ * <p>
+ * 1) Did not understand why a 2D shape did not scale past a certain point.
+ * Had to do with the fact that the z was scaled as fast in the negative
+ * direction as the scale was applied in the positive direction
+ * <p>
  * =============
- * 
+ *
  * @author Cas Wognum (TU/e, 1012585)
  */
-public class DungeonsAndDrawings implements IGameLogic {
-    
+public class SandboxTestLevel implements IGameLogic {
+
     private final Camera camera;
-    
-    private final Vector3f cameraInc;   
-
+    private final Vector3f cameraInc;
     private final Renderer renderer;
-        
     private GameEntity[] gameEntities;
-    
+
     private Vector3f ambientLight;
-
     private PointLight[] pointLightList;
-
     private SpotLight[] spotLightList;
-
     private DirectionalLight directionalLight;
-
     private float lightAngle;
 
-    
     private static final float CAMERA_POS_STEP = 0.10f;
     private static final float MOUSE_SENSITIVITY = 0.2f;
-    
-    public DungeonsAndDrawings() {
+
+    public SandboxTestLevel() {
         renderer = new Renderer();
-        camera = new Camera(); 
+        camera = new Camera();
         cameraInc = new Vector3f(0.0f, 0.0f, 0.0f);
-        
+
         camera.setRotation(0.0f, 0.0f, 0.0f);
     }
-    
+
     @Override
     public void init(GameWindow window) throws Exception {
         renderer.init(window);
-        
+
 //        float reflectance = 0.1f;
 //        Mesh mesh = OBJLoader.loadMesh("/models/cube.obj");
 //        Texture texture = new Texture("/textures/texture_wall.png");
 //        Material material = new Material(texture, reflectance);
 //        mesh.setMaterial(material);
 
+        // Load test .ply file
         Mesh mesh = PLYLoader.loadMesh("/models/PLY/tree.ply");
         Material material = new Material(0.1f);
         mesh.setMaterial(material);
@@ -115,7 +108,7 @@ public class DungeonsAndDrawings implements IGameLogic {
             gameEntities = new GameEntity[]{g};
         }
     }
-    
+
     @Override
     public void input(GameWindow window, MouseInput mouseInput) {
         cameraInc.set(0, 0, 0);
@@ -141,10 +134,12 @@ public class DungeonsAndDrawings implements IGameLogic {
     @Override
     public void update(float interval, MouseInput mouseInput) {
         // Update camera position
-        camera.movePosition(cameraInc.x * CAMERA_POS_STEP,
-            cameraInc.y * CAMERA_POS_STEP,
-            cameraInc.z * CAMERA_POS_STEP);
-        
+        camera.movePosition(
+                cameraInc.x * CAMERA_POS_STEP,
+                cameraInc.y * CAMERA_POS_STEP,
+                cameraInc.z * CAMERA_POS_STEP
+        );
+
         // Update camera based on mouse            
         if (GameEngine.DEBUG_MODE) {
             if (mouseInput.isRightButtonPressed()) {
@@ -156,14 +151,21 @@ public class DungeonsAndDrawings implements IGameLogic {
 
     @Override
     public void render(GameWindow window) {
-        renderer.render(window, camera, gameEntities, ambientLight,
-                pointLightList, spotLightList, directionalLight);
+        renderer.render(
+                window,
+                camera,
+                gameEntities,
+                ambientLight,
+                pointLightList,
+                spotLightList,
+                directionalLight
+        );
     }
-    
+
     @Override
     public void terminate() {
         renderer.terminate();
-        
+
         for (GameEntity ge : gameEntities) {
             ge.getMesh().terminate();
         }
