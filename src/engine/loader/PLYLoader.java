@@ -170,9 +170,11 @@ public class PLYLoader {
 
         int vertex = 0;
         for (Vertex v : verticesList) {
+            // Have to switch the x and y coordinate as Blender interprets
+            // the axes differently than we do.
             positions[vertex * 3] = v.getPositionData().x;
-            positions[vertex * 3 + 1] = v.getPositionData().y;
-            positions[vertex * 3 + 2] = v.getPositionData().z;
+            positions[vertex * 3 + 2] = v.getPositionData().y; // actually our z
+            positions[vertex * 3 + 1] = v.getPositionData().z; // actually our y
 
             normals[vertex * 3] = v.getNormalData().x;
             normals[vertex * 3 + 1] = v.getNormalData().y;

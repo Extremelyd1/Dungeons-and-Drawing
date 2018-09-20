@@ -100,7 +100,6 @@ public class SandboxTestLevel implements IGameLogic {
 
         GameEntity g = new GameEntity(mesh);
         g.setPosition(0.0f, -2.0f, -7.0f);
-        g.setRotation(90, 0f, 0f);
 
         if (GameEngine.DEBUG_MODE) {
             gameEntities = new GameEntity[]{g, light};
