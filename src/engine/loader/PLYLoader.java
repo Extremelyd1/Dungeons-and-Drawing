@@ -1,6 +1,6 @@
 package engine.loader;
 
-import engine.Utilities;
+import engine.util.Utilities;
 import engine.loader.data.PLYData;
 import graphics.Mesh;
 import org.joml.Vector3f;

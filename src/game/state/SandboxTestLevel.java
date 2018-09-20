@@ -1,10 +1,11 @@
-package game;
+package game.state;
 
 import engine.*;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.loader.PLYLoader;
+import game.Renderer;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
@@ -24,31 +25,23 @@ import static org.lwjgl.glfw.GLFW.*;
  *
  * @author Cas Wognum (TU/e, 1012585)
  */
-public class DungeonsAndDrawings implements IGameLogic {
+public class SandboxTestLevel implements IGameLogic {
 
     private final Camera camera;
-
     private final Vector3f cameraInc;
-
     private final Renderer renderer;
-
     private GameEntity[] gameEntities;
 
     private Vector3f ambientLight;
-
     private PointLight[] pointLightList;
-
     private SpotLight[] spotLightList;
-
     private DirectionalLight directionalLight;
-
     private float lightAngle;
-
 
     private static final float CAMERA_POS_STEP = 0.10f;
     private static final float MOUSE_SENSITIVITY = 0.2f;
 
-    public DungeonsAndDrawings() {
+    public SandboxTestLevel() {
         renderer = new Renderer();
         camera = new Camera();
         cameraInc = new Vector3f(0.0f, 0.0f, 0.0f);
@@ -66,6 +59,7 @@ public class DungeonsAndDrawings implements IGameLogic {
 //        Material material = new Material(texture, reflectance);
 //        mesh.setMaterial(material);
 
+        // Load test .ply file
         Mesh mesh = PLYLoader.loadMesh("/models/PLY/tree.ply");
         Material material = new Material(0.1f);
         mesh.setMaterial(material);
@@ -140,9 +134,11 @@ public class DungeonsAndDrawings implements IGameLogic {
     @Override
     public void update(float interval, MouseInput mouseInput) {
         // Update camera position
-        camera.movePosition(cameraInc.x * CAMERA_POS_STEP,
+        camera.movePosition(
+                cameraInc.x * CAMERA_POS_STEP,
                 cameraInc.y * CAMERA_POS_STEP,
-                cameraInc.z * CAMERA_POS_STEP);
+                cameraInc.z * CAMERA_POS_STEP
+        );
 
         // Update camera based on mouse            
         if (GameEngine.DEBUG_MODE) {
@@ -155,8 +151,15 @@ public class DungeonsAndDrawings implements IGameLogic {
 
     @Override
     public void render(GameWindow window) {
-        renderer.render(window, camera, gameEntities, ambientLight,
-                pointLightList, spotLightList, directionalLight);
+        renderer.render(
+                window,
+                camera,
+                gameEntities,
+                ambientLight,
+                pointLightList,
+                spotLightList,
+                directionalLight
+        );
     }
 
     @Override

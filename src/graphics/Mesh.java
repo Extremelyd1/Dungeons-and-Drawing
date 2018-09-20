@@ -38,6 +38,13 @@ import static org.lwjgl.opengl.GL30.*;
  * when drawing, use a list of indices of said vertices to determine
  * the order in which to draw them.
  *
+ * <b> Something about indices </b>
+ * The index used in calls such as {@code glVertexAttribPointer(index, size, GL_FLOAT, false, 0, 0);}
+ * correspond to memory addresses on the GPU. If create a buffer at some index, you must
+ * use the same index to enable that particular buffer. The game will crash when you try to
+ * enable a buffer with an index that was not created. These indices are also used in the
+ * shader programs (location).
+ *
  * @author Cas Wognum (TU/e, 1012585)
  */
 public class Mesh {
@@ -47,7 +54,13 @@ public class Mesh {
     private final int vertexCount; // Amount of vertices we are rendering
     private Material material;
 
+    /**
+     * Indicates whether vertex colors have been defined
+     */
     private boolean hasVertexColors;
+    /**
+     * Indicates whether texture coordinates have been defined
+     */
     private boolean hasTextureCoords;
 
     /**
@@ -80,6 +93,7 @@ public class Mesh {
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);
         } finally {
+            // Remove off-heap memory since the garbage collector won't clean it up
             buffers.forEach(MemoryUtil::memFree);
         }
     }
@@ -114,6 +128,7 @@ public class Mesh {
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);
         } finally {
+            // Remove off-heap memory since the garbage collector won't clean it up
             buffers.forEach(MemoryUtil::memFree);
         }
     }

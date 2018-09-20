@@ -1,5 +1,6 @@
 package engine;
 
+import engine.util.Timer;
 import org.lwjgl.*;
 
 /** 
@@ -21,7 +22,7 @@ public class GameEngine implements Runnable {
     private boolean isRunning = false; 
     
     // Game logic
-    private final Timer timer; 
+    private final Timer timer;
     private final IGameLogic gameLogic;
     
     // Input / Output
