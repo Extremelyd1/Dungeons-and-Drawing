@@ -13,6 +13,10 @@ import graphics.Shader;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
+
+import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -95,6 +99,14 @@ public class Renderer {
     ) {
 
         clear();
+        /* We attach a callback which is invokd when we resize the window */
+        glfwSetWindowSizeCallback(window.getWindowHandle(), new GLFWWindowSizeCallback(){
+            @Override
+            public void invoke(long window, int width, int height){
+                glfwSetWindowSize(window, width, height); //Set new window size
+                glViewport(0, 0, width, height); //Update the Viewport with new width and height
+            }
+        });
 
         shader.bind();
 
