@@ -28,6 +28,7 @@ public class GameWindow {
     
     // Defaults
     private final String DEFAULT_WINDOW_TITLE = "Dungeons And Drawings";
+    private final boolean FULL_SCREEN = true;
     private final int DEFAULT_WINDOW_WIDTH = 1280;
     private final int DEFAULT_WINDOW_HEIGHT = 720;
     
@@ -82,11 +83,20 @@ public class GameWindow {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
         // Create the window
-        windowHandle = glfwCreateWindow(
-                DEFAULT_WINDOW_WIDTH, 
-                DEFAULT_WINDOW_HEIGHT, 
-                DEFAULT_WINDOW_TITLE, 
-                NULL, NULL);
+        if (FULL_SCREEN) {
+            windowHandle = glfwCreateWindow(
+                    /* We get the current screen resolution */
+                    glfwGetVideoMode(glfwGetPrimaryMonitor()).width(),
+                    glfwGetVideoMode(glfwGetPrimaryMonitor()).height(),
+                    DEFAULT_WINDOW_TITLE,
+                    glfwGetPrimaryMonitor(), NULL);
+        } else {
+            windowHandle = glfwCreateWindow(
+                    DEFAULT_WINDOW_WIDTH,
+                    DEFAULT_WINDOW_HEIGHT,
+                    DEFAULT_WINDOW_TITLE,
+                    NULL, NULL);
+        }
 
        // Check if window creation is succesful
         if (windowHandle == NULL) {
