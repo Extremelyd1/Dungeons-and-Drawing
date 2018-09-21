@@ -74,7 +74,7 @@ public class GameWindow {
         // Configure GLFW
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); //We set the window to be resizable
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
@@ -93,7 +93,6 @@ public class GameWindow {
             throw new RuntimeException("engine.io.GameWindow.initialize(): "
                     + "failed to create the GLFW window");
         }
-        
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(windowHandle, (long windowParam, int key, int scancode, int action, int mods) -> {
             // If the escape key is released, close the window
@@ -109,7 +108,6 @@ public class GameWindow {
 
             // Get the window size passed to glfwCreateWindow
             glfwGetWindowSize(windowHandle, pWidth, pHeight);
-
             // Get the resolution of the primary monitor
             GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
@@ -138,8 +136,7 @@ public class GameWindow {
         // Wireframe model
         //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
     }
-    
-    
+
     
     /** Terminates the window */
     public void terminate() {
