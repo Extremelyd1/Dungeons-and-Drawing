@@ -12,7 +12,8 @@ public interface MapLoader {
      * 2-dimensional format, following [x][y].
      *
      * @return A two dimensional tile array
+     * @throws Exception when the loading goes wrong
      */
-    public Tile[][] load();
+    public Tile[][] load() throws Exception;
 
 }

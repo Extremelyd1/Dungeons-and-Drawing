@@ -40,8 +40,9 @@ public class Map {
      * Loads a map. It assumes that the map has at least a width and height of 1
      *
      * @param loader Loader
+     * @throws Exception if the loading goes wrong
      */
-    public void load(MapLoader loader) {
+    public void load(MapLoader loader) throws Exception {
         tiles = loader.load();
         width = tiles.length;
         height = tiles[0].length;
