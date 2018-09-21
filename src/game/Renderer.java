@@ -1,15 +1,15 @@
 package game;
 
-import graphics.Mesh;
-import graphics.Shader;
 import engine.Camera;
-import engine.Utilities;
 import engine.GameEntity;
 import engine.GameWindow;
 import engine.Transformation;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
+import engine.util.Utilities;
+import graphics.Mesh;
+import graphics.Shader;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -17,31 +17,33 @@ import org.lwjgl.glfw.GLFWWindowSizeCallback;
 
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
+
 import static org.lwjgl.opengl.GL11.*;
 
 /**
- * Class that handles all graphic updates 
+ * Class that handles all graphic updates
+ *
  * @author Cas Wognum (TU/e, 1012585)
  */
 
 public class Renderer {
 
     private Shader shader;
-    
+
     private static final float FOV = (float) Math.toRadians(45.0f);
     private static final float Z_NEAR = 0.01f;
     private static final float Z_FAR = 1000.f;
     private final Transformation transformation;
-    
+
     private static final int MAX_POINT_LIGHTS = 5;
     private static final int MAX_SPOT_LIGHTS = 5;
     private final float specularPower;
-    
+
     public Renderer() {
-        transformation = new Transformation(); 
+        transformation = new Transformation();
         specularPower = 10f;
     }
-    
+
     public void init(GameWindow window) throws Exception {
 
         // Create a shader program
@@ -54,31 +56,48 @@ public class Renderer {
         shader.createUniform("projectionMatrix");
         shader.createUniform("modelViewMatrix");
         shader.createUniform("texture_sampler");
-        
+
         // Create uniform for material
         shader.createMaterialUniform("material");
-        
+
         // Create lighting related uniforms
         shader.createUniform("specularPower");
         shader.createUniform("ambientLight");
         shader.createPointLightListUniform("pointLights", MAX_POINT_LIGHTS);
         shader.createSpotLightListUniform("spotLights", MAX_SPOT_LIGHTS);
         shader.createDirectionalLightUniform("directionalLight");
-        
-        
+
         window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        
     }
 
-    /** Reset the screen to the clear color */
+    /**
+     * Reset the screen to the clear color
+     */
     public void clear() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
-    
-    /* Update graphics */
-    public void render(GameWindow window, Camera camera, GameEntity[] entities, Vector3f ambientLight,
-            PointLight[] pointLightList, SpotLight[] spotLightList, DirectionalLight directionalLight) {
-        
+
+    /**
+     * Renders the scene
+     *
+     * @param window           Game window
+     * @param camera           Camera
+     * @param entities         List of entities to draw
+     * @param ambientLight     Ambient light
+     * @param pointLightList   List of point lights
+     * @param spotLightList    List of spot lights
+     * @param directionalLight Directional light
+     */
+    public void render(
+            GameWindow window,
+            Camera camera,
+            GameEntity[] entities,
+            Vector3f ambientLight,
+            PointLight[] pointLightList,
+            SpotLight[] spotLightList,
+            DirectionalLight directionalLight
+    ) {
+
         clear();
         /* We attach a callback which is invokd when we resize the window */
         glfwSetWindowSizeCallback(window.getWindowHandle(), new GLFWWindowSizeCallback(){
@@ -89,41 +108,60 @@ public class Renderer {
             }
         });
 
-        shader.bind();   
-        
+        shader.bind();
+
         // Update projection Matrix
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(
-                FOV, window.getWindowWidth(), window.getWindowHeight(), 
-                Z_NEAR, Z_FAR );
-        
+                FOV,
+                window.getWindowWidth(),
+                window.getWindowHeight(),
+                Z_NEAR,
+                Z_FAR
+        );
+
         shader.setUniform("projectionMatrix", projectionMatrix);
-                
+
         // Update view Matrix
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
 
         // Update Light Uniforms
         renderLights(viewMatrix, ambientLight, pointLightList, spotLightList, directionalLight);
-        
+
         shader.setUniform("texture_sampler", 0);
+
         for (GameEntity entity : entities) {
-            
+
             Mesh mesh = entity.getMesh();
-            
+
             // Set model view matrix for this item
             Matrix4f modelViewMatrix = transformation.getModelViewMatrix(entity, viewMatrix);
             shader.setUniform("modelViewMatrix", modelViewMatrix);
-            
+
             // Render the mes for this game item
             shader.setUniform("material", mesh.getMaterial());
-            
+
             mesh.render();
         }
 
         shader.unbind();
     }
-    
-    private void renderLights(Matrix4f viewMatrix, Vector3f ambientLight,
-            PointLight[] pointLightList, SpotLight[] spotLightList, DirectionalLight directionalLight) {
+
+    /**
+     * Renders the lights
+     *
+     * @param viewMatrix       View matrix
+     * @param ambientLight     Ambient light
+     * @param pointLightList   List of point lights
+     * @param spotLightList    List of spot lights
+     * @param directionalLight Direction light
+     */
+    private void renderLights(
+            Matrix4f viewMatrix,
+            Vector3f ambientLight,
+            PointLight[] pointLightList,
+            SpotLight[] spotLightList,
+            DirectionalLight directionalLight
+    ) {
 
         shader.setUniform("ambientLight", ambientLight);
         shader.setUniform("specularPower", specularPower);
@@ -172,7 +210,9 @@ public class Renderer {
 
     }
 
-    /** Free up resources */
+    /**
+     * Free up resources
+     */
     public void terminate() {
         shader.terminate();
     }

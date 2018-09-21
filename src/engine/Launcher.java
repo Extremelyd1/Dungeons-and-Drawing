@@ -1,6 +1,6 @@
 package engine;
 
-import game.DungeonsAndDrawings;
+import game.state.SandboxTestLevel;
 
 /**
  * Main class of this Java Application to test the Light Weight Java Gaming 
@@ -37,7 +37,7 @@ public class Launcher {
      */
     public static void main(String[] args) {
         try {
-            IGameLogic gameLogic = new DungeonsAndDrawings();
+            IGameLogic gameLogic = new SandboxTestLevel();
             (new GameEngine(gameLogic)).start();
         } catch (Exception e) {
             e.printStackTrace(System.out);
