@@ -4,6 +4,9 @@ import game.map.loader.MapLoader;
 import game.map.tile.Tile;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Map {
 
     /**
@@ -11,27 +14,37 @@ public class Map {
      */
     private static final float TILE_DIMENSION = 1.0f;
     /**
-     * This number defines the lowest point of the map, which will be the z-coord
+     * This number defines the lowest point of the map, which will be the y-coord
      * for all tiles
      */
-    private static final float MIN_Z = 0;
+    private static final float MIN_Y = 0;
 
     /**
      * 2d tile array in which the tiles are stored in a [x][y] fashion
      */
     private Tile[][] tiles;
+    /**
+     * The width of the tile map
+     */
+    private int width;
+    /**
+     * The height of the tile map
+     */
+    private int height;
 
     public Tile[][] getTiles() {
         return tiles;
     }
 
     /**
-     * Loads a map
+     * Loads a map. It assumes that the map has at least a width and height of 1
      *
      * @param loader Loader
      */
     public void load(MapLoader loader) {
         tiles = loader.load();
+        width = tiles.length;
+        height = tiles[0].length;
     }
 
     /**
@@ -60,6 +73,45 @@ public class Map {
         return tiles[x][y];
     }
 
+    public Tile[] getNeighbours(Tile tile) {
+        List<Tile> neighbours = new ArrayList<>();
+        int x = tile.getPosition().x;
+        int y = tile.getPosition().y;
+
+        if (x > 0) {
+            neighbours.add(tiles[x - 1][y]);
+        }
+        if (x < width - 1) {
+            neighbours.add(tiles[x + 1][y]);
+        }
+        if (y > 0) {
+            neighbours.add(tiles[x][y - 1]);
+        }
+        if (y < height - 1) {
+            neighbours.add(tiles[x][y + 1]);
+        }
+
+        return neighbours.toArray(new Tile[]{});
+    }
+
+    public Tile[] getNeighbours(Tile tile, boolean solid) {
+        List<Tile> filteredTiles = new ArrayList<>();
+        Tile[] neighbours = getNeighbours(tile);
+
+        for (Tile t : neighbours) {
+            // Check if we should only add solid tiles
+            if (solid && t.isSolid()) {
+                filteredTiles.add(t);
+            }
+            // Check if we should add non-solid tiles
+            if (!solid && !t.isSolid()) {
+                filteredTiles.add(t);
+            }
+        }
+
+        return filteredTiles.toArray(new Tile[]{});
+    }
+
     /**
      * Maps tile coordinates to world coordinates
      *
@@ -68,6 +120,6 @@ public class Map {
      * @return Position vector of the tile in world coordinates
      */
     public static Vector3f coordsToWorldCoords(int x, int y) {
-        return new Vector3f(x, y, MIN_Z);
+        return new Vector3f(x, y, MIN_Y);
     }
 }
