@@ -10,15 +10,22 @@ import engine.lights.SpotLight;
 import engine.util.Utilities;
 import graphics.Mesh;
 import graphics.Shader;
+import graphics.ShadowMap;
 import org.joml.Matrix4f;
+import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
+
+import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
+import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 /**
  * Class that handles all graphic updates
@@ -29,6 +36,7 @@ import static org.lwjgl.opengl.GL11.*;
 public class Renderer {
 
     private Shader shader;
+    private Shader depthShader;
 
     private static final float FOV = (float) Math.toRadians(45.0f);
     private static final float Z_NEAR = 0.01f;
@@ -39,13 +47,14 @@ public class Renderer {
     private static final int MAX_SPOT_LIGHTS = 5;
     private final float specularPower;
 
+    private ShadowMap shadowMap;
+
     public Renderer() {
         transformation = new Transformation();
         specularPower = 10f;
     }
 
     public void init(GameWindow window) throws Exception {
-
         // Create a shader program
         shader = new Shader();
         shader.createVertexShader(Utilities.loadResource("/shaders/vertex.vs"));
@@ -67,7 +76,23 @@ public class Renderer {
         shader.createSpotLightListUniform("spotLights", MAX_SPOT_LIGHTS);
         shader.createDirectionalLightUniform("directionalLight");
 
+        // Setup shadows
+        setupShadows();
+
         window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    }
+
+    private void setupShadows() throws Exception {
+        shadowMap = new ShadowMap(2048);
+
+        // Create Depth Shader
+        depthShader = new Shader();
+        depthShader.createVertexShader(Utilities.loadResource("/shaders/depth_vertex.vs"));
+        depthShader.createFragmentShader(Utilities.loadResource("/shaders/depth_fragment.fs"));
+        depthShader.link();
+        // Create Depth Shader variables
+        depthShader.createUniform("orthoProjectionMatrix");
+        depthShader.createUniform("modelLightViewMatrix");
     }
 
     /**
@@ -99,6 +124,9 @@ public class Renderer {
     ) {
 
         clear();
+
+        renderShadows(window, camera, entities, pointLightList, spotLightList, directionalLight);
+
         /* We attach a callback which is invokd when we resize the window */
         glfwSetWindowSizeCallback(window.getWindowHandle(), new GLFWWindowSizeCallback(){
             @Override
@@ -107,6 +135,9 @@ public class Renderer {
                 glViewport(0, 0, width, height); //Update the Viewport with new width and height
             }
         });
+
+        //WORKAROUND width and height are fixed because the viewport is wrong?
+        glViewport(0, 0, 3840, 2160);
 
         shader.bind();
 
@@ -208,6 +239,45 @@ public class Renderer {
             shader.setUniform("directionalLight", currDirLight);
         }
 
+    }
+
+
+    /**
+     * Renders the Shadows
+     */
+    private void renderShadows(
+            GameWindow window,
+            Camera camera,
+            GameEntity[] entities,
+            PointLight[] pointLightList,
+            SpotLight[] spotLightList,
+            DirectionalLight directionalLight){
+        glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
+        glViewport(0, 0, shadowMap.getResolution(), shadowMap.getResolution());
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        depthShader.bind();
+
+        Vector3f lightDirection = directionalLight.getDirection();
+
+        float lightAngleX = (float) Math.toDegrees(Math.acos(lightDirection.z));
+        float lightAngleY = (float) Math.toDegrees(Math.asin(lightDirection.x));
+        Matrix4f lightViewMatrix = transformation.updateLightViewMatrix(
+                new Vector3f(lightDirection).mul(1), new Vector3f(lightAngleX, lightAngleY, 0));
+        DirectionalLight.OrthoCoords orthCoords = directionalLight.getOrthoCoords();
+        Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(
+                orthCoords.left, orthCoords.right, orthCoords.bottom,
+                orthCoords.top , orthCoords.near , orthCoords.far);
+
+        depthShader.setUniform("orthoProjectionMatrix", orthoProjMatrix);
+        for (GameEntity entity : entities) {
+            Matrix4f modelLightViewMatrix = transformation.getModelViewMatrix(entity, lightViewMatrix);
+            depthShader.setUniform("modelLightViewMatrix", modelLightViewMatrix);
+        }
+
+        //Unbind Shader and FBO
+        depthShader.unbind();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     /**

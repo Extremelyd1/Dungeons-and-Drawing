@@ -4,6 +4,7 @@ import engine.*;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
+import engine.loader.OBJLoader;
 import engine.loader.PLYLoader;
 import game.Renderer;
 import graphics.Material;
@@ -60,7 +61,7 @@ public class SandboxTestLevel implements IGameLogic {
 //        mesh.setMaterial(material);
 
         // Load test .ply file
-        Mesh mesh = PLYLoader.loadMesh("/models/PLY/tree.ply");
+        Mesh mesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
         Material material = new Material(0.1f);
         mesh.setMaterial(material);
 
@@ -95,14 +96,24 @@ public class SandboxTestLevel implements IGameLogic {
 //        SpotLight spotLight = new SpotLight(pointLight, coneDir, cutoff);
 //        spotLightList = new SpotLight[]{};
 //
-//        lightPosition = new Vector3f(-1, 0, 0);
-//        directionalLight = new DirectionalLight(new Vector3f(0, 1, 0), lightPosition, lightIntensity);
+        directionalLight = new DirectionalLight(
+                new Vector3f(1, 1, 1),
+                new Vector3f(0, 1, 1),
+                1.0f);
+        directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
 
         GameEntity g = new GameEntity(mesh);
         g.setPosition(0.0f, -2.0f, -7.0f);
 
+        Mesh quadMesh = OBJLoader.loadMesh("/models/plane.obj");
+        Material quadMaterial = new Material(new Vector4f(0.0f, 0.0f, 1.0f, 1.0f), 1.0f);
+        quadMesh.setMaterial(quadMaterial);
+        GameEntity quadGameItem = new GameEntity(quadMesh);
+        quadGameItem.setPosition(0, -4.0f, -8.0f);
+        quadGameItem.setScale(4.5f);
+
         if (GameEngine.DEBUG_MODE) {
-            gameEntities = new GameEntity[]{g, light};
+            gameEntities = new GameEntity[]{g, quadGameItem, light};
         } else {
             gameEntities = new GameEntity[]{g};
         }

@@ -1,5 +1,6 @@
 package graphics;
 
+import engine.GameEntity;
 import engine.loader.data.OBJData;
 import engine.loader.data.PLYData;
 import org.lwjgl.system.MemoryUtil;
@@ -9,6 +10,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -179,7 +181,7 @@ public class Mesh {
     /**
      * Renders the mesh
      */
-    public void render() {
+    public void initRender() {
         if (material.isTextured()) {
             //Get the texture
             Texture texture = material.getTexture();
@@ -199,9 +201,17 @@ public class Mesh {
             glEnableVertexAttribArray(2);
         }
         glEnableVertexAttribArray(3);
+    }
+
+    public void render() {
+        initRender();
 
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
 
+        endRender();
+    }
+
+    public void endRender() {
         // Restore state
         glDisableVertexAttribArray(0);
         if (hasTextureCoords) {

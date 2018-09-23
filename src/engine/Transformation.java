@@ -77,11 +77,20 @@ public class Transformation {
      */
     private final Matrix4f viewMatrix;
 
+    /**
+     * Required for Shadows
+     */
+    private final Matrix4f lightViewMatrix;
+    private final Matrix4f orthoProjMatrix;
+
     public Transformation() {
         worldMatrix = new Matrix4f();
         modelViewMatrix = new Matrix4f();
         projectionMatrix = new Matrix4f();
         viewMatrix = new Matrix4f();
+
+        lightViewMatrix = new Matrix4f();
+        orthoProjMatrix = new Matrix4f();
     }
 
     public final Matrix4f getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
@@ -122,5 +131,36 @@ public class Transformation {
                 scale(entity.getScale());
         Matrix4f viewCurr = new Matrix4f(viewMatrix);
         return viewCurr.mul(modelViewMatrix);
+    }
+
+    /**
+     * lightViewMatrix
+     */
+    public Matrix4f getLightViewMatrix() {
+        return lightViewMatrix;
+    }
+
+    public void setLightViewMatrix(Matrix4f lightViewMatrix) {
+        this.lightViewMatrix.set(lightViewMatrix);
+    }
+
+    public Matrix4f updateLightViewMatrix(Vector3f position, Vector3f rotation) {
+        return updateGenericViewMatrix(position, rotation, lightViewMatrix);
+    }
+
+    private Matrix4f updateGenericViewMatrix(Vector3f position, Vector3f rotation, Matrix4f matrix) {
+        matrix.identity();
+        // Rotation
+        matrix.rotate((float)Math.toRadians(rotation.x), new Vector3f(1, 0, 0))
+                .rotate((float)Math.toRadians(rotation.y), new Vector3f(0, 1, 0));
+        // Translation
+        matrix.translate(-position.x, -position.y, -position.z);
+        return matrix;
+    }
+
+    public Matrix4f updateOrthoProjectionMatrix(float left, float right, float bottom, float top, float zNear, float zFar) {
+        orthoProjMatrix.identity();
+        orthoProjMatrix.setOrtho(left, right, bottom, top, zNear, zFar);
+        return orthoProjMatrix;
     }
 }

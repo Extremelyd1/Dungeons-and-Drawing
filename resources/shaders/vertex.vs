@@ -9,9 +9,13 @@ out vec2 outTexCoord;
 out vec3 mvVertexNormal;
 out vec3 mvVertexPos;
 out vec4 color;
+out vec4 mlightviewVertexPos;
+out mat4 outModelViewMatrix;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
+uniform mat4 modelLightViewMatrix;
+uniform mat4 orthoProjectionMatrix;
 
 void main()
 {
@@ -20,5 +24,7 @@ void main()
     outTexCoord = texCoord;
     mvVertexNormal = normalize(modelViewMatrix * vec4(vertexNormal, 0.0)).xyz;
     mvVertexPos = mvPos.xyz;
+    mlightviewVertexPos = orthoProjectionMatrix * modelLightViewMatrix * vec4(position, 1.0);
+    outModelViewMatrix = modelViewMatrix;
     color = vec4(colors, 1);
 }

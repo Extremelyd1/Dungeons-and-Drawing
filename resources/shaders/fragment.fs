@@ -7,6 +7,7 @@ in vec2 outTexCoord;
 in vec4 color;
 in vec3 mvVertexNormal;
 in vec3 mvVertexPos;
+in vec4 mlightviewVertexPos;
 
 out vec4 fragColor;
 
@@ -57,6 +58,7 @@ uniform Material material;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 uniform DirectionalLight directionalLight;
+uniform sampler2D shadowMap;
 
 vec4 ambientC;
 vec4 diffuseC;
@@ -140,6 +142,33 @@ vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal)
     return calcLightColour(light.colour, light.intensity, position, normalize(light.direction), normal);
 }
 
+float calcShadow(vec4 position)
+{
+    vec3 projCoords = position.xyz;
+    // Transform from screen coordinates to texture coordinates
+    projCoords = projCoords * 0.5 + 0.5;
+    float bias = 0.05;
+
+    float shadowFactor = 0.0;
+    vec2 inc = 1.0 / textureSize(shadowMap, 0);
+    for(int row = -1; row <= 1; ++row)
+    {
+        for(int col = -1; col <= 1; ++col)
+        {
+            float textDepth = texture(shadowMap, projCoords.xy + vec2(row, col) * inc).r;
+            shadowFactor += projCoords.z - bias > textDepth ? 1.0 : 0.0;
+        }
+    }
+    shadowFactor /= 9.0;
+
+    if(projCoords.z > 1.0)
+    {
+        shadowFactor = 1.0;
+    }
+
+    return 1 - shadowFactor;
+}
+
 void main()
 {
     setupColours(material, outTexCoord);
@@ -162,5 +191,6 @@ void main()
         }
     }
     
-    fragColor = ambientC * vec4(ambientLight, 1) + diffuseSpecularComp;
+    float shadow = calcShadow(mlightviewVertexPos);
+    fragColor = clamp(ambientC * vec4(ambientLight, 1) + diffuseSpecularComp * shadow, 0, 1);
 }

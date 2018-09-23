@@ -6,6 +6,7 @@ import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 /**
@@ -15,24 +16,32 @@ public class Texture {
 
     private final int id;
 
+    public Texture(int id) {
+        this.id = id;
+    }
+
     public Texture(String fileName) throws Exception {
         this(loadTexture(fileName));
     }
 
-    public Texture(int id) {
-        this.id = id;
+    public Texture(int width, int height, int pixelFormat) {
+        this.id = glGenTextures();
+
+        glBindTexture(GL_TEXTURE_2D, this.id);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height,
+                0, pixelFormat, GL_FLOAT, (ByteBuffer)null);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
     public void bind() {
         glBindTexture(GL_TEXTURE_2D, id);
     }
 
-    public int getId() {
-        return id;
-    }
-
     private static int loadTexture(String fileName) throws Exception {
-
         // Load Texture file
         PNGDecoder decoder = new PNGDecoder(Texture.class.getResourceAsStream(fileName));
 
@@ -66,5 +75,9 @@ public class Texture {
 
     public void cleanup() {
         glDeleteTextures(id);
+    }
+
+    public int getId() {
+        return id;
     }
 }
