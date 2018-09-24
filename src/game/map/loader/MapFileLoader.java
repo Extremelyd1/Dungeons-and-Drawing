@@ -42,7 +42,6 @@ public class MapFileLoader implements MapLoader {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 String tileLine = lineList.get(index++);
-                // TODO: could throw exception
                 tileList[x][y] = tryParseTile(tileLine, x, y);
             }
         }
@@ -50,8 +49,7 @@ public class MapFileLoader implements MapLoader {
         return tileList;
     }
 
-    // TODO: need to throw exception
-    private Tile tryParseTile(String input, int x, int y) {
+    private Tile tryParseTile(String input, int x, int y) throws NumberFormatException {
         String[] tileProperties = input.split(" ");
 
         String meshName = tileProperties[0];
