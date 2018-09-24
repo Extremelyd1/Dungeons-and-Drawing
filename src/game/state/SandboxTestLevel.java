@@ -1,6 +1,7 @@
 package game.state;
 
 import engine.*;
+import engine.entities.GameEntity;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
@@ -139,7 +140,7 @@ public class SandboxTestLevel implements IGameLogic {
                 cameraInc.z * CAMERA_POS_STEP
         );
 
-        // Update camera based on mouse            
+        // Update camera based on mouse
         if (GameEngine.DEBUG_MODE) {
             if (mouseInput.isRightButtonPressed()) {
                 Vector2f rotVec = mouseInput.getDisplVec();

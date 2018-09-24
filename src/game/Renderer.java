@@ -1,7 +1,7 @@
 package game;
 
 import engine.Camera;
-import engine.GameEntity;
+import engine.entities.GameEntity;
 import engine.GameWindow;
 import engine.Transformation;
 import engine.lights.DirectionalLight;
