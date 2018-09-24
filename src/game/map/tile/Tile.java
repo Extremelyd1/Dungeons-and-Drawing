@@ -15,10 +15,6 @@ public class Tile {
      */
     private Vector3f rotation;
     /**
-     * The scale of the tile
-     */
-    private float scale;
-    /**
      * The actual model of the tile
      */
     private Mesh mesh;
@@ -27,20 +23,19 @@ public class Tile {
      */
     private boolean solid;
 
-    public Tile(Vector2i position, Vector3f rotation, float scale, Mesh mesh, boolean solid) {
+    public Tile(Vector2i position, Vector3f rotation, Mesh mesh, boolean solid) {
         this.position = position;
         this.rotation = rotation;
-        this.scale = scale;
         this.mesh = mesh;
         this.solid = solid;
     }
 
     public Tile(Vector2i position, Mesh mesh, boolean solid) {
-        this(position, new Vector3f(0, 0, 0), 1, mesh, solid);
+        this(position, new Vector3f(0, 0, 0), mesh, solid);
     }
 
     public Tile(Vector2i position, Mesh mesh) {
-        this(position, new Vector3f(0, 0, 0), 1, mesh, true);
+        this(position, new Vector3f(0, 0, 0), mesh, true);
     }
 
     public Vector2i getPosition() {
@@ -49,10 +44,6 @@ public class Tile {
 
     public Vector3f getRotation() {
         return rotation;
-    }
-
-    public float getScale() {
-        return scale;
     }
 
     public Mesh getMesh() {
