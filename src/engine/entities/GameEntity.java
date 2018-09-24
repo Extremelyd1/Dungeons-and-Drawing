@@ -1,5 +1,5 @@
 
-package engine;
+package engine.entities;
 
 import graphics.Mesh;
 import org.joml.Vector3f;
@@ -45,6 +45,14 @@ public class GameEntity {
         return rotation;
     }
 
+    public float getXRotation() {
+        return rotation.x;
+    }
+
+    public float getYRotation() {
+        return rotation.y;
+    }
+
     public void setRotation(float x, float y, float z) {
         this.rotation.x = x;
         this.rotation.y = y;
@@ -53,5 +61,17 @@ public class GameEntity {
 
     public Mesh getMesh() {
         return mesh;
+    }
+
+    public void increasePosition(float dx, float dy, float dz) {
+        this.position.x += dx;
+        this.position.y += dy;
+        this.position.z += dz;
+    }
+
+    public void increaseRotation(float dx, float dy, float dz) {
+        this.rotation.x += dx;
+        this.rotation.y += dy;
+        this.rotation.z += dz;
     }
 }

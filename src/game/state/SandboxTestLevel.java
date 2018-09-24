@@ -1,6 +1,8 @@
 package game.state;
 
 import engine.*;
+import engine.entities.GameEntity;
+import engine.entities.Player;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
@@ -85,6 +87,7 @@ public class SandboxTestLevel implements IGameLogic {
             light.setScale(0.05f * lightIntensity);
         }
 
+
 //        // Spot Light
 //        lightPosition = new Vector3f(0.5f, -6.0f, -9.0f);
 //        pointLight = new PointLight(new Vector3f(0.2f, 0.2f, 1), lightPosition, lightIntensity);
@@ -106,6 +109,8 @@ public class SandboxTestLevel implements IGameLogic {
         } else {
             gameEntities = new GameEntity[]{g};
         }
+
+
     }
 
     @Override
@@ -146,6 +151,8 @@ public class SandboxTestLevel implements IGameLogic {
                 camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
             }
         }
+
+
     }
 
     @Override
