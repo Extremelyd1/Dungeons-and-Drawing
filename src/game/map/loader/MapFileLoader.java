@@ -32,6 +32,9 @@ public class MapFileLoader implements MapLoader {
         {
             String sizeLine = lineList.get(index++);
             String[] sizeArray = sizeLine.split(" ");
+            if (sizeArray.length != 2) {
+                throw new Exception("Level file is not defined correctly");
+            }
 
             width = tryParseInt(sizeArray[0]);
             height = tryParseInt(sizeArray[1]);
@@ -49,8 +52,11 @@ public class MapFileLoader implements MapLoader {
         return tileList;
     }
 
-    private Tile tryParseTile(String input, int x, int y) throws NumberFormatException {
+    private Tile tryParseTile(String input, int x, int y) throws Exception {
         String[] tileProperties = input.split(" ");
+        if (tileProperties.length != 3) {
+            throw new Exception("Level file is not defined correctly");
+        }
 
         String meshName = tileProperties[0];
         int rotationIndex = tryParseInt(tileProperties[1]);
