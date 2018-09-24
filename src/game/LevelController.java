@@ -4,7 +4,10 @@ import engine.GameWindow;
 import engine.IGameLogic;
 import engine.MouseInput;
 import game.level.Level;
+import game.level.TestLevel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class LevelController implements IGameLogic {
@@ -12,8 +15,10 @@ public class LevelController implements IGameLogic {
     private List<Level> levels;
     private Level active;
 
-    public LevelController(List<Level> levels) {
-        this.levels = levels;
+    public LevelController() {
+        this.levels = new ArrayList<>(Arrays.asList(
+                new TestLevel(this)
+        ));
         this.active = levels.get(0);
     }
 
@@ -41,4 +46,6 @@ public class LevelController implements IGameLogic {
     public void terminate() {
         active.terminate();
     }
+
+    // TODO: Level switching mechanics
 }

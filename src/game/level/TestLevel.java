@@ -9,20 +9,19 @@ import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.loader.PLYLoader;
+import game.LevelController;
 import game.Renderer;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector3i;
 import org.joml.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class TestLevel extends Level {
 
-    private final Camera camera;
-    private final Vector3f cameraInc;
-    private final Renderer renderer;
     private GameEntity[] gameEntities;
 
     private Vector3f ambientLight;
@@ -34,32 +33,25 @@ public class TestLevel extends Level {
     private static final float CAMERA_POS_STEP = 0.10f;
     private static final float MOUSE_SENSITIVITY = 0.2f;
 
-    public TestLevel() {
+    public TestLevel(LevelController levelController) {
+        super(levelController);
+
         renderer = new Renderer();
         camera = new Camera();
-        cameraInc = new Vector3f(0.0f, 0.0f, 0.0f);
-
-        camera.setRotation(0.0f, 0.0f, 0.0f);
     }
 
     @Override
     public void init(GameWindow window) throws Exception {
         renderer.init(window);
 
-//        float reflectance = 0.1f;
-//        Mesh mesh = OBJLoader.loadMesh("/models/cube.obj");
-//        Texture texture = new Texture("/textures/texture_wall.png");
-//        Material material = new Material(texture, reflectance);
-//        mesh.setMaterial(material);
-
-        // Load test .ply file
+        // Load tree.ply file
         Mesh mesh = PLYLoader.loadMesh("/models/PLY/tree.ply");
         Material material = new Material(0.1f);
         mesh.setMaterial(material);
 
         ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
 
-        // Point Light
+        // Set up a point light
         Vector3f lightPosition = new Vector3f(1.0f, 1.0f, -7.0f);
         float lightIntensity = 2.0f;
         PointLight pointLight = new PointLight(new Vector3f(1.0f, 0.3f, 0.0f), lightPosition, lightIntensity);
@@ -78,19 +70,6 @@ public class TestLevel extends Level {
             light.setScale(0.05f * lightIntensity);
         }
 
-//        // Spot Light
-//        lightPosition = new Vector3f(0.5f, -6.0f, -9.0f);
-//        pointLight = new PointLight(new Vector3f(0.2f, 0.2f, 1), lightPosition, lightIntensity);
-//        att = new PointLight.Attenuation(0.0f, 0.0f, 0.01f);
-//        pointLight.setAttenuation(att);
-//        Vector3f coneDir = new Vector3f(0f, 0, -1);
-//        float cutoff = (float) Math.cos(Math.toRadians(180));
-//        SpotLight spotLight = new SpotLight(pointLight, coneDir, cutoff);
-//        spotLightList = new SpotLight[]{};
-//
-//        lightPosition = new Vector3f(-1, 0, 0);
-//        directionalLight = new DirectionalLight(new Vector3f(0, 1, 0), lightPosition, lightIntensity);
-
         GameEntity g = new GameEntity(mesh);
         g.setPosition(0.0f, -2.0f, -7.0f);
 
@@ -103,7 +82,8 @@ public class TestLevel extends Level {
 
     @Override
     public void input(GameWindow window, MouseInput mouseInput) {
-        cameraInc.set(0, 0, 0);
+        // Move the camera based on input
+        Vector3i cameraInc = new Vector3i(0, 0, 0);
         if (window.isKeyPressed(GLFW_KEY_W) || window.isKeyPressed(GLFW_KEY_UP)) {
             cameraInc.z = -1;
         } else if (window.isKeyPressed(GLFW_KEY_S) || window.isKeyPressed(GLFW_KEY_DOWN)) {
@@ -121,10 +101,7 @@ public class TestLevel extends Level {
                 cameraInc.y = 1;
             }
         }
-    }
 
-    @Override
-    public void update(float interval, MouseInput mouseInput) {
         // Update camera position
         camera.movePosition(
                 cameraInc.x * CAMERA_POS_STEP,
@@ -139,6 +116,11 @@ public class TestLevel extends Level {
                 camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
             }
         }
+    }
+
+    @Override
+    public void update(float interval, MouseInput mouseInput) {
+
     }
 
     @Override

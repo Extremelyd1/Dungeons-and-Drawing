@@ -1,12 +1,6 @@
 package engine;
 
 import game.LevelController;
-import game.level.Level;
-import game.level.TestLevel;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Main class of this Java Application to test the Light Weight Java Gaming
@@ -42,11 +36,7 @@ public class Launcher {
      */
     public static void main(String[] args) {
         try {
-            List<Level> levels = new ArrayList<>(Arrays.asList(
-                    new TestLevel()
-            ));
-//            IGameLogic gameLogic = new SandboxTestLevel();
-            (new GameEngine(new LevelController(levels))).start();
+            (new GameEngine(new LevelController())).start();
         } catch (Exception e) {
             e.printStackTrace(System.out);
             System.exit(-1);
