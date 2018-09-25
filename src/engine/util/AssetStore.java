@@ -21,7 +21,7 @@ public class AssetStore {
             return loadedMeshes.get(meshName);
         }
         // Load mesh
-        String filePath = "/models/PLY/" + meshName;
+        String filePath = "/models/PLY/" + meshName + ".ply";
         Mesh mesh;
         try {
             mesh = PLYLoader.loadMesh(filePath);
