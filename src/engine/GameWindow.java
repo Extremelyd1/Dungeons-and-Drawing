@@ -28,7 +28,7 @@ public class GameWindow {
     
     // Defaults
     private final String DEFAULT_WINDOW_TITLE = "Dungeons And Drawings";
-    private final boolean FULL_SCREEN = true;
+    private final boolean FULL_SCREEN = false;
     private final int DEFAULT_WINDOW_WIDTH = 1280;
     private final int DEFAULT_WINDOW_HEIGHT = 720;
     

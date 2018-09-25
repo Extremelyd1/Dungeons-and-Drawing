@@ -5,12 +5,13 @@ import engine.GameEngine;
 import engine.GameWindow;
 import engine.MouseInput;
 import engine.entities.GameEntity;
-import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.loader.PLYLoader;
 import game.LevelController;
 import game.Renderer;
+import game.map.Map;
+import game.map.loader.SimpleMapLoader;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
@@ -20,20 +21,19 @@ import org.joml.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class TestLevel extends Level {
+public class MapTestLevel extends Level {
 
     private GameEntity[] gameEntities;
 
     private Vector3f ambientLight;
     private PointLight[] pointLightList;
-    private SpotLight[] spotLightList;
-    private DirectionalLight directionalLight;
-    private float lightAngle;
+
+    private Map map;
 
     private static final float CAMERA_POS_STEP = 0.10f;
     private static final float MOUSE_SENSITIVITY = 0.2f;
 
-    public TestLevel(LevelController levelController) {
+    public MapTestLevel(LevelController levelController) {
         super(levelController);
 
         renderer = new Renderer();
@@ -44,12 +44,10 @@ public class TestLevel extends Level {
     public void init(GameWindow window) throws Exception {
         renderer.init(window);
 
-        // Load tree.ply file
-        Mesh mesh = PLYLoader.loadMesh("/models/test_1.ply");
-        Material material = new Material(0.1f);
-        mesh.setMaterial(material);
+        map = new Map();
+        map.load(new SimpleMapLoader());
 
-        ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
+        ambientLight = new Vector3f(0.6f, 0.6f, 0.6f);
 
         // Set up a point light
         Vector3f lightPosition = new Vector3f(1.0f, 1.0f, -7.0f);
@@ -60,24 +58,15 @@ public class TestLevel extends Level {
         pointLightList = new PointLight[]{pointLight};
 
         GameEntity light;
-        if (GameEngine.DEBUG_MODE) {
-            Mesh mesh_light = PLYLoader.loadMesh("/models/PLY/light.ply");
-            Material material_light = new Material(new Vector4f(pointLight.getColor(), 1), 0.1f);
-            mesh_light.setMaterial(material_light);
+        Mesh mesh_light = PLYLoader.loadMesh("/models/PLY/light.ply");
+        Material material_light = new Material(new Vector4f(pointLight.getColor(), 1), 0.1f);
+        mesh_light.setMaterial(material_light);
 
-            light = new GameEntity(mesh_light);
-            light.setPosition(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z);
-            light.setScale(0.05f * lightIntensity);
-        }
+        light = new GameEntity(mesh_light);
+        light.setPosition(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z);
+        light.setScale(0.05f * lightIntensity);
 
-        GameEntity g = new GameEntity(mesh);
-        g.setPosition(0.0f, -2.0f, -7.0f);
-
-        if (GameEngine.DEBUG_MODE) {
-            gameEntities = new GameEntity[]{g, light};
-        } else {
-            gameEntities = new GameEntity[]{g};
-        }
+        gameEntities = new GameEntity[]{light};
     }
 
     @Override
@@ -131,9 +120,9 @@ public class TestLevel extends Level {
                 gameEntities,
                 ambientLight,
                 pointLightList,
-                spotLightList,
-                directionalLight,
-                null
+                new SpotLight[]{},
+                null,
+                map
         );
     }
 

@@ -158,7 +158,8 @@ public class SandboxTestLevel implements IGameLogic {
                 ambientLight,
                 pointLightList,
                 spotLightList,
-                directionalLight
+                new DirectionalLight(new Vector3f(0.3f, 0.3f, 0.3f), new Vector3f(-1, 0, 0), 1f),
+                null
         );
     }
 

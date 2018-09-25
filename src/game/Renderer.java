@@ -8,6 +8,8 @@ import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.util.Utilities;
+import game.map.Map;
+import game.map.tile.Tile;
 import graphics.Mesh;
 import graphics.Shader;
 import org.joml.Matrix4f;
@@ -95,7 +97,8 @@ public class Renderer {
             Vector3f ambientLight,
             PointLight[] pointLightList,
             SpotLight[] spotLightList,
-            DirectionalLight directionalLight
+            DirectionalLight directionalLight,
+            Map map
     ) {
 
         clear();
@@ -128,6 +131,20 @@ public class Renderer {
         renderLights(viewMatrix, ambientLight, pointLightList, spotLightList, directionalLight);
 
         shader.setUniform("texture_sampler", 0);
+
+        for (Tile[] row : map.getTiles()) {
+            for (Tile tile : row) {
+                Mesh mesh = tile.getMesh();
+                // Set model view matrix for this item
+                Matrix4f modelViewMatrix = transformation.getModelViewMatrix(tile, viewMatrix);
+                shader.setUniform("modelViewMatrix", modelViewMatrix);
+
+                // Render the mes for this game item
+                shader.setUniform("material", mesh.getMaterial());
+
+                mesh.render();
+            }
+        }
 
         for (GameEntity entity : entities) {
 
