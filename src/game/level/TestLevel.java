@@ -1,9 +1,9 @@
 package game.level;
 
-import engine.Camera;
 import engine.GameEngine;
 import engine.GameWindow;
 import engine.MouseInput;
+import engine.camera.FreeCamera;
 import engine.entities.GameEntity;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
@@ -13,12 +13,8 @@ import game.LevelController;
 import game.Renderer;
 import graphics.Material;
 import graphics.Mesh;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector3i;
 import org.joml.Vector4f;
-
-import static org.lwjgl.glfw.GLFW.*;
 
 public class TestLevel extends Level {
 
@@ -30,14 +26,11 @@ public class TestLevel extends Level {
     private DirectionalLight directionalLight;
     private float lightAngle;
 
-    private static final float CAMERA_POS_STEP = 0.10f;
-    private static final float MOUSE_SENSITIVITY = 0.2f;
-
     public TestLevel(LevelController levelController) {
         super(levelController);
 
         renderer = new Renderer();
-        camera = new Camera();
+        camera = new FreeCamera();
     }
 
     @Override
@@ -83,44 +76,14 @@ public class TestLevel extends Level {
     @Override
     public void input(GameWindow window, MouseInput mouseInput) {
         // Move the camera based on input
-        Vector3i cameraInc = new Vector3i(0, 0, 0);
-        if (window.isKeyPressed(GLFW_KEY_W) || window.isKeyPressed(GLFW_KEY_UP)) {
-            cameraInc.z = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_S) || window.isKeyPressed(GLFW_KEY_DOWN)) {
-            cameraInc.z = 1;
-        }
-        if (window.isKeyPressed(GLFW_KEY_A) || window.isKeyPressed(GLFW_KEY_LEFT)) {
-            cameraInc.x = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_D) || window.isKeyPressed(GLFW_KEY_RIGHT)) {
-            cameraInc.x = 1;
-        }
-        if (GameEngine.DEBUG_MODE) {
-            if (window.isKeyPressed(GLFW_KEY_Z)) {
-                cameraInc.y = -1;
-            } else if (window.isKeyPressed(GLFW_KEY_X)) {
-                cameraInc.y = 1;
-            }
-        }
-
-        // Update camera position
-        camera.movePosition(
-                cameraInc.x * CAMERA_POS_STEP,
-                cameraInc.y * CAMERA_POS_STEP,
-                cameraInc.z * CAMERA_POS_STEP
-        );
-
-        // Update camera based on mouse
-        if (GameEngine.DEBUG_MODE) {
-            if (mouseInput.isRightButtonPressed()) {
-                Vector2f rotVec = mouseInput.getDisplVec();
-                camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
-            }
+        if (camera instanceof FreeCamera) {
+            ((FreeCamera) camera).handleInput(window, mouseInput);
         }
     }
 
     @Override
     public void update(float interval, MouseInput mouseInput) {
-
+        camera.update();
     }
 
     @Override

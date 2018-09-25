@@ -1,6 +1,6 @@
 package game.level;
 
-import engine.Camera;
+import engine.camera.Camera;
 import engine.GameWindow;
 import engine.IGameLogic;
 import engine.MouseInput;

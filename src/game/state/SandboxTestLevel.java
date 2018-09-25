@@ -1,6 +1,7 @@
 package game.state;
 
 import engine.*;
+import engine.camera.Camera;
 import engine.entities.GameEntity;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
@@ -46,8 +47,6 @@ public class SandboxTestLevel implements IGameLogic {
         renderer = new Renderer();
         camera = new Camera();
         cameraInc = new Vector3f(0.0f, 0.0f, 0.0f);
-
-        camera.setRotation(0.0f, 0.0f, 0.0f);
     }
 
     @Override
@@ -134,7 +133,7 @@ public class SandboxTestLevel implements IGameLogic {
     @Override
     public void update(float interval, MouseInput mouseInput) {
         // Update camera position
-        camera.movePosition(
+        camera.moveRelative(
                 cameraInc.x * CAMERA_POS_STEP,
                 cameraInc.y * CAMERA_POS_STEP,
                 cameraInc.z * CAMERA_POS_STEP
@@ -144,7 +143,7 @@ public class SandboxTestLevel implements IGameLogic {
         if (GameEngine.DEBUG_MODE) {
             if (mouseInput.isRightButtonPressed()) {
                 Vector2f rotVec = mouseInput.getDisplVec();
-                camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
+                camera.getRotation().add(new Vector3f(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0));
             }
         }
     }
