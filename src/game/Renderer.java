@@ -1,6 +1,6 @@
 package game;
 
-import engine.Camera;
+import engine.camera.Camera;
 import engine.entities.GameEntity;
 import engine.GameWindow;
 import engine.Transformation;
