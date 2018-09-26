@@ -12,18 +12,17 @@ import graphics.Mesh;
 import graphics.Shader;
 import graphics.ShadowMap;
 import org.joml.Matrix4f;
-import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
-
-import java.util.List;
-import java.util.Map;
+import sun.security.ssl.Debug;
 
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL20.GL_MAX_TEXTURE_IMAGE_UNITS;
 import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
 import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
@@ -55,6 +54,9 @@ public class Renderer {
     }
 
     public void init(GameWindow window) throws Exception {
+        // Setup Depth Shader
+        setupDepthShader();
+
         // Create a shader program
         shader = new Shader();
         shader.createVertexShader(Utilities.loadResource("/shaders/vertex.vs"));
@@ -76,15 +78,18 @@ public class Renderer {
         shader.createSpotLightListUniform("spotLights", MAX_SPOT_LIGHTS);
         shader.createDirectionalLightUniform("directionalLight");
 
-        // Setup shadows
-        setupShadows();
+        // Shadow mapping related uniforms
+        shader.createUniform("shadowMap");
+        shader.createUniform("orthoProjectionMatrix");
+        shader.createUniform("modelLightViewMatrix");
 
         window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
-    private void setupShadows() throws Exception {
+    // CHECKED OK
+    private void setupDepthShader() throws Exception {
+        // Create ShadowMap Object
         shadowMap = new ShadowMap(2048);
-
         // Create Depth Shader
         depthShader = new Shader();
         depthShader.createVertexShader(Utilities.loadResource("/shaders/depth_vertex.vs"));
@@ -103,7 +108,7 @@ public class Renderer {
     }
 
     /**
-     * Renders the scene
+     * Renders the scene (CHECKED OK)
      *
      * @param window           Game window
      * @param camera           Camera
@@ -125,7 +130,7 @@ public class Renderer {
 
         clear();
 
-        renderShadows(window, camera, entities, pointLightList, spotLightList, directionalLight);
+        renderDepthMap(window, camera, entities, pointLightList, spotLightList, directionalLight);
 
         /* We attach a callback which is invokd when we resize the window */
         glfwSetWindowSizeCallback(window.getWindowHandle(), new GLFWWindowSizeCallback(){
@@ -137,6 +142,7 @@ public class Renderer {
         });
 
         //WORKAROUND width and height are fixed because the viewport is wrong?
+        //glViewport(0, 0, getWindowWidth(), getWindowHeight());
         glViewport(0, 0, 3840, 2160);
 
         shader.bind();
@@ -149,8 +155,10 @@ public class Renderer {
                 Z_NEAR,
                 Z_FAR
         );
-
         shader.setUniform("projectionMatrix", projectionMatrix);
+        Matrix4f orthoProjMatrix = transformation.getOrthoProjectionMatrix();
+        shader.setUniform("orthoProjectionMatrix", orthoProjMatrix);
+        Matrix4f lightViewMatrix = transformation.getLightViewMatrix();
 
         // Update view Matrix
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
@@ -159,17 +167,22 @@ public class Renderer {
         renderLights(viewMatrix, ambientLight, pointLightList, spotLightList, directionalLight);
 
         shader.setUniform("texture_sampler", 0);
+        shader.setUniform("shadowMap", 2);
 
         for (GameEntity entity : entities) {
-
             Mesh mesh = entity.getMesh();
-
-            // Set model view matrix for this item
-            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(entity, viewMatrix);
-            shader.setUniform("modelViewMatrix", modelViewMatrix);
 
             // Render the mes for this game item
             shader.setUniform("material", mesh.getMaterial());
+
+            glActiveTexture(GL_TEXTURE2);
+            shadowMap.getDepthMap().bind();
+
+            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(entity, viewMatrix);
+            shader.setUniform("modelViewMatrix", modelViewMatrix);
+
+            Matrix4f modelLightViewMatrix = transformation.updateModelLightViewMatrix(entity, lightViewMatrix);
+            shader.setUniform("modelLightViewMatrix", modelLightViewMatrix);
 
             mesh.render();
         }
@@ -241,11 +254,10 @@ public class Renderer {
 
     }
 
-
     /**
-     * Renders the Shadows
+     * Renders the Depth Map (CHECKED OK)
      */
-    private void renderShadows(
+    private void renderDepthMap(
             GameWindow window,
             Camera camera,
             GameEntity[] entities,
@@ -263,7 +275,7 @@ public class Renderer {
         float lightAngleX = (float) Math.toDegrees(Math.acos(lightDirection.z));
         float lightAngleY = (float) Math.toDegrees(Math.asin(lightDirection.x));
         Matrix4f lightViewMatrix = transformation.updateLightViewMatrix(
-                new Vector3f(lightDirection).mul(1), new Vector3f(lightAngleX, lightAngleY, 0));
+                new Vector3f(lightDirection).mul(5.0f), new Vector3f(lightAngleX, lightAngleY, 0));
         DirectionalLight.OrthoCoords orthCoords = directionalLight.getOrthoCoords();
         Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(
                 orthCoords.left, orthCoords.right, orthCoords.bottom,
@@ -271,8 +283,12 @@ public class Renderer {
 
         depthShader.setUniform("orthoProjectionMatrix", orthoProjMatrix);
         for (GameEntity entity : entities) {
+            Mesh mesh = entity.getMesh();
+
             Matrix4f modelLightViewMatrix = transformation.getModelViewMatrix(entity, lightViewMatrix);
             depthShader.setUniform("modelLightViewMatrix", modelLightViewMatrix);
+
+            mesh.render();
         }
 
         //Unbind Shader and FBO

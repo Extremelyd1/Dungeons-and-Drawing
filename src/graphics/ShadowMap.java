@@ -10,26 +10,25 @@ public class ShadowMap {
 
     public ShadowMap(int resolution) throws Exception{
         this.resolution = resolution;
-        // FBO to render depth map
-        depthMapFBO = glGenFramebuffers();
 
         // Create depth map texture
         depthMap = new Texture(resolution, resolution, GL_DEPTH_COMPONENT);
 
-        // Tie depth map to FBO
+        // Create FBO
+        depthMapFBO = glGenFramebuffers();
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        depthMap.bind();
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
                 depthMap.getId(), 0);
-
-        // Depth Only
-        glDrawBuffer(GL_NONE);
-        glDrawBuffer(GL_NONE);
 
         // Error Check
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
             throw new Exception("ShadowMap could not create FrameBuffer");
 
-        // Unbind FBO
+        // Unbind Depth Map and FBO
+        glBindTexture(GL_TEXTURE_2D, 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 

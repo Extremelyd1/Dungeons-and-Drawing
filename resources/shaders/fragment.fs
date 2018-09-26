@@ -144,29 +144,54 @@ vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal)
 
 float calcShadow(vec4 position)
 {
-    vec3 projCoords = position.xyz;
+    float bias = max(0.05 * (1.0 - dot(mvVertexNormal, directionalLight.direction)), 0.01);
+
+    vec3 projCoords = position.xyz / position.w;
     // Transform from screen coordinates to texture coordinates
-    projCoords = projCoords * 0.5 + 0.5;
-    float bias = 0.05;
+    projCoords = projCoords * 0.5 + 0.5f;
 
-    float shadowFactor = 0.0;
-    vec2 inc = 1.0 / textureSize(shadowMap, 0);
-    for(int row = -1; row <= 1; ++row)
-    {
-        for(int col = -1; col <= 1; ++col)
+
+    if (projCoords.z > 1.0){
+        return 0.0f;
+    } else {
+        float closestDepth = texture(shadowMap, projCoords.xy).r;
+        float currentDepth = projCoords.z;
+
+        float shadow = 0.0;
+        vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+        for(int x = -2; x <= 2; ++x)
         {
-            float textDepth = texture(shadowMap, projCoords.xy + vec2(row, col) * inc).r;
-            shadowFactor += projCoords.z - bias > textDepth ? 1.0 : 0.0;
+            for(int y = -2; y <= 2; ++y)
+            {
+                float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+                shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+            }
         }
-    }
-    shadowFactor /= 9.0;
+        shadow /= 25.0;
 
-    if(projCoords.z > 1.0)
-    {
-        shadowFactor = 1.0;
+        return 1.0f - shadow;
     }
 
-    return 1 - shadowFactor;
+    //float bias = 0.05;
+
+    //float shadowFactor = 0.0;
+    //vec2 inc = 1.0 / textureSize(shadowMap, 0);
+    //for(int row = -1; row <= 1; ++row)
+    //{
+    //    for(int col = -1; col <= 1; ++col)
+    //    {
+    //        float textDepth = texture(shadowMap, projCoords.xy + vec2(row, col) * inc).r;
+    //        shadowFactor += projCoords.z - bias > textDepth ? 1.0 : 0.0;
+    //    }
+    //}
+    //shadowFactor /= 9.0;
+
+    //if(projCoords.z > 1.0)
+    //{
+    //    shadowFactor = 1.0;
+    //}
+
+    //return 1 - shadowFactor;
 }
 
 void main()
@@ -192,5 +217,9 @@ void main()
     }
     
     float shadow = calcShadow(mlightviewVertexPos);
-    fragColor = clamp(ambientC * vec4(ambientLight, 1) + diffuseSpecularComp * shadow, 0, 1);
+    //if (shadow < 1){
+    //    fragColor = vec4(0,0,0,0);
+    //} else {
+        fragColor = clamp(ambientC * vec4(ambientLight, 1) + diffuseSpecularComp * shadow, 0, 1);
+    //}
 }

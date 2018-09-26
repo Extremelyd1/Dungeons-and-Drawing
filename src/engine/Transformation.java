@@ -81,6 +81,8 @@ public class Transformation {
      * Required for Shadows
      */
     private final Matrix4f lightViewMatrix;
+    private final Matrix4f modelLightMatrix;
+    private final Matrix4f modelLightViewMatrix;
     private final Matrix4f orthoProjMatrix;
 
     public Transformation() {
@@ -90,6 +92,8 @@ public class Transformation {
         viewMatrix = new Matrix4f();
 
         lightViewMatrix = new Matrix4f();
+        modelLightMatrix = new Matrix4f();
+        modelLightViewMatrix = new Matrix4f();
         orthoProjMatrix = new Matrix4f();
     }
 
@@ -162,5 +166,20 @@ public class Transformation {
         orthoProjMatrix.identity();
         orthoProjMatrix.setOrtho(left, right, bottom, top, zNear, zFar);
         return orthoProjMatrix;
+    }
+
+    public Matrix4f getOrthoProjectionMatrix(){
+        return orthoProjMatrix;
+    }
+
+    public Matrix4f updateModelLightViewMatrix(GameEntity gameItem, Matrix4f matrix) {
+        Vector3f rotation = gameItem.getRotation();
+        modelLightMatrix.identity().translate(gameItem.getPosition()).
+                rotateX((float)Math.toRadians(-rotation.x)).
+                rotateY((float)Math.toRadians(-rotation.y)).
+                rotateZ((float)Math.toRadians(-rotation.z)).
+                scale(gameItem.getScale());
+        modelLightViewMatrix.set(matrix);
+        return modelLightViewMatrix.mul(modelLightMatrix);
     }
 }

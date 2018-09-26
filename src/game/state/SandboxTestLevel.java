@@ -68,14 +68,14 @@ public class SandboxTestLevel implements IGameLogic {
         ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
 
         // Point Light
-        Vector3f lightPosition = new Vector3f(1.0f, 1.0f, -7.0f);
+        /*Vector3f lightPosition = new Vector3f(1.0f, 1.0f, -7.0f);
         float lightIntensity = 2.0f;
         PointLight pointLight = new PointLight(new Vector3f(1.0f, 0.3f, 0.0f), lightPosition, lightIntensity);
         PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
         pointLight.setAttenuation(att);
-        pointLightList = new PointLight[]{pointLight};
+        pointLightList = new PointLight[]{pointLight};*/
 
-        GameEntity light;
+        /*GameEntity light;
         if (GameEngine.DEBUG_MODE) {
             Mesh mesh_light = PLYLoader.loadMesh("/models/PLY/light.ply");
             Material material_light = new Material(new Vector4f(pointLight.getColor(), 1), 0.1f);
@@ -84,7 +84,7 @@ public class SandboxTestLevel implements IGameLogic {
             light = new GameEntity(mesh_light);
             light.setPosition(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z);
             light.setScale(0.05f * lightIntensity);
-        }
+        }*/
 
 //        // Spot Light
 //        lightPosition = new Vector3f(0.5f, -6.0f, -9.0f);
@@ -98,22 +98,29 @@ public class SandboxTestLevel implements IGameLogic {
 //
         directionalLight = new DirectionalLight(
                 new Vector3f(1, 1, 1),
-                new Vector3f(0, 1, 1),
+                new Vector3f(0.2f, 1.0f, 0.5f),
                 1.0f);
-        directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
+        directionalLight.setOrthoCords(-40.0f, 40.0f, -40.0f, 40.0f, -1.0f, 20.0f);
 
         GameEntity g = new GameEntity(mesh);
-        g.setPosition(0.0f, -2.0f, -7.0f);
+        g.setPosition(0.0f, -2.0f, -2.0f);
 
-        Mesh quadMesh = OBJLoader.loadMesh("/models/plane.obj");
+        Mesh mesh2 = PLYLoader.loadMesh("/models/PLY/cube.ply");
+        Material material2 = new Material(0.1f);
+        mesh2.setMaterial(material);
+        GameEntity g2 = new GameEntity(mesh2);
+        g2.setPosition(0.0f, -9.5f, -2.0f);
+        g2.setScale(6.0f);
+
+        /*Mesh quadMesh = OBJLoader.loadMesh("/models/plane.obj");
         Material quadMaterial = new Material(new Vector4f(0.0f, 0.0f, 1.0f, 1.0f), 1.0f);
         quadMesh.setMaterial(quadMaterial);
         GameEntity quadGameItem = new GameEntity(quadMesh);
         quadGameItem.setPosition(0, -4.0f, -8.0f);
-        quadGameItem.setScale(4.5f);
+        quadGameItem.setScale(4.5f);*/
 
         if (GameEngine.DEBUG_MODE) {
-            gameEntities = new GameEntity[]{g, quadGameItem, light};
+            gameEntities = new GameEntity[]{g, g2};
         } else {
             gameEntities = new GameEntity[]{g};
         }
