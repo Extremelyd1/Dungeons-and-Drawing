@@ -1,6 +1,5 @@
 package game;
 
-import engine.GameWindow;
 import engine.IGameLogic;
 import engine.MouseInput;
 import game.level.Level;
@@ -23,13 +22,13 @@ public class LevelController implements IGameLogic {
     }
 
     @Override
-    public void init(GameWindow window) throws Exception {
-        active.init(window);
+    public void init() throws Exception {
+        active.init();
     }
 
     @Override
-    public void input(GameWindow window, MouseInput mouseInput) {
-        active.input(window, mouseInput);
+    public void input(MouseInput mouseInput) {
+        active.input(mouseInput);
     }
 
     @Override
@@ -38,8 +37,8 @@ public class LevelController implements IGameLogic {
     }
 
     @Override
-    public void render(GameWindow window) {
-        active.render(window);
+    public void render() {
+        active.render();
     }
 
     @Override

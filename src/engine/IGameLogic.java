@@ -9,18 +9,16 @@ package engine;
 public interface IGameLogic {
 
     /** 
-     * Initialize game variables and state at launch time 
-     * @param window The window in which all graphics are displayed
+     * Initialize game variables and state at launch time
      * @throws Exception if initialization was not possible 
      */
-    void init(GameWindow window) throws Exception;
+    void init() throws Exception;
     
     /**
      * Gather and start processing the user input
-     * @param window the game window 
      * @param mouseInput 
      */
-    void input(GameWindow window, MouseInput mouseInput);
+    void input(MouseInput mouseInput);
     
     /**
      * Update the game state and variables
@@ -30,10 +28,9 @@ public interface IGameLogic {
     void update(float interval, MouseInput mouseInput);
     
     /**
-     * Update the graphics 
-     * @param window the game window
+     * Update the graphics
      */
-    void render(GameWindow window);
+    void render();
     
     /** Free up resources that are no longer needed */
     void terminate();

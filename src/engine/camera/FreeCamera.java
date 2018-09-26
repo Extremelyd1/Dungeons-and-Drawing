@@ -19,10 +19,10 @@ public class FreeCamera extends Camera {
     /**
      * Read the input and move the camera
      *
-     * @param window     Window object for getting input
      * @param mouseInput Mouse input
      */
-    public void handleInput(GameWindow window, MouseInput mouseInput) {
+    public void handleInput(MouseInput mouseInput) {
+        GameWindow window = GameWindow.getGameWindow();
         Vector3i cameraInc = new Vector3i(0, 0, 0);
         if (window.isKeyPressed(GLFW_KEY_W) || window.isKeyPressed(GLFW_KEY_UP)) {
             cameraInc.z = -1;

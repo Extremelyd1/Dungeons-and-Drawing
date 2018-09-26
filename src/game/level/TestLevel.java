@@ -1,7 +1,6 @@
 package game.level;
 
 import engine.GameEngine;
-import engine.GameWindow;
 import engine.MouseInput;
 import engine.camera.FreeCamera;
 import engine.entities.GameEntity;
@@ -34,8 +33,8 @@ public class TestLevel extends Level {
     }
 
     @Override
-    public void init(GameWindow window) throws Exception {
-        renderer.init(window);
+    public void init() throws Exception {
+        renderer.init();
 
         // Load tree.ply file
         Mesh mesh = PLYLoader.loadMesh("/models/PLY/tree.ply");
@@ -74,10 +73,10 @@ public class TestLevel extends Level {
     }
 
     @Override
-    public void input(GameWindow window, MouseInput mouseInput) {
+    public void input(MouseInput mouseInput) {
         // Move the camera based on input
         if (camera instanceof FreeCamera) {
-            ((FreeCamera) camera).handleInput(window, mouseInput);
+            ((FreeCamera) camera).handleInput(mouseInput);
         }
     }
 
@@ -87,9 +86,8 @@ public class TestLevel extends Level {
     }
 
     @Override
-    public void render(GameWindow window) {
+    public void render() {
         renderer.render(
-                window,
                 camera,
                 gameEntities,
                 ambientLight,

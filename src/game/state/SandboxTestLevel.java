@@ -50,8 +50,8 @@ public class SandboxTestLevel implements IGameLogic {
     }
 
     @Override
-    public void init(GameWindow window) throws Exception {
-        renderer.init(window);
+    public void init() throws Exception {
+        renderer.init();
 
 //        float reflectance = 0.1f;
 //        Mesh mesh = OBJLoader.loadMesh("/models/cube.obj");
@@ -109,7 +109,8 @@ public class SandboxTestLevel implements IGameLogic {
     }
 
     @Override
-    public void input(GameWindow window, MouseInput mouseInput) {
+    public void input(MouseInput mouseInput) {
+        GameWindow window = GameWindow.getGameWindow();
         cameraInc.set(0, 0, 0);
         if (window.isKeyPressed(GLFW_KEY_W) || window.isKeyPressed(GLFW_KEY_UP)) {
             cameraInc.z = -1;
@@ -149,9 +150,8 @@ public class SandboxTestLevel implements IGameLogic {
     }
 
     @Override
-    public void render(GameWindow window) {
+    public void render() {
         renderer.render(
-                window,
                 camera,
                 gameEntities,
                 ambientLight,
