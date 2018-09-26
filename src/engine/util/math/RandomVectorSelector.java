@@ -4,14 +4,14 @@ import org.joml.Random;
 import org.joml.Vector3f;
 
 /**
- * Utility class that can choose random between vectors.
+ * Utility class that can choose randomly between vectors.
  */
-public class RandomVectorGenerator {
+public class RandomVectorSelector {
 
     /**
      * Seed for the random
      */
-    private final int seed = 123456789;
+    private int seed;
     /**
      * List of vectors to choose from
      */
@@ -21,7 +21,7 @@ public class RandomVectorGenerator {
      */
     private Random random;
 
-    public RandomVectorGenerator(Vector3f... vectors) {
+    public RandomVectorSelector(int seed, Vector3f... vectors) {
         this.vectors = vectors;
         this.random = new Random(seed);
     }
