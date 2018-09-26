@@ -10,17 +10,20 @@ import org.joml.Vector3f;
  */
 public class GameEntity {
 
-    private final Mesh mesh;
+    private Mesh mesh;
     private final Vector3f position;
     private float scale;
     private final Vector3f rotation;
 
     public GameEntity(Mesh mesh) {
+        this();
         this.mesh = mesh;
+    }
+
+    public GameEntity() {
         position = new Vector3f(0, 0, 0);
         scale = 1;
         rotation = new Vector3f(0, 0, 0);
-
     }
 
     public Vector3f getPosition() {
@@ -61,6 +64,10 @@ public class GameEntity {
 
     public Mesh getMesh() {
         return mesh;
+    }
+
+    public void setMesh(Mesh mesh) {
+        this.mesh = mesh;
     }
 
     public void increasePosition(float dx, float dy, float dz) {

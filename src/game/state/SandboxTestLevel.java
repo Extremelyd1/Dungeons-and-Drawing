@@ -7,6 +7,7 @@ import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.loader.PLYLoader;
+import game.GUI;
 import game.Renderer;
 import graphics.Material;
 import graphics.Mesh;
@@ -34,6 +35,8 @@ public class SandboxTestLevel implements IGameLogic {
     private final Renderer renderer;
     private GameEntity[] gameEntities;
 
+    private GUI gui;
+
     private Vector3f ambientLight;
     private PointLight[] pointLightList;
     private SpotLight[] spotLightList;
@@ -51,6 +54,9 @@ public class SandboxTestLevel implements IGameLogic {
 
     @Override
     public void init() throws Exception {
+
+        gui = new GUI("Test");
+
         renderer.init();
 
 //        float reflectance = 0.1f;
@@ -58,6 +64,8 @@ public class SandboxTestLevel implements IGameLogic {
 //        Texture texture = new Texture("/textures/texture_wall.png");
 //        Material material = new Material(texture, reflectance);
 //        mesh.setMaterial(material);
+
+
 
         // Load test .ply file
         Mesh mesh = PLYLoader.loadMesh("/models/PLY/tree.ply");
@@ -154,6 +162,7 @@ public class SandboxTestLevel implements IGameLogic {
         renderer.render(
                 camera,
                 gameEntities,
+                gui,
                 ambientLight,
                 pointLightList,
                 spotLightList,

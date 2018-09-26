@@ -33,6 +33,11 @@ public class GameEngine implements Runnable {
      * @param gameLogic the (logic of the) game we want to run
      */
     public GameEngine(IGameLogic gameLogic) {
+
+        // Needed to use the AWT Font class on OSX
+        System.setProperty("java.awt.headless", "true");
+
+
         this.gameLogic = gameLogic; 
         timer = new Timer(); 
         mouseInput = new MouseInput();
