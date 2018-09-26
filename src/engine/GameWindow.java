@@ -28,13 +28,13 @@ public class GameWindow {
     
     // Defaults
     private final String DEFAULT_WINDOW_TITLE = "Dungeons And Drawings";
-    private final boolean FULL_SCREEN = true;
     private final int DEFAULT_WINDOW_WIDTH = 1280;
     private final int DEFAULT_WINDOW_HEIGHT = 720;
     
     // << If we want the window to be resizable, these variables should be used >>
+    private boolean full_screen = false;
     private int windowWidth; 
-    private int windowHeight; 
+    private int windowHeight;
     
     /** Private constructor */
     private GameWindow() {
@@ -83,7 +83,7 @@ public class GameWindow {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
         // Create the window
-        if (FULL_SCREEN) {
+        if (full_screen) {
             windowHandle = glfwCreateWindow(
                     /* We get the current screen resolution */
                     glfwGetVideoMode(glfwGetPrimaryMonitor()).width(),
@@ -108,6 +108,9 @@ public class GameWindow {
             // If the escape key is released, close the window
             if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
                 glfwSetWindowShouldClose(windowParam, true);
+            }
+            if (key == GLFW_KEY_F11 && action == GLFW_RELEASE) {
+                updateWindow();
             }
         });
 
@@ -158,7 +161,34 @@ public class GameWindow {
         glfwTerminate();
         glfwSetErrorCallback(null).free();
     }
-    
+
+    /**
+     * Method that is called if the f11 key is pressed, switches between full screen and windowed mode
+     */
+    private void updateWindow() {
+        full_screen = !full_screen;
+        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        if (full_screen) {
+            windowWidth = vidmode.width();
+            windowHeight = vidmode.height();
+            glfwSetWindowSize(windowHandle, windowWidth, windowHeight);
+            glfwSetWindowMonitor(windowHandle, glfwGetPrimaryMonitor(), 0, 0,
+                                    windowHeight, windowWidth, GLFW_CONNECTED);
+            glfwSwapInterval(1);
+        } else {
+            windowWidth = DEFAULT_WINDOW_WIDTH;
+            windowHeight = DEFAULT_WINDOW_HEIGHT;
+            glfwSetWindowSize(windowHandle, windowWidth, windowHeight);
+            glfwSetWindowMonitor(windowHandle, NULL, 0, 0,
+                                    windowWidth, windowHeight, GLFW_CONNECTED);
+            glfwSetWindowPos(
+                    windowHandle,
+                    (vidmode.width() - windowWidth) / 2,
+                    (vidmode.height() - windowHeight) / 2
+            );
+            glfwSwapInterval(1);
+        }
+    }
     
     
     /** Renders and updates the game components */
@@ -166,7 +196,7 @@ public class GameWindow {
         glfwSwapBuffers(windowHandle); // swap the buffers (render new frame)
         glfwPollEvents(); // process all pending events
     }
-    
+
     /**
      * Return whether a certain key is pressed down
      * 

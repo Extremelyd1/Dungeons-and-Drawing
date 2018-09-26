@@ -120,6 +120,9 @@ public class Renderer {
                 Z_FAR
         );
 
+        //Update the glViewMatrix
+        glViewport(0, 0, window.getWindowWidth(), window.getWindowHeight());
+
         shader.setUniform("projectionMatrix", projectionMatrix);
 
         // Update view Matrix
