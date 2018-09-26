@@ -44,7 +44,7 @@ public class Renderer {
         specularPower = 10f;
     }
 
-    public void init(GameWindow window) throws Exception {
+    public void init() throws Exception {
 
         // Create a shader program
         shader = new Shader();
@@ -67,7 +67,7 @@ public class Renderer {
         shader.createSpotLightListUniform("spotLights", MAX_SPOT_LIGHTS);
         shader.createDirectionalLightUniform("directionalLight");
 
-        window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        GameWindow.getGameWindow().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
     /**
@@ -89,7 +89,6 @@ public class Renderer {
      * @param directionalLight Directional light
      */
     public void render(
-            GameWindow window,
             Camera camera,
             GameEntity[] entities,
             Vector3f ambientLight,
@@ -99,7 +98,9 @@ public class Renderer {
     ) {
 
         clear();
-        /* We attach a callback which is invokd when we resize the window */
+
+        GameWindow window = GameWindow.getGameWindow();
+        /* We attach a callback which is invoked when we resize the window */
         glfwSetWindowSizeCallback(window.getWindowHandle(), new GLFWWindowSizeCallback(){
             @Override
             public void invoke(long window, int width, int height){
