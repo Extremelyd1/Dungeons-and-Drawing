@@ -116,7 +116,7 @@ public class Mesh {
 
             // Create buffers
             buffers.add(createVBO(objData.positions, 0, 3));
-            buffers.add(createVBO(objData.textureCoords, 1, 3));
+            buffers.add(createVBO(objData.textureCoords, 1, 2));
             buffers.add(createVBO(objData.normals, 3, 3));
             buffers.add(createVBO(objData.indicies));
 
@@ -251,6 +251,20 @@ public class Mesh {
         Texture texture = material.getTexture();
         if (texture != null) {
             texture.cleanup();
+        }
+
+        // Delete the VAO
+        glBindVertexArray(0);
+        glDeleteVertexArrays(vaoId);
+    }
+
+    public void deleteBuffers() {
+        glDisableVertexAttribArray(0);
+
+        // Delete the VBOs
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        for (int vboId : vboIdList) {
+            glDeleteBuffers(vboId);
         }
 
         // Delete the VAO

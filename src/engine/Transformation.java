@@ -1,6 +1,7 @@
 package engine;
 
 import engine.camera.Camera;
+import engine.gui.GUIComponent;
 import engine.entities.Entity;
 import game.map.tile.Tile;
 import org.joml.Matrix4f;
@@ -80,11 +81,14 @@ public class Transformation {
      */
     private final Matrix4f viewMatrix;
 
+    private final Matrix4f orthoMatrix;
+
     public Transformation() {
         worldMatrix = new Matrix4f();
         modelViewMatrix = new Matrix4f();
         projectionMatrix = new Matrix4f();
         viewMatrix = new Matrix4f();
+        orthoMatrix = new Matrix4f();
     }
 
     public final Matrix4f getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
@@ -92,6 +96,12 @@ public class Transformation {
         projectionMatrix.identity();
         projectionMatrix.perspective(fov, aspectRatio, zNear, zFar);
         return projectionMatrix;
+    }
+
+    public final Matrix4f getOrthoProjectionMatrix(float left, float right, float bottom, float top) {
+        orthoMatrix.identity();
+        orthoMatrix.setOrtho2D(left, right, bottom, top);
+        return orthoMatrix;
     }
 
     public Matrix4f getWorldMatrix(Vector3f offset, Vector3f rotation, float scale) {
@@ -125,6 +135,19 @@ public class Transformation {
                 scale(entity.getScale());
         Matrix4f viewCurr = new Matrix4f(viewMatrix);
         return viewCurr.mul(modelViewMatrix);
+    }
+
+    public Matrix4f getOrtoProjModelMatrix(GUIComponent guiComponent, Matrix4f orthoMatrix) {
+        Vector3f rotation = guiComponent.getRotation();
+        Matrix4f modelMatrix = new Matrix4f();
+        modelMatrix.identity().translate(guiComponent.getPosition()).
+                rotateX((float) Math.toRadians(-rotation.x)).
+                rotateY((float) Math.toRadians(-rotation.y)).
+                rotateZ((float) Math.toRadians(-rotation.z)).
+                scale(guiComponent.getScale());
+        Matrix4f orthoMatrixCurr = new Matrix4f(orthoMatrix);
+        orthoMatrixCurr.mul(modelMatrix);
+        return orthoMatrixCurr;
     }
 
     public Matrix4f getModelViewMatrix(Tile tile, Matrix4f viewMatrix) {

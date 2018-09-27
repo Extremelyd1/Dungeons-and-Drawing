@@ -8,6 +8,7 @@ import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.loader.PLYLoader;
+import game.GUI;
 import game.LevelController;
 import game.Renderer;
 import graphics.Material;
@@ -17,6 +18,7 @@ import org.joml.Vector4f;
 
 public class TestLevel extends Level {
 
+    private GUI gui;
     private Entity[] gameEntities;
 
     private Vector3f ambientLight;
@@ -35,6 +37,8 @@ public class TestLevel extends Level {
     @Override
     public void init() throws Exception {
         renderer.init();
+
+        gui = new GUI("ABCDEFGabcdefg!");
 
         // Load tree.ply file
         Mesh mesh = PLYLoader.loadMesh("/models/test_1.ply");
@@ -89,6 +93,7 @@ public class TestLevel extends Level {
     public void render() {
         renderer.render(
                 camera,
+                gui,
                 gameEntities,
                 ambientLight,
                 pointLightList,

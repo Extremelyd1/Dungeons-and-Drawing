@@ -6,6 +6,7 @@ import engine.entities.Entity;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.loader.PLYLoader;
+import game.GUI;
 import game.LevelController;
 import game.Renderer;
 import game.map.Map;
@@ -24,6 +25,8 @@ public class MapTestLevel extends Level {
 
     private Map map;
 
+    private GUI gui;
+
     public MapTestLevel(LevelController levelController) {
         super(levelController);
 
@@ -34,6 +37,8 @@ public class MapTestLevel extends Level {
     @Override
     public void init() throws Exception {
         renderer.init();
+
+        gui = new GUI("ABCDEFGabcdefg!");
 
         map = new Map();
         map.load(new SimpleMapLoader());
@@ -75,6 +80,7 @@ public class MapTestLevel extends Level {
     public void render() {
         renderer.render(
                 camera,
+                gui,
                 gameEntities,
                 ambientLight,
                 pointLightList,
