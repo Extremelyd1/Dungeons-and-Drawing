@@ -16,6 +16,7 @@ public class GameEngine implements Runnable {
     // Display extra information if in debug mode to find errors more easily
     public static final boolean DEBUG_MODE = true; 
     public static final int TARGET_UPS = 60; // updates per second
+    public static final int TARGET_FPS = 120; // frames per second
     
     // Threads
     private Thread thread;   
@@ -77,7 +78,7 @@ public class GameEngine implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-//            terminate();
+            terminate();
         }        
     }
     
@@ -102,17 +103,35 @@ public class GameEngine implements Runnable {
 
         isRunning = true; 
         while (isRunning && !GameWindow.getGameWindow().shouldClose()) {
+            // Store the start time of the iteration
+            double iterationStartTime = timer.getTime();
+            // Calculate the time that elapsed since the previous game iteration
             elapsedTime = timer.getElapsedTime();
             accumulator += elapsedTime;
 
             input();
 
             while (accumulator >= interval) {
-                update(interval);
+                update(elapsedTime);
                 accumulator -= interval;
             }
-
             render();
+            // If the iteration did not take the expected time, let the thread sleep
+            // for the remaining time
+            sync(iterationStartTime);
+        }
+    }
+
+    /** Let the thread sleep the rest of how long the game iteration should have lasted */
+    private void sync(double loopStartTime) {
+        float loopSlot = 1f / TARGET_FPS;
+        double endTime = loopStartTime + loopSlot;
+        while(timer.getTime() < endTime) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ie) {
+                // TODO: Do something with exception?
+            }
         }
     }
     
@@ -124,10 +143,10 @@ public class GameEngine implements Runnable {
     
     /** 
      * Update the game state
-     * @param interval the frequence at which to render
+     * @param delta the frequence at which to render
      */
-    protected void update(float interval) {
-        gameLogic.update(interval, mouseInput);
+    protected void update(float delta) {
+        gameLogic.update(delta, mouseInput);
     }
     
     /** Update the game graphics */
