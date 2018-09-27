@@ -1,72 +1,79 @@
 package engine.entities;
 
+import engine.GameWindow;
 import engine.KeyboardInput;
-import engine.entities.GameEntity;
 import graphics.Mesh;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
-public class Player extends GameEntity {
-
-    private static final float RUN_SPEED = 20;
-    private static final float TURN_SPEED = 160;
-    private static final float GRAVITY = -50;
-    private static final float JUMP_POWER = -50;
-    private static final float TERRAIN = 0;
-
-    private float current_speed = 0;
-    private float currentTurnSpeed = 0;
-    private float upwardsSpeed = 0;
-
-    private boolean isInAir = false;
+/**
+ * Player class, the controllable PC of the game
+ */
+public class Player extends LivingEntity {
 
     public Player(Mesh mesh){
         super(mesh);
     }
 
-    public void move(){
-        checkIntputs();
-        increaseRotation(0, currentTurnSpeed, 0);
-        float distance = current_speed;
-        float dx = (float)(distance * Math.sin(Math.toRadians(super.getXRotation())));
-        float dz = (float)(distance * Math.cos(Math.toRadians(super.getXRotation())));
-        super.increasePosition(dx, 0, dz);
-        upwardsSpeed+=GRAVITY;
-        super.increasePosition(0, upwardsSpeed, 0);
-        if (super.getPosition().y < TERRAIN){
-            upwardsSpeed = 0;
-            isInAir = false;
-            super.getPosition().y = TERRAIN;
-        }
+    public Player(Mesh mesh, Vector3f position, Vector3f rotation) {
+        super(mesh, position, rotation);
     }
 
-    private void jump(){
-        if(!isInAir) {
-        this.upwardsSpeed = JUMP_POWER;
-        isInAir = true;
-        }
+    public Player(Mesh mesh, Vector3f position, Vector3f rotation, float speed) {
+        super(mesh, position, rotation, speed);
     }
 
-    private void checkIntputs(){
-        if (KeyboardInput.keys[GLFW.GLFW_KEY_T]){
-            this.current_speed = RUN_SPEED;
-        } else if(KeyboardInput.keys[GLFW.GLFW_KEY_G]){
-            this.current_speed = -RUN_SPEED;
-        } else {
-            this.current_speed = 0;
-        }
+    // TODO: parameter delta currently passed is not actually delta
+    /**
+     * Updates the player logic
+     * @param delta the time in seconds since previous update call
+     */
+    @Override
+    public void update(float delta) {
+        GameWindow window = GameWindow.getGameWindow();
+        boolean forward = window.isKeyPressed(GLFW.GLFW_KEY_W);
+        boolean backward = window.isKeyPressed(GLFW.GLFW_KEY_S);
+        boolean left = window.isKeyPressed(GLFW.GLFW_KEY_A);
+        boolean right = window.isKeyPressed(GLFW.GLFW_KEY_D);
+        
+        if (forward) {
+            if (left) {
+                this.getPosition().add((float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)));
+                
+                this.getRotation().set(0, 315, 0);
+            } else if (right) {
+                this.getPosition().add((float) (delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)));
 
-        if (KeyboardInput.keys[GLFW.GLFW_KEY_H]){
-            this.currentTurnSpeed = -TURN_SPEED;
-        } else if(KeyboardInput.keys[GLFW.GLFW_KEY_F]){
-            this.currentTurnSpeed = +TURN_SPEED;
-        } else{
-            this.currentTurnSpeed = 0;
-        }
+                this.getRotation().set(0, 45, 0);
+            } else {
+                this.getPosition().add(0, 0,-delta * this.getSpeed());
 
-        if (KeyboardInput.keys[GLFW.GLFW_KEY_SPACE]){
-            jump();
+                this.getRotation().set(0, 0, 0);
+            }
+        } else if (backward) {
+            if (left) {
+                this.getPosition().add((float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (delta * this.getSpeed() * 1 / Math.sqrt(2)));
+
+                this.getRotation().set(0, 225, 0);
+            } else if (right) {
+                this.getPosition().add((float) (delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (delta * this.getSpeed() * 1 / Math.sqrt(2)));
+
+                this.getRotation().set(0, 135, 0);
+            } else {
+                this.getPosition().add(0, 0, delta * this.getSpeed());
+
+                this.getRotation().set(0, 180, 0);
+            }
+        } else if (left) {
+            this.getPosition().add(-delta * this.getSpeed(), 0, 0);
+
+            this.getRotation().set(0,270, 0);
+        } else if (right) {
+            this.getPosition().add(delta * this.getSpeed(), 0, 0);
+
+            this.getRotation().set(0, 90, 0);
         }
+        
     }
-
 
 }

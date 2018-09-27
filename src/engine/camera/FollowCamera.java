@@ -1,6 +1,6 @@
 package engine.camera;
 
-import engine.entities.GameEntity;
+import engine.entities.Entity;
 import org.joml.Vector3f;
 
 /**
@@ -9,19 +9,21 @@ import org.joml.Vector3f;
 public class FollowCamera extends Camera {
 
     private Vector3f offset;
-    private GameEntity entity;
+    private Entity entity;
 
-    public FollowCamera(GameEntity entity) {
+    public FollowCamera(Entity entity) {
+        super(entity.getPosition(), new Vector3f(0, 0, 0));
         this.entity = entity;
+        this.offset = new Vector3f(0, 0, 0);
     }
 
-    public FollowCamera(GameEntity entity, Vector3f rotation) {
+    public FollowCamera(Entity entity, Vector3f rotation) {
         super(entity.getPosition(), rotation);
         this.entity = entity;
         this.offset = new Vector3f(0, 0, 0);
     }
 
-    public FollowCamera(GameEntity entity, Vector3f rotation, Vector3f offset) {
+    public FollowCamera(Entity entity, Vector3f rotation, Vector3f offset) {
         super(entity.getPosition(), rotation);
         this.entity = entity;
         this.offset = offset;

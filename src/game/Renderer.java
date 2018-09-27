@@ -1,7 +1,7 @@
 package game;
 
 import engine.camera.Camera;
-import engine.entities.GameEntity;
+import engine.entities.Entity;
 import engine.GameWindow;
 import engine.Transformation;
 import engine.gui.GUIComponent;
@@ -9,6 +9,8 @@ import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.util.Utilities;
+import game.map.Map;
+import game.map.tile.Tile;
 import graphics.Mesh;
 import graphics.Shader;
 import org.joml.Matrix4f;
@@ -107,12 +109,13 @@ public class Renderer {
      */
     public void render(
             Camera camera,
-            GameEntity[] entities,
             GUI gui,
+            Entity[] entities,
             Vector3f ambientLight,
             PointLight[] pointLightList,
             SpotLight[] spotLightList,
-            DirectionalLight directionalLight
+            DirectionalLight directionalLight,
+            Map map
     ) {
 
         clear();
@@ -121,22 +124,27 @@ public class Renderer {
         /* We attach a callback which is invoked when we resize the window */
         glfwSetWindowSizeCallback(window.getWindowHandle(), new GLFWWindowSizeCallback() {
             @Override
-            public void invoke(long window, int width, int height) {
-                glfwSetWindowSize(window, width, height); //Set new window size
+            public void invoke(long windowHandle, int width, int height){
+                glfwSetWindowSize(windowHandle, width, height); //Set new window size
+                window.setWindowHeight(height);
+                window.setWindowWidth(width);
                 glViewport(0, 0, width, height); //Update the Viewport with new width and height
             }
         });
 
-        renderScene(camera, entities, ambientLight, pointLightList, spotLightList, directionalLight);
-        renderGui(gui);
+        renderScene(camera, entities, ambientLight, pointLightList, spotLightList, directionalLight, map);
+        if (gui != null) {
+            renderGui(gui);
+        }
     }
 
     public void renderScene(Camera camera,
-                            GameEntity[] entities,
+                            Entity[] entities,
                             Vector3f ambientLight,
                             PointLight[] pointLightList,
                             SpotLight[] spotLightList,
-                            DirectionalLight directionalLight) {
+                            DirectionalLight directionalLight,
+                            Map map) {
 
         sceneShader.bind();
 
@@ -159,7 +167,21 @@ public class Renderer {
 
         sceneShader.setUniform("texture_sampler", 0);
 
-        for (GameEntity entity : entities) {
+        for (Tile[] row : map.getTiles()) {
+            for (Tile tile : row) {
+                Mesh mesh = tile.getMesh();
+                // Set model view matrix for this item
+                Matrix4f modelViewMatrix = transformation.getModelViewMatrix(tile, viewMatrix);
+                sceneShader.setUniform("modelViewMatrix", modelViewMatrix);
+
+                // Render the mes for this game item
+                sceneShader.setUniform("material", mesh.getMaterial());
+
+                mesh.render();
+            }
+        }
+
+        for (Entity entity : entities) {
 
             Mesh mesh = entity.getMesh();
 
