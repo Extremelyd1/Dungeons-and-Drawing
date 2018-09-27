@@ -2,6 +2,7 @@ package engine.entities;
 
 import engine.GameWindow;
 import engine.KeyboardInput;
+import engine.input.KeyBinding;
 import graphics.Mesh;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -31,15 +32,15 @@ public class Player extends LivingEntity {
     @Override
     public void update(float delta) {
         GameWindow window = GameWindow.getGameWindow();
-        boolean forward = window.isKeyPressed(GLFW.GLFW_KEY_W);
-        boolean backward = window.isKeyPressed(GLFW.GLFW_KEY_S);
-        boolean left = window.isKeyPressed(GLFW.GLFW_KEY_A);
-        boolean right = window.isKeyPressed(GLFW.GLFW_KEY_D);
-        
+        boolean forward = KeyBinding.isForwardPressed();
+        boolean backward = KeyBinding.isBackwardPressed();
+        boolean left = KeyBinding.isLeftPressed();
+        boolean right = KeyBinding.isRightPressed();
+
         if (forward) {
             if (left) {
                 this.getPosition().add((float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)));
-                
+
                 this.getRotation().set(0, 315, 0);
             } else if (right) {
                 this.getPosition().add((float) (delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)));
@@ -73,7 +74,7 @@ public class Player extends LivingEntity {
 
             this.getRotation().set(0, 90, 0);
         }
-        
+
     }
 
 }
