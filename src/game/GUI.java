@@ -4,7 +4,7 @@ import engine.GameWindow;
 import engine.gui.GUIComponent;
 import engine.gui.Text;
 import graphics.FontTexture;
-import org.joml.Vector4f;
+import org.joml.Vector3f;
 
 import java.awt.*;
 
@@ -25,8 +25,7 @@ public class GUI {
     public GUI(String initText) throws Exception {
 
         FontTexture fontTexture = new FontTexture(FONT, CHARSET);
-        this.text = new Text(initText, fontTexture, new Vector4f(1, 0, 0, 0));
-
+        this.text = new Text(initText, fontTexture, new Vector3f(0.75f, 0.4f, 0.1f));
         // Create list that holds the items that compose the HUD
         components = new GUIComponent[]{this.text};
 

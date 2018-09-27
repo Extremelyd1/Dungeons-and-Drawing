@@ -46,7 +46,7 @@ public class Text extends GUIComponent {
      * @param y The y-coordinate (in screen coordinates)
      * @throws Exception if texture can not be generated
      */
-    public Text(String text, FontTexture fontTexture, Vector4f color, float x, float y) throws Exception {
+    public Text(String text, FontTexture fontTexture, Vector3f color, float x, float y) throws Exception {
         this(text, fontTexture);
         this.setColor(color);
         this.setPosition(x, y);
@@ -60,7 +60,7 @@ public class Text extends GUIComponent {
      * @param color The color of the text
      * @throws Exception if texture can not be generated
      */
-    public Text(String text, FontTexture fontTexture, Vector4f color) throws Exception {
+    public Text(String text, FontTexture fontTexture, Vector3f color) throws Exception {
         this(text, fontTexture);
         this.setColor(color);
     }
@@ -78,7 +78,7 @@ public class Text extends GUIComponent {
         this.text = text;
         this.fontTexture = fontTexture;
         setMesh(buildMesh());
-        this.setColor(new Vector4f(1, 1, 1, 1));
+        this.setColor(new Vector3f(1, 1, 1));
     }
 
     /**
@@ -173,7 +173,7 @@ public class Text extends GUIComponent {
     }
 
     /* Update the color */
-    public void setColor(Vector4f color) {
-        this.getMesh().getMaterial().setAmbientColour(color);
+    public void setColor(Vector3f color) {
+        this.getMesh().getMaterial().setAmbientColour(new Vector4f(color, 1.0f));
     }
 }

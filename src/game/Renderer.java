@@ -273,8 +273,8 @@ public class Renderer {
             // Set ortohtaphic and model matrix for this HUD item
             Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(gameItem, ortho);
             guiShader.setUniform("projModelMatrix", projModelMatrix);
-            guiShader.setUniform("colour", gameItem.getMesh().getMaterial().getAmbientColour());
-            guiShader.setUniform("hasTexture", gameItem.getMesh().getMaterial().isTextured() ? 1 : 0);
+            guiShader.setUniform("colour", mesh.getMaterial().getAmbientColour());
+            guiShader.setUniform("hasTexture", mesh.getMaterial().isTextured() ? 1 : 0);
 
             // Render the mesh for this HUD item
             mesh.render();
