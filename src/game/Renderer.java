@@ -5,18 +5,22 @@ import engine.entities.Entity;
 import engine.GameWindow;
 import engine.Transformation;
 import engine.gui.GUIComponent;
+import engine.gui.Text;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.util.Utilities;
 import game.map.Map;
 import game.map.tile.Tile;
+import graphics.FontTexture;
 import graphics.Mesh;
 import graphics.Shader;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
+
+import java.awt.*;
 
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;

@@ -87,4 +87,5 @@ public class GUIComponent {
     public void setMesh(Mesh mesh) {
         this.mesh = mesh;
     }
+
 }

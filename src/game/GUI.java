@@ -2,6 +2,7 @@ package game;
 
 import engine.GameWindow;
 import engine.gui.GUIComponent;
+import engine.gui.SimplePopup;
 import engine.gui.Text;
 import graphics.FontTexture;
 import org.joml.Vector3f;
@@ -26,9 +27,9 @@ public class GUI {
 
         FontTexture fontTexture = new FontTexture(FONT, CHARSET);
         this.text = new Text(initText, fontTexture, new Vector3f(0.75f, 0.4f, 0.1f));
-        // Create list that holds the items that compose the HUD
-        components = new GUIComponent[]{this.text};
 
+        // Create list that holds the items that compose the HUD
+        components = new GUIComponent[]{ this.text };
     }
 
     public void setText(String text) {
