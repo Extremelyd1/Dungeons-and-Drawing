@@ -1,5 +1,6 @@
 package engine;
 
+import engine.camera.Camera;
 import engine.entities.GameEntity;
 import game.map.tile.Tile;
 import org.joml.Matrix4f;

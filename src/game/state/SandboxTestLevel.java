@@ -1,6 +1,7 @@
 package game.state;
 
 import engine.*;
+import engine.camera.Camera;
 import engine.entities.GameEntity;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
@@ -46,13 +47,11 @@ public class SandboxTestLevel implements IGameLogic {
         renderer = new Renderer();
         camera = new Camera();
         cameraInc = new Vector3f(0.0f, 0.0f, 0.0f);
-
-        camera.setRotation(0.0f, 0.0f, 0.0f);
     }
 
     @Override
-    public void init(GameWindow window) throws Exception {
-        renderer.init(window);
+    public void init() throws Exception {
+        renderer.init();
 
 //        float reflectance = 0.1f;
 //        Mesh mesh = OBJLoader.loadMesh("/models/cube.obj");
@@ -110,7 +109,8 @@ public class SandboxTestLevel implements IGameLogic {
     }
 
     @Override
-    public void input(GameWindow window, MouseInput mouseInput) {
+    public void input(MouseInput mouseInput) {
+        GameWindow window = GameWindow.getGameWindow();
         cameraInc.set(0, 0, 0);
         if (window.isKeyPressed(GLFW_KEY_W) || window.isKeyPressed(GLFW_KEY_UP)) {
             cameraInc.z = -1;
@@ -134,7 +134,7 @@ public class SandboxTestLevel implements IGameLogic {
     @Override
     public void update(float interval, MouseInput mouseInput) {
         // Update camera position
-        camera.movePosition(
+        camera.moveRelative(
                 cameraInc.x * CAMERA_POS_STEP,
                 cameraInc.y * CAMERA_POS_STEP,
                 cameraInc.z * CAMERA_POS_STEP
@@ -144,15 +144,14 @@ public class SandboxTestLevel implements IGameLogic {
         if (GameEngine.DEBUG_MODE) {
             if (mouseInput.isRightButtonPressed()) {
                 Vector2f rotVec = mouseInput.getDisplVec();
-                camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
+                camera.getRotation().add(new Vector3f(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0));
             }
         }
     }
 
     @Override
-    public void render(GameWindow window) {
+    public void render() {
         renderer.render(
-                window,
                 camera,
                 gameEntities,
                 ambientLight,

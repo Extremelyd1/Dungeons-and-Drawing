@@ -27,7 +27,6 @@ public class GameEngine implements Runnable {
     
     // Input / Output
     private final MouseInput mouseInput;
-    private GameWindow window;
    
     /**
      * Constructor that starts the game engine
@@ -41,7 +40,7 @@ public class GameEngine implements Runnable {
     
     /**
      * Starts the game application on a new thread. 
-     * Calls {@link GameEngine.run()}
+     * Calls {@link GameEngine#run()}
      */
     public synchronized void start() {
 
@@ -84,11 +83,9 @@ public class GameEngine implements Runnable {
                     Version.getVersion() + "!");
         }
 
-        window = GameWindow.getGameWindow();
-
         timer.init();
-        mouseInput.init(window);
-        gameLogic.init(window);
+        mouseInput.init();
+        gameLogic.init();
     }
 
     /** Update all game components with a given frequency */
@@ -99,7 +96,7 @@ public class GameEngine implements Runnable {
         float interval = 1f / TARGET_UPS;
 
         isRunning = true; 
-        while (isRunning && !window.shouldClose()) {
+        while (isRunning && !GameWindow.getGameWindow().shouldClose()) {
             elapsedTime = timer.getElapsedTime();
             accumulator += elapsedTime;
 
@@ -116,8 +113,8 @@ public class GameEngine implements Runnable {
     
     /** Gather and start processing the user input */
     protected void input() {
-        mouseInput.input(window);
-        gameLogic.input(window, mouseInput);
+        mouseInput.input();
+        gameLogic.input(mouseInput);
     }
     
     /** 
@@ -130,14 +127,15 @@ public class GameEngine implements Runnable {
     
     /** Update the game graphics */
     protected void render() {
-        gameLogic.render(window);
+        GameWindow window = GameWindow.getGameWindow();
+        gameLogic.render();
         window.render();
     }
     
     /** Terminate all game components */
     protected void terminate() {
-        gameLogic.terminate(); 
-        window.terminate();
+        gameLogic.terminate();
+        GameWindow.getGameWindow().terminate();
     }
 }
 

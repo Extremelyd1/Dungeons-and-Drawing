@@ -1,7 +1,6 @@
 package game.level;
 
-import engine.Camera;
-import engine.GameWindow;
+import engine.camera.Camera;
 import engine.IGameLogic;
 import engine.MouseInput;
 import game.LevelController;
@@ -17,16 +16,16 @@ public abstract class Level implements IGameLogic {
         this.levelController = levelController;
     }
 
-    public abstract void init(GameWindow window) throws Exception;
+    public abstract void init() throws Exception;
 
     @Override
-    public abstract void input(GameWindow window, MouseInput mouseInput);
+    public abstract void input(MouseInput mouseInput);
 
     @Override
     public abstract void update(float interval, MouseInput mouseInput);
 
     @Override
-    public abstract void render(GameWindow window);
+    public abstract void render();
 
     @Override
     public abstract void terminate();

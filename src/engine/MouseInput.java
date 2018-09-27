@@ -24,7 +24,8 @@ public class MouseInput {
         displVec = new Vector2f();
     }
 
-    public void init(GameWindow window) {
+    public void init() {
+        GameWindow window = GameWindow.getGameWindow();
         glfwSetCursorPosCallback(window.getWindowHandle(), (windowHandle, xpos, ypos) -> {
             currentPos.x = xpos;
             currentPos.y = ypos;
@@ -44,7 +45,7 @@ public class MouseInput {
         return displVec;
     }
 
-    public void input(GameWindow window) {
+    public void input() {
         displVec.x = 0;
         displVec.y = 0;
         if (previousPos.x > 0 && previousPos.y > 0 && inWindow) {
