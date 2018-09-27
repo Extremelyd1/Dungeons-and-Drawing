@@ -80,9 +80,7 @@ public class SandboxTestLevel implements IGameLogic {
             Material material_light = new Material(new Vector4f(pointLight.getColor(), 1), 0.1f);
             mesh_light.setMaterial(material_light);
 
-            light = new Entity(mesh_light);
-            light.setPosition(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z);
-            light.setScale(0.05f * lightIntensity);
+            light = new Entity(mesh_light, new Vector3f(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z), 0.05f * lightIntensity);
         }
 
 //        // Spot Light
@@ -98,8 +96,7 @@ public class SandboxTestLevel implements IGameLogic {
 //        lightPosition = new Vector3f(-1, 0, 0);
 //        directionalLight = new DirectionalLight(new Vector3f(0, 1, 0), lightPosition, lightIntensity);
 
-        Entity g = new Entity(mesh);
-        g.setPosition(0.0f, -2.0f, -7.0f);
+        Entity g = new Entity(mesh, new Vector3f(0.0f, -2.0f, -7.0f));
 
         if (GameEngine.DEBUG_MODE) {
             gameEntities = new Entity[]{g, light};

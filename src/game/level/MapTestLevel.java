@@ -2,7 +2,7 @@ package game.level;
 
 import engine.MouseInput;
 import engine.camera.FreeCamera;
-import engine.entities.GameEntity;
+import engine.entities.Entity;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.loader.PLYLoader;
@@ -17,7 +17,7 @@ import org.joml.Vector4f;
 
 public class MapTestLevel extends Level {
 
-    private GameEntity[] gameEntities;
+    private Entity[] gameEntities;
 
     private Vector3f ambientLight;
     private PointLight[] pointLightList;
@@ -48,16 +48,14 @@ public class MapTestLevel extends Level {
         pointLight.setAttenuation(att);
         pointLightList = new PointLight[]{pointLight};
 
-        GameEntity light;
+        Entity light;
         Mesh mesh_light = PLYLoader.loadMesh("/models/PLY/light.ply");
         Material material_light = new Material(new Vector4f(pointLight.getColor(), 1), 0.1f);
         mesh_light.setMaterial(material_light);
 
-        light = new GameEntity(mesh_light);
-        light.setPosition(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z);
-        light.setScale(0.05f * lightIntensity);
+        light = new Entity(mesh_light, new Vector3f(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z), 0.05f * lightIntensity);
 
-        gameEntities = new GameEntity[]{light};
+        gameEntities = new Entity[]{light};
     }
 
     @Override
@@ -90,7 +88,7 @@ public class MapTestLevel extends Level {
     public void terminate() {
         renderer.terminate();
 
-        for (GameEntity ge : gameEntities) {
+        for (Entity ge : gameEntities) {
             ge.getMesh().terminate();
         }
     }
