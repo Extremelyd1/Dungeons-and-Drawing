@@ -38,7 +38,7 @@ public class MapTestLevel extends Level {
     public void init() throws Exception {
         renderer.init();
 
-        gui = new GUI("ABCDEFGabcdefg!");
+        gui = new GUI("Dungeons and Drawings!");
 
         map = new Map();
         map.load(new SimpleMapLoader());
