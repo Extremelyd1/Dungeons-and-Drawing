@@ -1,8 +1,8 @@
 package game;
 
 import engine.GameWindow;
-import engine.entities.gui.GUIComponent;
-import engine.entities.gui.Text;
+import engine.gui.GUIComponent;
+import engine.gui.Text;
 import graphics.FontTexture;
 import org.joml.Vector4f;
 
@@ -22,6 +22,8 @@ public class GUI {
 
         FontTexture fontTexture = new FontTexture(FONT, CHARSET);
         this.text = new Text(initText, fontTexture);
+        text.setRotation(0, 0, 10);
+//        text.setScale(0.5f);
         this.text.getMesh().getMaterial().setAmbientColour(new Vector4f(1, 1, 1, 1));
 
         // Create list that holds the items that compose the HUD

@@ -4,7 +4,7 @@ import engine.camera.Camera;
 import engine.entities.GameEntity;
 import engine.GameWindow;
 import engine.Transformation;
-import engine.entities.gui.GUIComponent;
+import engine.gui.GUIComponent;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;

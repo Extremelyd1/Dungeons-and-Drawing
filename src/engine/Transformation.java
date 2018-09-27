@@ -2,7 +2,7 @@ package engine;
 
 import engine.camera.Camera;
 import engine.entities.GameEntity;
-import engine.entities.gui.GUIComponent;
+import engine.gui.GUIComponent;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

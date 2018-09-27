@@ -38,7 +38,8 @@ public class TestLevel extends Level {
     public void init() throws Exception {
         renderer.init();
 
-        gui = new GUI("DEMO");
+        gui = new GUI("ABCDEFGabcdefg!");
+
         // Load tree.ply file
         Mesh mesh = PLYLoader.loadMesh("/models/PLY/tree.ply");
         Material material = new Material(0.1f);

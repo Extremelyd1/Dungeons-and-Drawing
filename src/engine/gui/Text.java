@@ -1,6 +1,5 @@
-package engine.entities.gui;
+package engine.gui;
 
-import engine.entities.GameEntity;
 import engine.loader.data.OBJData;
 import engine.util.Utilities;
 import graphics.FontTexture;

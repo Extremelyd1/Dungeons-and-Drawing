@@ -116,7 +116,7 @@ public class Mesh {
 
             // Create buffers
             buffers.add(createVBO(objData.positions, 0, 3));
-            buffers.add(createVBO(objData.textureCoords, 1, 3));
+            buffers.add(createVBO(objData.textureCoords, 1, 2));
             buffers.add(createVBO(objData.normals, 3, 3));
             buffers.add(createVBO(objData.indicies));
 

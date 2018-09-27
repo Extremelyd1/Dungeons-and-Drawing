@@ -95,6 +95,8 @@ public class FontTexture {
         g2D.drawString(allChars, 0, fontMetrics.getAscent());
         g2D.dispose();
 
+        ImageIO.write(img, IMAGE_FORMAT, new java.io.File("Temp.png"));
+
         // Dump image to a byte buffer
         InputStream is;
         try (
