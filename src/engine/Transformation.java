@@ -1,7 +1,8 @@
 package engine;
 
 import engine.camera.Camera;
-import engine.entities.GameEntity;
+import engine.entities.Entity;
+import game.map.tile.Tile;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -115,13 +116,24 @@ public class Transformation {
         return viewMatrix;
     }
 
-    public Matrix4f getModelViewMatrix(GameEntity entity, Matrix4f viewMatrix) {
+    public Matrix4f getModelViewMatrix(Entity entity, Matrix4f viewMatrix) {
         Vector3f rotation = entity.getRotation();
         modelViewMatrix.identity().translate(entity.getPosition()).
                 rotateX((float) Math.toRadians(-rotation.x)).
                 rotateY((float) Math.toRadians(-rotation.y)).
                 rotateZ((float) Math.toRadians(-rotation.z)).
                 scale(entity.getScale());
+        Matrix4f viewCurr = new Matrix4f(viewMatrix);
+        return viewCurr.mul(modelViewMatrix);
+    }
+
+    public Matrix4f getModelViewMatrix(Tile tile, Matrix4f viewMatrix) {
+        Vector3f rotation = tile.getRotation();
+        modelViewMatrix.identity().translate(new Vector3f(tile.getPosition().x, 0, tile.getPosition().y)).
+                rotateX((float) Math.toRadians(-rotation.x)).
+                rotateY((float) Math.toRadians(-rotation.y)).
+                rotateZ((float) Math.toRadians(-rotation.z)).
+                scale(0.5f);
         Matrix4f viewCurr = new Matrix4f(viewMatrix);
         return viewCurr.mul(modelViewMatrix);
     }

@@ -2,8 +2,8 @@ package game.state;
 
 import engine.*;
 import engine.camera.Camera;
-import engine.entities.GameEntity;
 import engine.input.KeyBinding;
+import engine.entities.Entity;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
@@ -33,7 +33,7 @@ public class SandboxTestLevel implements IGameLogic {
     private final Camera camera;
     private final Vector3f cameraInc;
     private final Renderer renderer;
-    private GameEntity[] gameEntities;
+    private Entity[] gameEntities;
 
     private Vector3f ambientLight;
     private PointLight[] pointLightList;
@@ -75,13 +75,13 @@ public class SandboxTestLevel implements IGameLogic {
         pointLight.setAttenuation(att);
         pointLightList = new PointLight[]{pointLight};
 
-        GameEntity light;
+        Entity light;
         if (GameEngine.DEBUG_MODE) {
             Mesh mesh_light = PLYLoader.loadMesh("/models/PLY/light.ply");
             Material material_light = new Material(new Vector4f(pointLight.getColor(), 1), 0.1f);
             mesh_light.setMaterial(material_light);
 
-            light = new GameEntity(mesh_light);
+            light = new Entity(mesh_light);
             light.setPosition(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z);
             light.setScale(0.05f * lightIntensity);
         }
@@ -99,13 +99,13 @@ public class SandboxTestLevel implements IGameLogic {
 //        lightPosition = new Vector3f(-1, 0, 0);
 //        directionalLight = new DirectionalLight(new Vector3f(0, 1, 0), lightPosition, lightIntensity);
 
-        GameEntity g = new GameEntity(mesh);
+        Entity g = new Entity(mesh);
         g.setPosition(0.0f, -2.0f, -7.0f);
 
         if (GameEngine.DEBUG_MODE) {
-            gameEntities = new GameEntity[]{g, light};
+            gameEntities = new Entity[]{g, light};
         } else {
-            gameEntities = new GameEntity[]{g};
+            gameEntities = new Entity[]{g};
         }
     }
 
@@ -158,7 +158,8 @@ public class SandboxTestLevel implements IGameLogic {
                 ambientLight,
                 pointLightList,
                 spotLightList,
-                directionalLight
+                new DirectionalLight(new Vector3f(0.3f, 0.3f, 0.3f), new Vector3f(-1, 0, 0), 1f),
+                null
         );
     }
 
@@ -166,7 +167,7 @@ public class SandboxTestLevel implements IGameLogic {
     public void terminate() {
         renderer.terminate();
 
-        for (GameEntity ge : gameEntities) {
+        for (Entity ge : gameEntities) {
             ge.getMesh().terminate();
         }
     }
