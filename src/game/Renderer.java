@@ -102,8 +102,10 @@ public class Renderer {
         /* We attach a callback which is invoked when we resize the window */
         glfwSetWindowSizeCallback(window.getWindowHandle(), new GLFWWindowSizeCallback(){
             @Override
-            public void invoke(long window, int width, int height){
-                glfwSetWindowSize(window, width, height); //Set new window size
+            public void invoke(long windowHandle, int width, int height){
+                glfwSetWindowSize(windowHandle, width, height); //Set new window size
+                window.setWindowHeight(height);
+                window.setWindowWidth(width);
                 glViewport(0, 0, width, height); //Update the Viewport with new width and height
             }
         });

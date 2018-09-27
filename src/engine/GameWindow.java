@@ -197,7 +197,16 @@ public class GameWindow {
             glfwSwapInterval(1);
         }
     }
-    
+
+
+    public void setWindowWidth(int width) {
+        windowWidth = width;
+    }
+
+    public void setWindowHeight(int height) {
+        windowHeight = height;
+    }
+
     
     /** Renders and updates the game components */
     public void render() {   
