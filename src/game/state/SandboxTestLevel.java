@@ -2,6 +2,7 @@ package game.state;
 
 import engine.*;
 import engine.camera.Camera;
+import engine.input.KeyBinding;
 import engine.entities.Entity;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
@@ -109,20 +110,20 @@ public class SandboxTestLevel implements IGameLogic {
     public void input(MouseInput mouseInput) {
         GameWindow window = GameWindow.getGameWindow();
         cameraInc.set(0, 0, 0);
-        if (window.isKeyPressed(GLFW_KEY_W) || window.isKeyPressed(GLFW_KEY_UP)) {
+        if (KeyBinding.isForwardPressed()) {
             cameraInc.z = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_S) || window.isKeyPressed(GLFW_KEY_DOWN)) {
+        } else if (KeyBinding.isBackwardPressed()) {
             cameraInc.z = 1;
         }
-        if (window.isKeyPressed(GLFW_KEY_A) || window.isKeyPressed(GLFW_KEY_LEFT)) {
+        if (KeyBinding.isLeftPressed()) {
             cameraInc.x = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_D) || window.isKeyPressed(GLFW_KEY_RIGHT)) {
+        } else if (KeyBinding.isRightPressed()) {
             cameraInc.x = 1;
         }
         if (GameEngine.DEBUG_MODE) {
-            if (window.isKeyPressed(GLFW_KEY_Z)) {
+            if (KeyBinding.isUpPressed()) {
                 cameraInc.y = -1;
-            } else if (window.isKeyPressed(GLFW_KEY_X)) {
+            } else if (KeyBinding.isDownPressed()) {
                 cameraInc.y = 1;
             }
         }
