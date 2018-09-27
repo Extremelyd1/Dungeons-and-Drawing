@@ -216,14 +216,15 @@ public class GameWindow {
 
     /**
      * Return whether a certain key is pressed down
-     * 
+     * @TODO: Delete obsolete function
      * @param keyCode the code of the key to check
      * @return whether the key is pressed or not
      */
+    /*
     public boolean isKeyPressed(int keyCode) {
         return glfwGetKey(windowHandle, keyCode) == GLFW_PRESS;
     }
-
+    /*
     
     /** 
      * Returns whether the window should be closed
