@@ -23,13 +23,57 @@ public class Player extends LivingEntity {
         super(mesh, position, rotation, speed);
     }
 
+    // TODO: parameter delta currently passed is not actually delta
+    /**
+     * Updates the player logic
+     * @param delta the time in seconds since previous update call
+     */
     @Override
     public void update(float delta) {
         GameWindow window = GameWindow.getGameWindow();
-        if (window.isKeyPressed(GLFW.GLFW_KEY_W)) {
-        }
+        boolean forward = window.isKeyPressed(GLFW.GLFW_KEY_W);
+        boolean backward = window.isKeyPressed(GLFW.GLFW_KEY_S);
+        boolean left = window.isKeyPressed(GLFW.GLFW_KEY_A);
+        boolean right = window.isKeyPressed(GLFW.GLFW_KEY_D);
+        
+        if (forward) {
+            if (left) {
+                this.getPosition().add((float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)));
+                
+                this.getRotation().set(0, 315, 0);
+            } else if (right) {
+                this.getPosition().add((float) (delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)));
 
-        // TODO: Update the player based on delta time
+                this.getRotation().set(0, 45, 0);
+            } else {
+                this.getPosition().add(0, 0,-delta * this.getSpeed());
+
+                this.getRotation().set(0, 0, 0);
+            }
+        } else if (backward) {
+            if (left) {
+                this.getPosition().add((float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (delta * this.getSpeed() * 1 / Math.sqrt(2)));
+
+                this.getRotation().set(0, 225, 0);
+            } else if (right) {
+                this.getPosition().add((float) (delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (delta * this.getSpeed() * 1 / Math.sqrt(2)));
+
+                this.getRotation().set(0, 135, 0);
+            } else {
+                this.getPosition().add(0, 0, delta * this.getSpeed());
+
+                this.getRotation().set(0, 180, 0);
+            }
+        } else if (left) {
+            this.getPosition().add(-delta * this.getSpeed(), 0, 0);
+
+            this.getRotation().set(0,270, 0);
+        } else if (right) {
+            this.getPosition().add(delta * this.getSpeed(), 0, 0);
+
+            this.getRotation().set(0, 90, 0);
+        }
+        
     }
 
 }
