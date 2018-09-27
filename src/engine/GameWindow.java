@@ -32,7 +32,7 @@ public class GameWindow {
     private final int DEFAULT_WINDOW_HEIGHT = 720;
     
     // << If we want the window to be resizable, these variables should be used >>
-    private boolean full_screen = false;
+    private boolean fullScreen = false;
     private int windowWidth; 
     private int windowHeight;
     
@@ -83,7 +83,7 @@ public class GameWindow {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
         // Create the window
-        if (full_screen) {
+        if (fullScreen) {
             windowHandle = glfwCreateWindow(
                     /* We get the current screen resolution */
                     glfwGetVideoMode(glfwGetPrimaryMonitor()).width(),
@@ -166,26 +166,34 @@ public class GameWindow {
      * Method that is called if the f11 key is pressed, switches between full screen and windowed mode
      */
     private void updateWindow() {
-        full_screen = !full_screen;
+        fullScreen = !fullScreen;
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        if (full_screen) {
+        if (fullScreen) {
+            //Set the height and width according to monitor resolution
             windowWidth = vidmode.width();
             windowHeight = vidmode.height();
+            //We set the new window size
             glfwSetWindowSize(windowHandle, windowWidth, windowHeight);
+            //Set primary monitor as window monitor
             glfwSetWindowMonitor(windowHandle, glfwGetPrimaryMonitor(), 0, 0,
                                     windowHeight, windowWidth, GLFW_CONNECTED);
+            //We enable vsync (since we changed monitor)
             glfwSwapInterval(1);
         } else {
+            //Set window size to default
             windowWidth = DEFAULT_WINDOW_WIDTH;
             windowHeight = DEFAULT_WINDOW_HEIGHT;
             glfwSetWindowSize(windowHandle, windowWidth, windowHeight);
+            //Reset monitor
             glfwSetWindowMonitor(windowHandle, NULL, 0, 0,
                                     windowWidth, windowHeight, GLFW_CONNECTED);
+            //Set window to middle of the screen
             glfwSetWindowPos(
                     windowHandle,
                     (vidmode.width() - windowWidth) / 2,
                     (vidmode.height() - windowHeight) / 2
             );
+            //Again enable vsync
             glfwSwapInterval(1);
         }
     }

@@ -80,7 +80,6 @@ public class Renderer {
     /**
      * Renders the scene
      *
-     * @param window           Game window
      * @param camera           Camera
      * @param entities         List of entities to draw
      * @param ambientLight     Ambient light
@@ -119,9 +118,6 @@ public class Renderer {
                 Z_NEAR,
                 Z_FAR
         );
-
-        //Update the glViewMatrix
-        glViewport(0, 0, window.getWindowWidth(), window.getWindowHeight());
 
         shader.setUniform("projectionMatrix", projectionMatrix);
 
