@@ -21,10 +21,7 @@ public class GUI {
     public GUI(String initText) throws Exception {
 
         FontTexture fontTexture = new FontTexture(FONT, CHARSET);
-        this.text = new Text(initText, fontTexture);
-        text.setRotation(0, 0, 10);
-//        text.setScale(0.5f);
-        this.text.getMesh().getMaterial().setAmbientColour(new Vector4f(1, 1, 1, 1));
+        this.text = new Text(initText, fontTexture, new Vector4f(1, 0, 0, 0));
 
         // Create list that holds the items that compose the HUD
         components = new GUIComponent[]{this.text};
@@ -40,7 +37,7 @@ public class GUI {
     }
 
     public void updateSize() {
-        this.text.setPosition(10f, GameWindow.getGameWindow().getWindowHeight() - 50f, 0);
+        this.text.setPosition(10f, GameWindow.getGameWindow().getWindowHeight() - 50f);
     }
 
     public void terminate() {

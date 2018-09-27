@@ -5,6 +5,8 @@ import engine.util.Utilities;
 import graphics.FontTexture;
 import graphics.Material;
 import graphics.Mesh;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +27,23 @@ public class Text extends GUIComponent {
 
     private String text;
 
+    public Text(String text, FontTexture fontTexture, Vector4f color, float x, float y) throws Exception {
+        this(text, fontTexture);
+        this.setColor(color);
+        this.setPosition(x, y);
+    }
+
+    public Text(String text, FontTexture fontTexture, Vector4f color) throws Exception {
+        this(text, fontTexture);
+        this.setColor(color);
+    }
+
     public Text(String text, FontTexture fontTexture) throws Exception {
         super();
         this.text = text;
         this.fontTexture = fontTexture;
         setMesh(buildMesh());
+        this.setColor(new Vector4f(1, 1, 1, 1));
     }
 
     private Mesh buildMesh() {
@@ -101,5 +115,9 @@ public class Text extends GUIComponent {
         this.text = text;
         this.getMesh().deleteBuffers();
         this.setMesh(buildMesh());
+    }
+
+    public void setColor(Vector4f color) {
+        this.getMesh().getMaterial().setAmbientColour(color);
     }
 }
