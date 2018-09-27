@@ -12,7 +12,9 @@ public class FollowCamera extends Camera {
     private Entity entity;
 
     public FollowCamera(Entity entity) {
+        super(entity.getPosition(), new Vector3f(0, 0, 0));
         this.entity = entity;
+        this.offset = new Vector3f(0, 0, 0);
     }
 
     public FollowCamera(Entity entity, Vector3f rotation) {
