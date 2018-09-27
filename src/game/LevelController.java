@@ -3,6 +3,7 @@ package game;
 import engine.IGameLogic;
 import engine.MouseInput;
 import game.level.Level;
+import game.level.MapTestLevel;
 import game.level.TestLevel;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class LevelController implements IGameLogic {
 
     public LevelController() {
         this.levels = new ArrayList<>(Arrays.asList(
-                new TestLevel(this)
+                new MapTestLevel(this)
         ));
         this.active = levels.get(0);
     }

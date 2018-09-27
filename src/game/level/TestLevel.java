@@ -37,7 +37,7 @@ public class TestLevel extends Level {
         renderer.init();
 
         // Load tree.ply file
-        Mesh mesh = PLYLoader.loadMesh("/models/PLY/tree.ply");
+        Mesh mesh = PLYLoader.loadMesh("/models/test_1.ply");
         Material material = new Material(0.1f);
         mesh.setMaterial(material);
 
@@ -93,7 +93,8 @@ public class TestLevel extends Level {
                 ambientLight,
                 pointLightList,
                 spotLightList,
-                directionalLight
+                directionalLight,
+                null
         );
     }
 
