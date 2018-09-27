@@ -48,6 +48,11 @@ public class Utilities {
         return list;
     }
 
+    /**
+     * Utility method that takes in a float list and converts it to an array.
+     * @param list The list to convert to an array
+     * @return float array with the elements from the list
+     */
     public static float[] listToArray(List<Float> list) {
         int size = list != null ? list.size() : 0;
         float[] floatArr = new float[size];

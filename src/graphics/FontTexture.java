@@ -15,22 +15,43 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
 
+/**
+ * Class to generate a texture image from a Font. All font information is retrieved from a java.awt.Font
+ * class. The characters that we want to be part of our font are decided based on a character set.
+ *
+ * The FontTexture generates a very wide image (as an input stream) with all the characters next to
+ * each other which then can be used to display text
+ */
 public class FontTexture {
 
+    // The format of the image we are generating
     private static final String IMAGE_FORMAT = "png";
 
+    // The font object that contains all properties of the font
     private final Font font;
 
+    // The character set that defines all characters we want
     private final String charSetName;
 
+    // A mapping from character to character info.
+    // The character info concerns the position and width of a character in the texture
     private final Map<Character, CharInfo> charMap;
 
+    // Texture
     private Texture texture;
 
+    // Height of the texture picture
     private int height;
 
+    // Width of the texture picture
     private int width;
 
+    /**
+     * Constructs a texture based on a character set and Font details
+     * @param font The properties of the Font
+     * @param charSetName The set of characters
+     * @throws Exception if inputstream fails
+     */
     public FontTexture(Font font, String charSetName) throws Exception {
         this.font = font;
         this.charSetName = charSetName;
@@ -39,22 +60,11 @@ public class FontTexture {
         buildTexture();
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public Texture getTexture() {
-        return texture;
-    }
-
-    public CharInfo getCharInfo(char c) {
-        return charMap.get(c);
-    }
-
+    /**
+     * Generates a string with all characters in the character set
+     * @param charsetName a set of characters
+     * @return A string with all characters concatenated
+     */
     private String getAllAvailableChars(String charsetName) {
         CharsetEncoder ce = Charset.forName(charsetName).newEncoder();
         StringBuilder result = new StringBuilder();
@@ -66,23 +76,32 @@ public class FontTexture {
         return result.toString();
     }
 
+    /**
+     * Generates the image texture
+     * @throws Exception if inputstream fails
+     */
     private void buildTexture() throws Exception {
+
         // Get the font metrics for each character for the selected font by using image
         BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+
         Graphics2D g2D = img.createGraphics();
         g2D.setFont(font);
         FontMetrics fontMetrics = g2D.getFontMetrics();
 
         String allChars = getAllAvailableChars(charSetName);
+
         this.width = 0;
         this.height = 0;
+
+        // Loop through all characters and update width and height variables
         for (char c : allChars.toCharArray()) {
-            // Get the size for each character and update global image size
             CharInfo charInfo = new CharInfo(width, fontMetrics.charWidth(c));
             charMap.put(c, charInfo);
             width += charInfo.getWidth();
             height = Math.max(height, fontMetrics.getHeight());
         }
+
         g2D.dispose();
 
         // Create the image associated to the charset
@@ -95,20 +114,43 @@ public class FontTexture {
         g2D.drawString(allChars, 0, fontMetrics.getAscent());
         g2D.dispose();
 
-        ImageIO.write(img, IMAGE_FORMAT, new java.io.File("Temp.png"));
+        // If you would want to, you can save the generated image with the following line
+        // ImageIO.write(img, IMAGE_FORMAT, new java.io.File("Temp.png"));
 
         // Dump image to a byte buffer
         InputStream is;
-        try (
-                ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            ImageIO.write(img, IMAGE_FORMAT, out);
-            out.flush();
-            is = new ByteArrayInputStream(out.toByteArray());
-        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ImageIO.write(img, IMAGE_FORMAT, out);
+        out.flush();
+        is = new ByteArrayInputStream(out.toByteArray());
 
         texture = new Texture(is);
     }
 
+    /* Get the width of the image */
+    public int getWidth() {
+        return width;
+    }
+
+    /* Get the height of the image */
+    public int getHeight() {
+        return height;
+    }
+
+    /* Get the texture of the image */
+    public Texture getTexture() {
+        return texture;
+    }
+
+    /* Get info, width and startX, of the character in the image */
+    public CharInfo getCharInfo(char c) {
+        return charMap.get(c);
+    }
+
+    /**
+     * Data structure that stores the start position and width of the character
+     * within the generated image
+     */
     public static class CharInfo {
 
         private final int startX;

@@ -8,6 +8,10 @@ import org.joml.Vector4f;
 
 import java.awt.*;
 
+/**
+ * Class to test GUI components. Should be extended to dynamically load and remove
+ * objects in a more structured way.
+ */
 public class GUI {
 
     private static final Font FONT = new Font("Arial", Font.PLAIN, 20);
