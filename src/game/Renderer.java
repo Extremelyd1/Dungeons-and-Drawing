@@ -1,7 +1,7 @@
 package game;
 
 import engine.camera.Camera;
-import engine.entities.GameEntity;
+import engine.entities.Entity;
 import engine.GameWindow;
 import engine.Transformation;
 import engine.lights.DirectionalLight;
@@ -91,7 +91,7 @@ public class Renderer {
      */
     public void render(
             Camera camera,
-            GameEntity[] entities,
+            Entity[] entities,
             Vector3f ambientLight,
             PointLight[] pointLightList,
             SpotLight[] spotLightList,
@@ -148,7 +148,7 @@ public class Renderer {
             }
         }
 
-        for (GameEntity entity : entities) {
+        for (Entity entity : entities) {
 
             Mesh mesh = entity.getMesh();
 
