@@ -6,6 +6,7 @@ import engine.input.KeyBinding;
 import engine.entities.Entity;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
+import engine.lights.SceneLight;
 import engine.lights.SpotLight;
 import engine.loader.PLYLoader;
 import game.GUI;
@@ -161,10 +162,7 @@ public class SandboxTestLevel implements IGameLogic {
                 camera,
                 null,
                 gameEntities,
-                ambientLight,
-                pointLightList,
-                spotLightList,
-                new DirectionalLight(new Vector3f(0.3f, 0.3f, 0.3f), new Vector3f(-1, 0, 0), 1f),
+                new SceneLight(),
                 null
         );
     }

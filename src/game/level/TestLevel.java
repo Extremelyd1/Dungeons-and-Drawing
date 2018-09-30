@@ -4,9 +4,7 @@ import engine.GameEngine;
 import engine.MouseInput;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
-import engine.lights.DirectionalLight;
-import engine.lights.PointLight;
-import engine.lights.SpotLight;
+import engine.lights.*;
 import engine.loader.PLYLoader;
 import game.GUI;
 import game.LevelController;
@@ -21,17 +19,14 @@ public class TestLevel extends Level {
     private GUI gui;
     private Entity[] gameEntities;
 
-    private Vector3f ambientLight;
-    private PointLight[] pointLightList;
-    private SpotLight[] spotLightList;
-    private DirectionalLight directionalLight;
-    private float lightAngle;
+    private SceneLight sceneLight;
 
     public TestLevel(LevelController levelController) {
         super(levelController);
 
         renderer = new Renderer();
         camera = new FreeCamera();
+        sceneLight = new SceneLight();
     }
 
     @Override
@@ -45,7 +40,7 @@ public class TestLevel extends Level {
         Material material = new Material(0.1f);
         mesh.setMaterial(material);
 
-        ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
 
         // Set up a point light
         Vector3f lightPosition = new Vector3f(1.0f, 1.0f, -7.0f);
@@ -53,7 +48,7 @@ public class TestLevel extends Level {
         PointLight pointLight = new PointLight(new Vector3f(1.0f, 0.3f, 0.0f), lightPosition, lightIntensity);
         PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
         pointLight.setAttenuation(att);
-        pointLightList = new PointLight[]{pointLight};
+        sceneLight.pointLights.add(pointLight);
 
         Entity light;
         if (GameEngine.DEBUG_MODE) {
@@ -95,10 +90,7 @@ public class TestLevel extends Level {
                 camera,
                 gui,
                 gameEntities,
-                ambientLight,
-                pointLightList,
-                spotLightList,
-                directionalLight,
+                sceneLight,
                 null
         );
     }

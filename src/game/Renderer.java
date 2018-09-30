@@ -7,6 +7,7 @@ import engine.Transformation;
 import engine.gui.GUIComponent;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
+import engine.lights.SceneLight;
 import engine.lights.SpotLight;
 import engine.util.Utilities;
 import game.map.Map;
@@ -111,10 +112,7 @@ public class Renderer {
             Camera camera,
             GUI gui,
             Entity[] entities,
-            Vector3f ambientLight,
-            PointLight[] pointLightList,
-            SpotLight[] spotLightList,
-            DirectionalLight directionalLight,
+            SceneLight sceneLight,
             Map map
     ) {
 
@@ -132,7 +130,7 @@ public class Renderer {
             }
         });
 
-        renderScene(camera, entities, ambientLight, pointLightList, spotLightList, directionalLight, map);
+        renderScene(camera, entities, sceneLight, map);
         if (gui != null) {
             renderGui(gui);
         }
@@ -140,10 +138,7 @@ public class Renderer {
 
     public void renderScene(Camera camera,
                             Entity[] entities,
-                            Vector3f ambientLight,
-                            PointLight[] pointLightList,
-                            SpotLight[] spotLightList,
-                            DirectionalLight directionalLight,
+                            SceneLight sceneLight,
                             Map map) {
 
         sceneShader.bind();
@@ -163,7 +158,7 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
 
         // Update Light Uniforms
-        renderLights(viewMatrix, ambientLight, pointLightList, spotLightList, directionalLight);
+        renderLights(viewMatrix, sceneLight);
 
         sceneShader.setUniform("texture_sampler", 0);
 
@@ -209,20 +204,17 @@ public class Renderer {
      */
     private void renderLights(
             Matrix4f viewMatrix,
-            Vector3f ambientLight,
-            PointLight[] pointLightList,
-            SpotLight[] spotLightList,
-            DirectionalLight directionalLight
+            SceneLight sceneLight
     ) {
 
-        sceneShader.setUniform("ambientLight", ambientLight);
+        sceneShader.setUniform("ambientLight", sceneLight.ambientLight.getLight());
         sceneShader.setUniform("specularPower", specularPower);
 
         // Process Point Lights
-        int numLights = pointLightList != null ? pointLightList.length : 0;
+        int numLights = sceneLight.pointLights != null ? sceneLight.pointLights.size() : 0;
         for (int i = 0; i < numLights; i++) {
             // Get a copy of the point light object and transform its position to view coordinates
-            PointLight currPointLight = new PointLight(pointLightList[i]);
+            PointLight currPointLight = new PointLight(sceneLight.pointLights.get(i));
             Vector3f lightPos = currPointLight.getPosition();
             Vector4f aux = new Vector4f(lightPos, 1);
             aux.mul(viewMatrix);
@@ -233,10 +225,10 @@ public class Renderer {
         }
 
         // Process Spot Ligths
-        numLights = spotLightList != null ? spotLightList.length : 0;
+        numLights = sceneLight.spotLights != null ? sceneLight.spotLights.size() : 0;
         for (int i = 0; i < numLights; i++) {
             // Get a copy of the spot light object and transform its position and cone direction to view coordinates
-            SpotLight currSpotLight = new SpotLight(spotLightList[i]);
+            SpotLight currSpotLight = new SpotLight(sceneLight.spotLights.get(i));
             Vector4f dir = new Vector4f(currSpotLight.getConeDirection(), 0);
             dir.mul(viewMatrix);
             currSpotLight.setConeDirection(new Vector3f(dir.x, dir.y, dir.z));
@@ -252,14 +244,13 @@ public class Renderer {
         }
 
         // Get a copy of the directional light object and transform its position to view coordinates
-        if (directionalLight != null) {
-            DirectionalLight currDirLight = new DirectionalLight(directionalLight);
+        if (sceneLight.directionalLight != null) {
+            DirectionalLight currDirLight = new DirectionalLight(sceneLight.directionalLight);
             Vector4f dir = new Vector4f(currDirLight.getDirection(), 0);
             dir.mul(viewMatrix);
             currDirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
             sceneShader.setUniform("directionalLight", currDirLight);
         }
-
     }
 
     private void renderGui(GUI gui) {
