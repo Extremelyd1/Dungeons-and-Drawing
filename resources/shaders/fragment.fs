@@ -1,5 +1,4 @@
 #version 330
-#extension GL_NV_shadow_samplers_cube : enable
 
 const int MAX_POINT_LIGHTS = 5;
 const int MAX_SPOT_LIGHTS = 5;
@@ -169,7 +168,7 @@ float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2
     int samples = 20;
     float diskRadius = 0.0015; //Regulates the softness of shadows 0.0015 is ideal
     for (int i = 0; i < samples; ++i){
-        float closestDepth = textureCube(shadowMap, fragToLight + shadowSamplingGrid[i] * diskRadius).r;
+        float closestDepth = texture(shadowMap, fragToLight + shadowSamplingGrid[i] * diskRadius).r;
         closestDepth *= plane.y;
         if (currentDepth - bias < closestDepth)
             shadow += 1.0;
