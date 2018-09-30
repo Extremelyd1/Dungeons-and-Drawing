@@ -139,6 +139,7 @@ vec4 calcPointLight(PointLight light, vec3 position, vec3 normal)
     return light_colour / attenuationInv;
 }
 
+// Calculate Spot Light
 vec4 calcSpotLight(SpotLight light, vec3 position, vec3 normal)
 {
     vec3 light_direction = normalize(light.position - position);
@@ -147,7 +148,7 @@ vec4 calcSpotLight(SpotLight light, vec3 position, vec3 normal)
     float epsilon = light.cutoff - light.outerCutoff;
     float intensity = clamp((theta - light.outerCutoff) / epsilon, 0.0, 1.0);
 
-    vec4 light_colour = calcBlinnPhong(light.colour, intensity, vec3(inverse(view) * vec4(light.position, 1.0)), light_direction, normal);
+    vec4 light_colour = calcBlinnPhong(light.colour, intensity, light.position, light_direction, normal);
 
     // Apply Attenuation
     float distance = length(light_direction);

@@ -217,7 +217,7 @@ public class SandboxTestLevel implements IGameLogic {
             }
         }
 
-        GameEntity gameEntity = gameEntities[9];
+        GameEntity gameEntity = gameEntities[8];
         PointLight pointLight = pointLightList[1];
 
         move += 0.01f;

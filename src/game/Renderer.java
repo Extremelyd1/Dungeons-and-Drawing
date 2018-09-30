@@ -91,6 +91,9 @@ public class Renderer {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
+    long shadowRenderTime = 0;
+    long sceneRenderTime = 0;
+    int frameCounter = 0;
     /**
      * Renders the scene (CHECKED OK)
      *
@@ -111,12 +114,12 @@ public class Renderer {
             SpotLight[] spotLightList,
             DirectionalLight directionalLight
     ) {
-
+        long time;
         clear();
 
-        long time = System.nanoTime();
+        time = System.nanoTime();
         renderDepthMap(window, camera, entities, pointLightList, spotLightList, directionalLight);
-        Debug.println("Render Time", "Shadows: " + ((System.nanoTime() - time) / 1000) + "us");
+        shadowRenderTime += System.nanoTime() - time;
 
         /* We attach a callback which is invokd when we resize the window */
         glfwSetWindowSizeCallback(window.getWindowHandle(), new GLFWWindowSizeCallback(){
@@ -153,41 +156,51 @@ public class Renderer {
         shader.setUniform("texture_sampler", 0);
         shader.setUniform("viewPos", camera.getPosition());
 
-        int numLights = pointLightList != null ? pointLightList.length : 0;
-        for (int i = 0; i < numLights; i++) {
+        int numPointLights = pointLightList != null ? pointLightList.length : 0;
+        int numSpotLights = spotLightList != null ? spotLightList.length : 0;
+        for (int i = 0; i < numPointLights; i++) {
             shader.setUniform("pointLights[" + i + "].shadowMap", 2 + i);
         }
-        numLights = spotLightList != null ? spotLightList.length : 0;
-        for (int i = 0; i < numLights; i++) {
-            shader.setUniform("spotLights[" + i + "].shadowMap", 2 + pointLightList.length + i);
+        for (int i = 0; i < numSpotLights; i++) {
+            shader.setUniform("spotLights[" + i + "].shadowMap", 2 + numPointLights + i);
         }
 
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
+        time = System.nanoTime();
         for (GameEntity entity : entities) {
             Mesh mesh = entity.getMesh();
-
-            numLights = pointLightList != null ? pointLightList.length : 0;
-            for (int i = 0; i < numLights; i++) {
-                glActiveTexture(GL_TEXTURE2 + i);
-                glBindTexture(GL_TEXTURE_CUBE_MAP, pointLightList[i].getShadowMap().getDepthMap());
-            }
-            numLights = spotLightList != null ? spotLightList.length : 0;
-            for (int i = 0; i < numLights; i++) {
-                glActiveTexture(GL_TEXTURE2 + pointLightList.length + i);
-                glBindTexture(GL_TEXTURE_2D, spotLightList[i].getShadowMap().getDepthMap());
-            }
 
             shader.setUniform("material", mesh.getMaterial());
             shader.setUniform("model",
                     transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScale()));
 
+            for (int i = 0; i < numPointLights; i++) {
+                glActiveTexture(GL_TEXTURE2 + i);
+                glBindTexture(GL_TEXTURE_CUBE_MAP, pointLightList[i].getShadowMap().getDepthMap());
+            }
+            for (int i = 0; i < numSpotLights; i++) {
+                glActiveTexture(GL_TEXTURE2 + numPointLights + i);
+                glBindTexture(GL_TEXTURE_2D, spotLightList[i].getShadowMap().getDepthMap());
+            }
+
             mesh.render();
         }
+        sceneRenderTime += System.nanoTime() - time;
         glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
 
         shader.unbind();
+
+        frameCounter++;
+        if (frameCounter == 60) {
+            shadowRenderTime /= 60;
+            sceneRenderTime /= 60;
+            Debug.println("Render time", (shadowRenderTime / 1000) + "us " + (sceneRenderTime / 1000) + "us");
+            frameCounter = 0;
+            shadowRenderTime = 0;
+            sceneRenderTime = 0;
+        }
     }
 
     /**
