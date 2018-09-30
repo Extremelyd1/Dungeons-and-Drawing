@@ -221,8 +221,9 @@ public class SandboxTestLevel implements IGameLogic {
         PointLight pointLight = pointLightList[1];
 
         move += 0.01f;
+        if (move > 99999) move = 0;
 
-        Vector3f pos = new Vector3f(7.0f + (float)Math.sin(move), 2.0f, 0.0f + 4 * (float)Math.sin(-move));
+        Vector3f pos = new Vector3f(7.0f + 2 * (float)Math.sin(move), 2.0f, 2.0f + 7 * (float)Math.sin(-move));
         gameEntity.setPosition(pos);
         pointLight.setPosition(pos);
 

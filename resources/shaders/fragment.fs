@@ -113,16 +113,14 @@ void setupColours(Material material, vec2 textCoord)
 
 // Blinn-Phong lighting
 vec4 calcBlinnPhong(vec3 light_color, float light_intensity, vec3 position, vec3 light_direction, vec3 normal){
-    vec4 diffuse  = vec4(0, 0, 0, 0);
-    vec4 specular = vec4(0, 0, 0, 0);
     // Diffuse component
     float diff = max(dot(light_direction, normal), 0.0);
-    diffuse = diffuseC * vec4(light_color, 1.0) * light_intensity * diff;
+    vec4 diffuse = diffuseC * vec4(light_color, 1.0) * light_intensity * diff;
     // Specular component
     vec3 viewDir = normalize(viewPos - position);
     vec3 halfwayDir = normalize(light_direction + viewDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0), specularPower);
-    specular = speculrC * light_intensity * spec * material.reflectance * vec4(light_color, 1.0);
+    vec4 specular = speculrC * light_intensity * spec * material.reflectance * vec4(light_color, 1.0);
 
     return (diffuse + specular);
 }
@@ -164,7 +162,7 @@ float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2
     float currentDepth = length(fragToLight);
 
     float shadow = 0.0f;
-    float bias = 0.01f; //0.001f
+    float bias = 0.0075f; //0.001f
     int samples = 20;
     float diskRadius = 0.0015; //Regulates the softness of shadows 0.0015 is ideal
     for (int i = 0; i < samples; ++i){

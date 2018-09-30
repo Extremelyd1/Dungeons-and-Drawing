@@ -38,7 +38,6 @@ public class PointLight {
     }
 
     private PointLight(Vector3f color, Vector3f position, float intensity, Attenuation attenuation, ShadowMap shadowMap, Vector2f plane) {
-        attenuation = new Attenuation(1, 0, 0);
         this.color = color;
         this.position = position;
         this.intensity = intensity;
