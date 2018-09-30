@@ -13,7 +13,6 @@ import graphics.Shader;
 import graphics.ShadowMap;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import sun.security.ssl.Debug;
 
@@ -117,7 +116,20 @@ public class Renderer {
         long time;
         clear();
 
+        // Update projection Matrix
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(
+                FOV,
+                window.getWindowWidth(),
+                window.getWindowHeight(),
+                Z_NEAR,
+                Z_FAR
+        );
+
+        // Update view Matrix
+        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+
         time = System.nanoTime();
+        // Update Shadows
         renderDepthMap(window, camera, entities, pointLightList, spotLightList, directionalLight);
         shadowRenderTime += System.nanoTime() - time;
 
@@ -135,20 +147,7 @@ public class Renderer {
         //glViewport(0, 0, 3840, 2160);
 
         shader.bind();
-
-        // Update projection Matrix
-        Matrix4f projectionMatrix = transformation.getProjectionMatrix(
-                FOV,
-                window.getWindowWidth(),
-                window.getWindowHeight(),
-                Z_NEAR,
-                Z_FAR
-        );
-
-        // Update view Matrix
-        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
-
-        // Update Light Uniforms
+        // Update Lights
         renderLights(viewMatrix, ambientLight, pointLightList, spotLightList, directionalLight);
 
         shader.setUniform("projection", projectionMatrix);
@@ -159,10 +158,10 @@ public class Renderer {
         int numPointLights = pointLightList != null ? pointLightList.length : 0;
         int numSpotLights = spotLightList != null ? spotLightList.length : 0;
         for (int i = 0; i < numPointLights; i++) {
-            shader.setUniform("pointLights[" + i + "].shadowMap", 2 + i);
+            shader.setUniform("pointLights[" + i + "].shadowMap", 1 + i);
         }
         for (int i = 0; i < numSpotLights; i++) {
-            shader.setUniform("spotLights[" + i + "].shadowMap", 2 + numPointLights + i);
+            shader.setUniform("spotLights[" + i + "].shadowMap", 1 + numPointLights + i);
         }
 
         glEnable(GL_CULL_FACE);
@@ -176,11 +175,11 @@ public class Renderer {
                     transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScale()));
 
             for (int i = 0; i < numPointLights; i++) {
-                glActiveTexture(GL_TEXTURE2 + i);
+                glActiveTexture(GL_TEXTURE1 + i);
                 glBindTexture(GL_TEXTURE_CUBE_MAP, pointLightList[i].getShadowMap().getDepthMap());
             }
             for (int i = 0; i < numSpotLights; i++) {
-                glActiveTexture(GL_TEXTURE2 + numPointLights + i);
+                glActiveTexture(GL_TEXTURE1 + numPointLights + i);
                 glBindTexture(GL_TEXTURE_2D, spotLightList[i].getShadowMap().getDepthMap());
             }
 
