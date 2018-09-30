@@ -1,12 +1,11 @@
 #version 330
+layout (location = 0) in vec3 aPos;
 
-layout (location=0) in vec3 position;
-layout (location=1) in vec2 texCoord;
-layout (location=2) in vec3 vertexNormal;
-
-uniform mat4 modelLightViewMatrix;
-uniform mat4 orthoProjectionMatrix;
+out vec4 FragPos;
+uniform mat4 modelMatrix;
+uniform mat4 lightSpaceMatrix;
 
 void main() {
-    gl_Position = orthoProjectionMatrix * modelLightViewMatrix * vec4(position, 1.0f);
+    gl_Position = lightSpaceMatrix * modelMatrix * vec4(aPos, 1.0f);   // Transform to light space
+    FragPos = gl_Position;
 }

@@ -12,13 +12,13 @@ public class GameEntity {
 
     private final Mesh mesh;
     private final Vector3f position;
-    private float scale;
     private final Vector3f rotation;
+    private final Vector3f scale;
 
     public GameEntity(Mesh mesh) {
         this.mesh = mesh;
         position = new Vector3f(0, 0, 0);
-        scale = 1;
+        scale = new Vector3f(1, 1, 1);
         rotation = new Vector3f(0, 0, 0);
 
     }
@@ -33,12 +33,26 @@ public class GameEntity {
         this.position.z = z;
     }
 
-    public float getScale() {
+    public void setPosition(Vector3f position){
+        this.position.x = position.x;
+        this.position.y = position.y;
+        this.position.z = position.z;
+    }
+
+    public Vector3f getScale() {
         return scale;
     }
 
+    public void setScale(Vector3f scale) {
+        this.scale.x = scale.x;
+        this.scale.y = scale.y;
+        this.scale.z = scale.z;
+    }
+
     public void setScale(float scale) {
-        this.scale = scale;
+        this.scale.x = scale;
+        this.scale.y = scale;
+        this.scale.z = scale;
     }
 
     public Vector3f getRotation() {

@@ -2,6 +2,8 @@ package engine;
 
 import game.state.SandboxTestLevel;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Main class of this Java Application to test the Light Weight Java Gaming 
  * Library (LWJGT) and to to explore whether it can be applied for the 
@@ -37,6 +39,7 @@ public class Launcher {
      */
     public static void main(String[] args) {
         try {
+            //TimeUnit.SECONDS.sleep(5);
             IGameLogic gameLogic = new SandboxTestLevel();
             (new GameEngine(gameLogic)).start();
         } catch (Exception e) {

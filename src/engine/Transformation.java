@@ -104,7 +104,7 @@ public class Transformation {
         return projectionMatrix;
     }
 
-    public Matrix4f getWorldMatrix(Vector3f offset, Vector3f rotation, float scale) {
+    public Matrix4f getWorldMatrix(Vector3f offset, Vector3f rotation, Vector3f scale) {
         worldMatrix.identity().translate(offset).
                 rotateX((float) Math.toRadians(rotation.x)).
                 rotateY((float) Math.toRadians(rotation.y)).
@@ -181,5 +181,18 @@ public class Transformation {
                 scale(gameItem.getScale());
         modelLightViewMatrix.set(matrix);
         return modelLightViewMatrix.mul(modelLightMatrix);
+    }
+
+    public Matrix4f getProjectionWithDirection(Vector3f location, Vector3f lookingDirection, Matrix4f perspective, Vector3f up) {
+        Vector3f center = new Vector3f(location);
+        center.add(lookingDirection);
+
+        Matrix4f lookAt = new Matrix4f();
+        lookAt.setLookAt(
+                location,
+                center,
+                up);
+
+        return new Matrix4f(perspective).mul(lookAt);
     }
 }

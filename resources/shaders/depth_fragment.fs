@@ -1,5 +1,7 @@
-#version 330
+#version 330 core
+in vec4 FragPos;
 
-void main() {
+void main()
+{
     gl_FragDepth = gl_FragCoord.z;
 }
