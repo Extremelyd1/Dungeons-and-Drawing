@@ -162,9 +162,9 @@ float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2
     float currentDepth = length(fragToLight);
 
     float shadow = 0.0f;
-    float bias = 0.0075f; //0.001f
+    float bias = 0.0125f; //0.001f
     int samples = 20;
-    float diskRadius = 0.0015; //Regulates the softness of shadows 0.0015 is ideal
+    float diskRadius = 0.001; //Regulates the softness of shadows 0.0015 is ideal
     for (int i = 0; i < samples; ++i){
         float closestDepth = texture(shadowMap, fragToLight + shadowSamplingGrid[i] * diskRadius).r;
         closestDepth *= plane.y;
@@ -183,7 +183,7 @@ float calcShadow2D(mat4 matrix, vec3 position, vec3 light_position, sampler2D sh
     projCoords = projCoords * 0.5 + 0.5;
 
     float currentDepth = projCoords.z;
-    float bias = 0.00075f; //0.001f
+    float bias = 0.0014f; //0.001f
 
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);

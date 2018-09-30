@@ -15,6 +15,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
+import sun.security.ssl.Debug;
 
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
@@ -113,7 +114,9 @@ public class Renderer {
 
         clear();
 
+        long time = System.nanoTime();
         renderDepthMap(window, camera, entities, pointLightList, spotLightList, directionalLight);
+        Debug.println("Render Time", "Shadows: " + ((System.nanoTime() - time) / 1000) + "us");
 
         /* We attach a callback which is invokd when we resize the window */
         glfwSetWindowSizeCallback(window.getWindowHandle(), new GLFWWindowSizeCallback(){
