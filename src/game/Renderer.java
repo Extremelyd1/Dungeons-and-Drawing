@@ -81,6 +81,9 @@ public class Renderer {
         shader.createUniform("projection");
 
         window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
     }
 
     /**

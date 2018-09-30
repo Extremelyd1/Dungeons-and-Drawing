@@ -55,6 +55,7 @@ public class SandboxTestLevel implements IGameLogic {
     public void init(GameWindow window) throws Exception {
         renderer.init(window);
 
+        float farPlane = 100f;
         ambientLight = new Vector3f(0.02f, 0.02f, 0.02f);
 
         // Spot Light 1
@@ -65,7 +66,7 @@ public class SandboxTestLevel implements IGameLogic {
         float cutoff = (float) Math.cos(Math.toRadians(6.5f));
         float outerCutOff = (float) Math.cos(Math.toRadians(11.5f));
         SpotLight spotLight = new SpotLight(new Vector3f(1.0f, 1.0f, 1.0f), lightPosition5,
-                lightIntensity5, coneDir, cutoff, outerCutOff, att5, new Vector2f(1.0f, 200.0f));
+                lightIntensity5, coneDir, cutoff, outerCutOff, att5, new Vector2f(1.0f, farPlane));
         // Spot Light 2
         Vector3f lightPosition6 = new Vector3f(15.5f, 0.0f, -10.0f);
         float lightIntensity6 = 0.1f;
@@ -74,14 +75,14 @@ public class SandboxTestLevel implements IGameLogic {
         float cutoff2 = (float) Math.cos(Math.toRadians(6.5f));
         float outerCutOff2 = (float) Math.cos(Math.toRadians(11.5f));
         SpotLight spotLight2 = new SpotLight(new Vector3f(1.0f, 1.0f, 1.0f), lightPosition6,
-                lightIntensity6, coneDir2, cutoff2, outerCutOff2, att6, new Vector2f(1.0f, 200.0f));
+                lightIntensity6, coneDir2, cutoff2, outerCutOff2, att6, new Vector2f(1.0f, farPlane));
         // Add Spot Lights
         spotLightList = new SpotLight[]{spotLight, spotLight2};
 
         // Point Light 1
         Vector3f lightPosition = new Vector3f(0.0f, 2.0f, 7.0f);
         float lightIntensity = 0.7f;
-        PointLight pointLight = new PointLight(new Vector3f(1.0f, 1.0f, 1.0f), lightPosition, lightIntensity, new Vector2f(1.0f, 200.0f));
+        PointLight pointLight = new PointLight(new Vector3f(1.0f, 1.0f, 1.0f), lightPosition, lightIntensity, new Vector2f(1.0f, farPlane));
         PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 0.5f);
         pointLight.setAttenuation(att);
         // Point Light 2
@@ -93,7 +94,7 @@ public class SandboxTestLevel implements IGameLogic {
         // Point Light 3
         Vector3f lightPosition3 = new Vector3f(-5.0f, 2.0f, 13.0f);
         float lightIntensity3 = 0.7f;
-        PointLight pointLight3 = new PointLight(new Vector3f(1.0f, 1.0f, 1.0f), lightPosition3, lightIntensity3, new Vector2f(1.0f, 200.0f));
+        PointLight pointLight3 = new PointLight(new Vector3f(1.0f, 1.0f, 1.0f), lightPosition3, lightIntensity3, new Vector2f(1.0f, farPlane));
         PointLight.Attenuation att3 = new PointLight.Attenuation(0.0f, 0.0f, 0.5f);
         pointLight.setAttenuation(att3);
         // Add Point Lights
