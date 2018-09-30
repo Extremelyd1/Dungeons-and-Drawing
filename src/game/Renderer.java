@@ -150,10 +150,12 @@ public class Renderer {
         shader.setUniform("texture_sampler", 0);
         shader.setUniform("viewPos", camera.getPosition());
 
-        for (int i = 0; i < pointLightList.length; i++) {
+        int numLights = pointLightList != null ? pointLightList.length : 0;
+        for (int i = 0; i < numLights; i++) {
             shader.setUniform("pointLights[" + i + "].shadowMap", 2 + i);
         }
-        for (int i = 0; i < spotLightList.length; i++) {
+        numLights = spotLightList != null ? spotLightList.length : 0;
+        for (int i = 0; i < numLights; i++) {
             shader.setUniform("spotLights[" + i + "].shadowMap", 2 + pointLightList.length + i);
         }
 
@@ -162,11 +164,13 @@ public class Renderer {
         for (GameEntity entity : entities) {
             Mesh mesh = entity.getMesh();
 
-            for (int i = 0; i < pointLightList.length; i++) {
+            numLights = pointLightList != null ? pointLightList.length : 0;
+            for (int i = 0; i < numLights; i++) {
                 glActiveTexture(GL_TEXTURE2 + i);
                 glBindTexture(GL_TEXTURE_CUBE_MAP, pointLightList[i].getShadowMap().getDepthMap());
             }
-            for (int i = 0; i < spotLightList.length; i++) {
+            numLights = spotLightList != null ? spotLightList.length : 0;
+            for (int i = 0; i < numLights; i++) {
                 glActiveTexture(GL_TEXTURE2 + pointLightList.length + i);
                 glBindTexture(GL_TEXTURE_2D, spotLightList[i].getShadowMap().getDepthMap());
             }

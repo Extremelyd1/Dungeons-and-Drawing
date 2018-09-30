@@ -84,6 +84,7 @@ public class SpotLight {
 
     public void setPosition(Vector3f position) {
         this.position = position;
+        setPlane(plane); //update LightSpaceMatrix
     }
 
     public float getIntensity() {
@@ -112,6 +113,7 @@ public class SpotLight {
 
     public void setConeDirection(Vector3f coneDirection) {
         this.coneDirection = coneDirection;
+        setPlane(plane); //update LightSpaceMatrix
     }
 
     public float getCutOff() {

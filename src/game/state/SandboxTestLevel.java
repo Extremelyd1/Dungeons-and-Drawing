@@ -55,7 +55,7 @@ public class SandboxTestLevel implements IGameLogic {
     public void init(GameWindow window) throws Exception {
         renderer.init(window);
 
-        ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
+        ambientLight = new Vector3f(0.02f, 0.02f, 0.02f);
 
         // Spot Light 1
         Vector3f lightPosition5 = new Vector3f(15.5f, 0.0f, -10.0f);
@@ -66,8 +66,17 @@ public class SandboxTestLevel implements IGameLogic {
         float outerCutOff = (float) Math.cos(Math.toRadians(11.5f));
         SpotLight spotLight = new SpotLight(new Vector3f(1.0f, 1.0f, 1.0f), lightPosition5,
                 lightIntensity5, coneDir, cutoff, outerCutOff, att5, new Vector2f(1.0f, 200.0f));
+        // Spot Light 2
+        Vector3f lightPosition6 = new Vector3f(15.5f, 0.0f, -10.0f);
+        float lightIntensity6 = 0.1f;
+        PointLight.Attenuation att6 = new PointLight.Attenuation(0.0f, 0.0f, 0.5f);
+        Vector3f coneDir2 = new Vector3f(-1f, -0.2f, 0);
+        float cutoff2 = (float) Math.cos(Math.toRadians(6.5f));
+        float outerCutOff2 = (float) Math.cos(Math.toRadians(11.5f));
+        SpotLight spotLight2 = new SpotLight(new Vector3f(1.0f, 1.0f, 1.0f), lightPosition6,
+                lightIntensity6, coneDir2, cutoff2, outerCutOff2, att6, new Vector2f(1.0f, 200.0f));
         // Add Spot Lights
-        spotLightList = new SpotLight[]{spotLight};
+        spotLightList = new SpotLight[]{spotLight, spotLight2};
 
         // Point Light 1
         Vector3f lightPosition = new Vector3f(0.0f, 2.0f, 7.0f);
@@ -90,7 +99,7 @@ public class SandboxTestLevel implements IGameLogic {
         // Add Point Lights
         pointLightList = new PointLight[]{pointLight, pointLight2, pointLight3};
 
-        GameEntity light, light2, light3, light4;
+        GameEntity light, light2, light3, light4, light5;
         if (GameEngine.DEBUG_MODE) {
             Mesh mesh_light = PLYLoader.loadMesh("/models/PLY/light.ply");
             Material material_light = new Material(new Vector4f(pointLight.getColor(), 1), 0.1f);
@@ -111,6 +120,10 @@ public class SandboxTestLevel implements IGameLogic {
             light4 = new GameEntity(mesh_light);
             light4.setPosition(spotLight.getPosition().x, spotLight.getPosition().y, spotLight.getPosition().z);
             light4.setScale(new Vector3f(0.05f,0.05f,0.05f));
+
+            light5 = new GameEntity(mesh_light);
+            light5.setPosition(spotLight2.getPosition().x, spotLight2.getPosition().y, spotLight2.getPosition().z);
+            light5.setScale(new Vector3f(0.05f,0.05f,0.05f));
         }
         Mesh cube = PLYLoader.loadMesh("/models/PLY/cube.ply");
         Material cubeMat = new Material(0.1f);
@@ -132,6 +145,11 @@ public class SandboxTestLevel implements IGameLogic {
         g7.setPosition(7.5f, -2.2f, -10.0f);
         g7.setRotation(-90,0,0);
         g7.setScale(0.2f);
+        // Tree 4
+        GameEntity g8 = new GameEntity(tree);
+        g8.setPosition(12.5f, -2.2f, 10.0f);
+        g8.setRotation(-90,0,0);
+        g8.setScale(0.4f);
 
         // Floor
         GameEntity g2 = new GameEntity(cube);
@@ -152,7 +170,7 @@ public class SandboxTestLevel implements IGameLogic {
         g5.setScale(new Vector3f(1f,3.2f,6f));
 
         if (GameEngine.DEBUG_MODE) {
-            gameEntities = new GameEntity[]{g, g2, g3, g4, g5, g6, g7, light, light2, light3, light4};
+            gameEntities = new GameEntity[]{g, g2, g3, g4, g5, g6, g7, g8, light, light2, light3, light4, light5};
         } else {
             gameEntities = new GameEntity[]{g, g2, g3, g4, g5, g6, g7};
         }
@@ -207,6 +225,17 @@ public class SandboxTestLevel implements IGameLogic {
         Vector3f pos = new Vector3f(7.0f + (float)Math.sin(move), 2.0f, 0.0f + 4 * (float)Math.sin(-move));
         gameEntity.setPosition(pos);
         pointLight.setPosition(pos);
+
+        GameEntity gameEntity2 = gameEntities[9];
+        SpotLight spotLight = spotLightList[1];
+
+        Vector3f pos2 = new Vector3f(12.5f + 8 * (float)Math.sin(move), 2.0f, 10.0f + 8 * (float)Math.cos(move));
+        gameEntity2.setPosition(pos2);
+        spotLight.setPosition(pos2);
+
+        Vector3f coneDir = new Vector3f(pos2).sub(new Vector3f(12.5f, -2.2f, 10.0f)).mul(-1);
+        spotLight.setConeDirection(coneDir);
+
     }
 
     @Override
