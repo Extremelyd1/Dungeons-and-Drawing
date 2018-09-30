@@ -28,13 +28,13 @@ public class GameWindow {
     
     // Defaults
     private final String DEFAULT_WINDOW_TITLE = "Dungeons And Drawings";
-    private final boolean FULL_SCREEN = true;
     private final int DEFAULT_WINDOW_WIDTH = 1280;
     private final int DEFAULT_WINDOW_HEIGHT = 720;
     
     // << If we want the window to be resizable, these variables should be used >>
+    private boolean fullScreen = false;
     private int windowWidth; 
-    private int windowHeight; 
+    private int windowHeight;
     
     /** Private constructor */
     private GameWindow() {
@@ -83,7 +83,7 @@ public class GameWindow {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
         // Create the window
-        if (FULL_SCREEN) {
+        if (fullScreen) {
             windowHandle = glfwCreateWindow(
                     /* We get the current screen resolution */
                     glfwGetVideoMode(glfwGetPrimaryMonitor()).width(),
@@ -108,6 +108,9 @@ public class GameWindow {
             // If the escape key is released, close the window
             if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
                 glfwSetWindowShouldClose(windowParam, true);
+            }
+            if (key == GLFW_KEY_F11 && action == GLFW_RELEASE) {
+                updateWindow();
             }
         });
 
@@ -142,7 +145,10 @@ public class GameWindow {
         GL.createCapabilities();
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glEnable(GL_DEPTH_TEST);
-        
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         // Wireframe model
         //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
     }
@@ -158,25 +164,70 @@ public class GameWindow {
         glfwTerminate();
         glfwSetErrorCallback(null).free();
     }
-    
-    
+
+    /**
+     * Method that is called if the f11 key is pressed, switches between full screen and windowed mode
+     */
+    private void updateWindow() {
+        fullScreen = !fullScreen;
+        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        if (fullScreen) {
+            //Set the height and width according to monitor resolution
+            windowWidth = vidmode.width();
+            windowHeight = vidmode.height();
+            //We set the new window size
+            glfwSetWindowSize(windowHandle, windowWidth, windowHeight);
+            //Set primary monitor as window monitor
+            glfwSetWindowMonitor(windowHandle, glfwGetPrimaryMonitor(), 0, 0,
+                                    windowHeight, windowWidth, GLFW_CONNECTED);
+            //We enable vsync (since we changed monitor)
+            glfwSwapInterval(1);
+        } else {
+            //Set window size to default
+            windowWidth = DEFAULT_WINDOW_WIDTH;
+            windowHeight = DEFAULT_WINDOW_HEIGHT;
+            glfwSetWindowSize(windowHandle, windowWidth, windowHeight);
+            //Reset monitor
+            glfwSetWindowMonitor(windowHandle, NULL, 0, 0,
+                                    windowWidth, windowHeight, GLFW_CONNECTED);
+            //Set window to middle of the screen
+            glfwSetWindowPos(
+                    windowHandle,
+                    (vidmode.width() - windowWidth) / 2,
+                    (vidmode.height() - windowHeight) / 2
+            );
+            //Again enable vsync
+            glfwSwapInterval(1);
+        }
+    }
+
+
+    public void setWindowWidth(int width) {
+        windowWidth = width;
+    }
+
+    public void setWindowHeight(int height) {
+        windowHeight = height;
+    }
+
     
     /** Renders and updates the game components */
     public void render() {   
         glfwSwapBuffers(windowHandle); // swap the buffers (render new frame)
         glfwPollEvents(); // process all pending events
     }
-    
+
     /**
      * Return whether a certain key is pressed down
-     * 
+     * @TODO: Delete obsolete function
      * @param keyCode the code of the key to check
      * @return whether the key is pressed or not
      */
+    /*
     public boolean isKeyPressed(int keyCode) {
         return glfwGetKey(windowHandle, keyCode) == GLFW_PRESS;
     }
-
+    /*
     
     /** 
      * Returns whether the window should be closed

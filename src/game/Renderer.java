@@ -1,13 +1,16 @@
 package game;
 
-import engine.Camera;
-import engine.entities.GameEntity;
+import engine.camera.Camera;
+import engine.entities.Entity;
 import engine.GameWindow;
 import engine.Transformation;
+import engine.gui.GUIComponent;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.util.Utilities;
+import game.map.Map;
+import game.map.tile.Tile;
 import graphics.Mesh;
 import graphics.Shader;
 import org.joml.Matrix4f;
@@ -28,7 +31,8 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Renderer {
 
-    private Shader shader;
+    private Shader sceneShader;
+    private Shader guiShader;
 
     private static final float FOV = (float) Math.toRadians(45.0f);
     private static final float Z_NEAR = 0.01f;
@@ -44,30 +48,46 @@ public class Renderer {
         specularPower = 10f;
     }
 
-    public void init(GameWindow window) throws Exception {
+    public void init() throws Exception {
+        setupSceneShader();
+        setupGUIShader();
+    }
 
-        // Create a shader program
-        shader = new Shader();
-        shader.createVertexShader(Utilities.loadResource("/shaders/vertex.vs"));
-        shader.createFragmentShader(Utilities.loadResource("/shaders/fragment.fs"));
-        shader.link();
+    private void setupSceneShader() throws Exception {
+        // Create a sceneShader program
+        sceneShader = new Shader();
+        sceneShader.createVertexShader(Utilities.loadResource("/shaders/vertex.vs"));
+        sceneShader.createFragmentShader(Utilities.loadResource("/shaders/fragment.fs"));
+        sceneShader.link();
 
         // Create uniforms
-        shader.createUniform("projectionMatrix");
-        shader.createUniform("modelViewMatrix");
-        shader.createUniform("texture_sampler");
+        sceneShader.createUniform("projectionMatrix");
+        sceneShader.createUniform("modelViewMatrix");
+        sceneShader.createUniform("texture_sampler");
 
         // Create uniform for material
-        shader.createMaterialUniform("material");
+        sceneShader.createMaterialUniform("material");
 
         // Create lighting related uniforms
-        shader.createUniform("specularPower");
-        shader.createUniform("ambientLight");
-        shader.createPointLightListUniform("pointLights", MAX_POINT_LIGHTS);
-        shader.createSpotLightListUniform("spotLights", MAX_SPOT_LIGHTS);
-        shader.createDirectionalLightUniform("directionalLight");
+        sceneShader.createUniform("specularPower");
+        sceneShader.createUniform("ambientLight");
+        sceneShader.createPointLightListUniform("pointLights", MAX_POINT_LIGHTS);
+        sceneShader.createSpotLightListUniform("spotLights", MAX_SPOT_LIGHTS);
+        sceneShader.createDirectionalLightUniform("directionalLight");
 
-        window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        GameWindow.getGameWindow().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    }
+
+    private void setupGUIShader() throws Exception {
+        guiShader = new Shader();
+        guiShader.createVertexShader(Utilities.loadResource("/shaders/vertex_gui.vs"));
+        guiShader.createFragmentShader(Utilities.loadResource("/shaders/fragment_gui.fs"));
+        guiShader.link();
+
+        // Create uniforms for Ortographic-model projection matrix and base colour
+        guiShader.createUniform("projModelMatrix");
+        guiShader.createUniform("colour");
+        guiShader.createUniform("hasTexture");
     }
 
     /**
@@ -80,7 +100,6 @@ public class Renderer {
     /**
      * Renders the scene
      *
-     * @param window           Game window
      * @param camera           Camera
      * @param entities         List of entities to draw
      * @param ambientLight     Ambient light
@@ -89,37 +108,56 @@ public class Renderer {
      * @param directionalLight Directional light
      */
     public void render(
-            GameWindow window,
             Camera camera,
-            GameEntity[] entities,
+            GUI gui,
+            Entity[] entities,
             Vector3f ambientLight,
             PointLight[] pointLightList,
             SpotLight[] spotLightList,
-            DirectionalLight directionalLight
+            DirectionalLight directionalLight,
+            Map map
     ) {
 
         clear();
-        /* We attach a callback which is invokd when we resize the window */
-        glfwSetWindowSizeCallback(window.getWindowHandle(), new GLFWWindowSizeCallback(){
+
+        GameWindow window = GameWindow.getGameWindow();
+        /* We attach a callback which is invoked when we resize the window */
+        glfwSetWindowSizeCallback(window.getWindowHandle(), new GLFWWindowSizeCallback() {
             @Override
-            public void invoke(long window, int width, int height){
-                glfwSetWindowSize(window, width, height); //Set new window size
+            public void invoke(long windowHandle, int width, int height){
+                glfwSetWindowSize(windowHandle, width, height); //Set new window size
+                window.setWindowHeight(height);
+                window.setWindowWidth(width);
                 glViewport(0, 0, width, height); //Update the Viewport with new width and height
             }
         });
 
-        shader.bind();
+        renderScene(camera, entities, ambientLight, pointLightList, spotLightList, directionalLight, map);
+        if (gui != null) {
+            renderGui(gui);
+        }
+    }
+
+    public void renderScene(Camera camera,
+                            Entity[] entities,
+                            Vector3f ambientLight,
+                            PointLight[] pointLightList,
+                            SpotLight[] spotLightList,
+                            DirectionalLight directionalLight,
+                            Map map) {
+
+        sceneShader.bind();
 
         // Update projection Matrix
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(
                 FOV,
-                window.getWindowWidth(),
-                window.getWindowHeight(),
+                GameWindow.getGameWindow().getWindowWidth(),
+                GameWindow.getGameWindow().getWindowHeight(),
                 Z_NEAR,
                 Z_FAR
         );
 
-        shader.setUniform("projectionMatrix", projectionMatrix);
+        sceneShader.setUniform("projectionMatrix", projectionMatrix);
 
         // Update view Matrix
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
@@ -127,23 +165,37 @@ public class Renderer {
         // Update Light Uniforms
         renderLights(viewMatrix, ambientLight, pointLightList, spotLightList, directionalLight);
 
-        shader.setUniform("texture_sampler", 0);
+        sceneShader.setUniform("texture_sampler", 0);
 
-        for (GameEntity entity : entities) {
+        for (Tile[] row : map.getTiles()) {
+            for (Tile tile : row) {
+                Mesh mesh = tile.getMesh();
+                // Set model view matrix for this item
+                Matrix4f modelViewMatrix = transformation.getModelViewMatrix(tile, viewMatrix);
+                sceneShader.setUniform("modelViewMatrix", modelViewMatrix);
+
+                // Render the mes for this game item
+                sceneShader.setUniform("material", mesh.getMaterial());
+
+                mesh.render();
+            }
+        }
+
+        for (Entity entity : entities) {
 
             Mesh mesh = entity.getMesh();
 
             // Set model view matrix for this item
             Matrix4f modelViewMatrix = transformation.getModelViewMatrix(entity, viewMatrix);
-            shader.setUniform("modelViewMatrix", modelViewMatrix);
+            sceneShader.setUniform("modelViewMatrix", modelViewMatrix);
 
             // Render the mes for this game item
-            shader.setUniform("material", mesh.getMaterial());
+            sceneShader.setUniform("material", mesh.getMaterial());
 
             mesh.render();
         }
 
-        shader.unbind();
+        sceneShader.unbind();
     }
 
     /**
@@ -163,8 +215,8 @@ public class Renderer {
             DirectionalLight directionalLight
     ) {
 
-        shader.setUniform("ambientLight", ambientLight);
-        shader.setUniform("specularPower", specularPower);
+        sceneShader.setUniform("ambientLight", ambientLight);
+        sceneShader.setUniform("specularPower", specularPower);
 
         // Process Point Lights
         int numLights = pointLightList != null ? pointLightList.length : 0;
@@ -177,7 +229,7 @@ public class Renderer {
             lightPos.x = aux.x;
             lightPos.y = aux.y;
             lightPos.z = aux.z;
-            shader.setUniform("pointLights", currPointLight, i);
+            sceneShader.setUniform("pointLights", currPointLight, i);
         }
 
         // Process Spot Ligths
@@ -196,7 +248,7 @@ public class Renderer {
             lightPos.y = aux.y;
             lightPos.z = aux.z;
 
-            shader.setUniform("spotLights", currSpotLight, i);
+            sceneShader.setUniform("spotLights", currSpotLight, i);
         }
 
         // Get a copy of the directional light object and transform its position to view coordinates
@@ -205,16 +257,40 @@ public class Renderer {
             Vector4f dir = new Vector4f(currDirLight.getDirection(), 0);
             dir.mul(viewMatrix);
             currDirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
-            shader.setUniform("directionalLight", currDirLight);
+            sceneShader.setUniform("directionalLight", currDirLight);
         }
 
     }
 
-    /**
-     * Free up resources
-     */
+    private void renderGui(GUI gui) {
+        guiShader.bind();
+
+        Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, GameWindow.getGameWindow().getWindowWidth(),
+                GameWindow.getGameWindow().getWindowHeight(), 0);
+
+        for (GUIComponent gameItem : gui.getGUIComponents()) {
+            Mesh mesh = gameItem.getMesh();
+            // Set ortohtaphic and model matrix for this HUD item
+            Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(gameItem, ortho);
+            guiShader.setUniform("projModelMatrix", projModelMatrix);
+            guiShader.setUniform("colour", mesh.getMaterial().getAmbientColour());
+            guiShader.setUniform("hasTexture", mesh.getMaterial().isTextured() ? 1 : 0);
+
+            // Render the mesh for this HUD item
+            mesh.render();
+        }
+
+        guiShader.unbind();
+    }
+
     public void terminate() {
-        shader.terminate();
+        if (sceneShader != null) {
+            sceneShader.terminate();
+        }
+
+        if (guiShader != null) {
+            guiShader.terminate();
+        }
     }
 }
 
