@@ -5,14 +5,13 @@ import engine.entities.Entity;
 import engine.GameWindow;
 import engine.Transformation;
 import engine.gui.GUIComponent;
-import engine.gui.Text;
+import engine.gui.Layer;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.util.Utilities;
 import game.map.Map;
 import game.map.tile.Tile;
-import graphics.FontTexture;
 import graphics.Mesh;
 import graphics.Shader;
 import org.joml.Matrix4f;
@@ -20,7 +19,6 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 
-import java.awt.*;
 
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
@@ -267,21 +265,28 @@ public class Renderer {
     }
 
     private void renderGui(GUI gui) {
+
         guiShader.bind();
 
         Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, GameWindow.getGameWindow().getWindowWidth(),
                 GameWindow.getGameWindow().getWindowHeight(), 0);
 
-        for (GUIComponent gameItem : gui.getGUIComponents()) {
-            Mesh mesh = gameItem.getMesh();
-            // Set ortohtaphic and model matrix for this HUD item
-            Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(gameItem, ortho);
-            guiShader.setUniform("projModelMatrix", projModelMatrix);
-            guiShader.setUniform("colour", mesh.getMaterial().getAmbientColour());
-            guiShader.setUniform("hasTexture", mesh.getMaterial().isTextured() ? 1 : 0);
+        for (Layer layer : gui.getLayers()) {
 
-            // Render the mesh for this HUD item
-            mesh.render();
+            // Set ortohtaphic and model matrix for this HUD item
+            Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(layer, ortho);
+            guiShader.setUniform("projModelMatrix", projModelMatrix);
+
+            for (GUIComponent element : layer.getElements()) {
+
+                Mesh mesh = element.getMesh();
+
+                guiShader.setUniform("colour", mesh.getMaterial().getAmbientColour());
+                guiShader.setUniform("hasTexture", mesh.getMaterial().isTextured() ? 1 : 0);
+
+                // Render the mesh for this HUD item
+                mesh.render();
+            }
         }
 
         guiShader.unbind();
