@@ -8,9 +8,13 @@ import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
+
+import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 
 /**
@@ -22,6 +26,7 @@ public class Shader {
     private final int programId;
     private int vertexShaderId;
     private int fragmentShaderId;
+    private int geometryShaderId;
     
     // Holds all uniforms used in the shaders
     private final Map<String, Integer> uniforms;
@@ -43,6 +48,11 @@ public class Shader {
     /* Specify which fragement shader this shader should use */
     public void createFragmentShader(String shaderCode) throws Exception {
         fragmentShaderId = createShader(shaderCode, GL_FRAGMENT_SHADER);
+    }
+
+    /* Specify which geometry shader this shader should use */
+    public void createGeometryShader(String shaderCode) throws Exception {
+        geometryShaderId = createShader(shaderCode, GL_GEOMETRY_SHADER);
     }
 
     /* Create, compile and attach the shader given its id and type */
@@ -81,6 +91,10 @@ public class Shader {
         }
         if (fragmentShaderId != 0) {
             glDetachShader(programId, fragmentShaderId);
+        }
+
+        if (geometryShaderId != 0) {
+            glDetachShader(programId, geometryShaderId);
         }
         
         if (GameEngine.DEBUG_MODE) {
@@ -135,6 +149,8 @@ public class Shader {
         createUniform(uniformName + ".att.constant");
         createUniform(uniformName + ".att.linear");
         createUniform(uniformName + ".att.exponent");
+        createUniform(uniformName + ".shadowMap");
+        createUniform(uniformName + ".plane");
     }
 
     public void createSpotLightListUniform(String uniformName, int size) throws Exception {
@@ -144,9 +160,18 @@ public class Shader {
     }
 
     public void createSpotLightUniform(String uniformName) throws Exception {
-        createPointLightUniform(uniformName + ".pl");
+        createUniform(uniformName + ".colour");
+        createUniform(uniformName + ".position");
+        createUniform(uniformName + ".intensity");
+        createUniform(uniformName + ".att.constant");
+        createUniform(uniformName + ".att.linear");
+        createUniform(uniformName + ".att.exponent");
+        createUniform(uniformName + ".shadowMap");
         createUniform(uniformName + ".conedir");
         createUniform(uniformName + ".cutoff");
+        createUniform(uniformName + ".outerCutoff");
+        createUniform(uniformName + ".lightSpaceMatrix");
+        createUniform(uniformName + ".plane");
     }
 
     public void createDirectionalLightUniform(String uniformName) throws Exception {
@@ -186,6 +211,10 @@ public class Shader {
     public void setUniform(String uniformName, Vector3f value) {
         glUniform3f(uniforms.get(uniformName), value.x, value.y, value.z);
     }
+
+    public void setUniform(String uniformName, Vector2f value) {
+        glUniform2f(uniforms.get(uniformName), value.x, value.y);
+    }
     
     public void setUniform(String uniformName, float value) {
         glUniform1f(uniforms.get(uniformName), value);
@@ -193,6 +222,16 @@ public class Shader {
     
     public void setUniform(String uniformName, Vector4f value) {
         glUniform4f(uniforms.get(uniformName), value.x, value.y, value.z, value.w);
+    }
+
+    public void setUniform(String uniformName, Matrix4f[] data, int size) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer fb = BufferUtils.createFloatBuffer(16 * size);
+            for (int i = 0; i < size; i++) {
+                data[i].get(16 * i, fb);
+            }
+            glUniformMatrix4fv(uniforms.get(uniformName), false, fb);
+        }
     }
     
     public void setUniform(String uniformName, PointLight[] pointLights) {
@@ -214,6 +253,7 @@ public class Shader {
         setUniform(uniformName + ".att.constant", att.getConstant());
         setUniform(uniformName + ".att.linear", att.getLinear());
         setUniform(uniformName + ".att.exponent", att.getExponent());
+        setUniform(uniformName + ".plane", pointLight.getPlane());
     }
 
     public void setUniform(String uniformName, SpotLight[] spotLights) {
@@ -228,9 +268,18 @@ public class Shader {
     }
 
     public void setUniform(String uniformName, SpotLight spotLight) {
-        setUniform(uniformName + ".pl", spotLight.getPointLight());
+        setUniform(uniformName + ".colour", spotLight.getColor());
+        setUniform(uniformName + ".position", spotLight.getPosition());
+        setUniform(uniformName + ".intensity", spotLight.getIntensity());
+        PointLight.Attenuation att = spotLight.getAttenuation();
+        setUniform(uniformName + ".att.constant", att.getConstant());
+        setUniform(uniformName + ".att.linear", att.getLinear());
+        setUniform(uniformName + ".att.exponent", att.getExponent());
         setUniform(uniformName + ".conedir", spotLight.getConeDirection());
         setUniform(uniformName + ".cutoff", spotLight.getCutOff());
+        setUniform(uniformName + ".outerCutoff", spotLight.getOuterCutOff());
+        setUniform(uniformName + ".lightSpaceMatrix", spotLight.getLightSpaceMatrix());
+        setUniform(uniformName + ".plane", spotLight.getPlane());
     }
 
     public void setUniform(String uniformName, DirectionalLight dirLight) {
