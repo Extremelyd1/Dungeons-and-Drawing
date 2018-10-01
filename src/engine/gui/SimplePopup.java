@@ -48,9 +48,9 @@ public class SimplePopup extends GUIComponentParent {
 
         // Texture coordinates
         float[] textureCoordinates = new float[] {
-                0.5f, 0.5f,
-                0.5f, 1,
-                1, 0.5f,
+                0, 0,
+                0, 1,
+                1, 0,
                 1, 1,
         };
 
@@ -59,7 +59,7 @@ public class SimplePopup extends GUIComponentParent {
 
         // Create the mesh and add the texture
         Mesh mesh = new Mesh(new OBJData(vertices, normals, textureCoordinates, indices));
-        mesh.setMaterial(new Material(new Texture("/textures/grassblock.png")));
+        mesh.setMaterial(new Material(new Texture("/textures/popup.png")));
 
         return mesh;
     }

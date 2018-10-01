@@ -36,7 +36,7 @@ public class GUI {
         FontTexture fontTexture = new FontTexture(FONT, CHARSET);
 
         text = new Text(initText, fontTexture, new Vector3f(0.25f, 0.2f, 0.2f));
-        SimplePopup pop = new SimplePopup(text, 400, 100);
+        SimplePopup pop = new SimplePopup(text, 500, 150);
         pop.center();
 
         layer1.add(pop);
