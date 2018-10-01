@@ -6,6 +6,7 @@ import engine.entities.Entity;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.loader.PLYLoader;
+import pathfinding.A_star;
 import game.LevelController;
 import game.Renderer;
 import game.map.Map;
@@ -37,6 +38,8 @@ public class MapTestLevel extends Level {
 
         map = new Map();
         map.load(new SimpleMapLoader());
+        A_star alg = new A_star();
+        alg.computePath(map.getTile(0,0), map.getTile(2, 0), map);
 
         ambientLight = new Vector3f(0.6f, 0.6f, 0.6f);
 

@@ -3,6 +3,7 @@ package pathfinding;
 import game.map.Map;
 import game.map.tile.Tile;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -14,9 +15,6 @@ import java.util.PriorityQueue;
  * @Author Koen Degeling (1018025)
  */
 public class A_star {
-    public static void main(String[] args) {
-        
-    }
     /**
      * Method that computes the path and returns a list of tiles, the path we have to take to reach
      * the target.
@@ -27,12 +25,7 @@ public class A_star {
      */
     public List<Tile> computePath(Tile start, Tile target, Map map) {
         // Initialise our open queue and comparator
-        PriorityQueue<Pair> open = new PriorityQueue<Pair>() {
-            // Open queue inserts 'open' nodes which we sort on their g(t) value
-            public int compare(Pair p, Pair q) {
-                if (p.g < q.g) return -1; else return 1;
-            }
-        };
+        PriorityQueue<Pair> open = new PriorityQueue<>();
         // List containing all the 'closed' nodes
         LinkedList<Tile> closed = new LinkedList<>();
         open.add(new Pair(start, 0, Math.abs(start.getPosition().x-target.getPosition().x)
@@ -43,10 +36,15 @@ public class A_star {
             // We get all of q's successors and put them on the open list
             for (Tile n : map.getNeighbours(q.t) ) {
                 // If the tile is walkable, add the tile to the open list
-                if (n == target) {
-                    break;
+                if (n.getPosition().x == target.getPosition().x && n.getPosition().y == target.getPosition().y) {
+                    closed.add(q.t);
+                    closed.add(n);
+                    for (Tile t : closed) {
+                        System.out.println("("+t.getPosition().x + "," + t.getPosition().y+")");
+                    }
+                    return closed;
                 }
-                if (!n.isSolid()) {
+                if (!n.isSolid() && !inClosed(n, closed)) {
                     int h = Math.abs(n.getPosition().x-target.getPosition().x)
                         + Math.abs(n.getPosition().y-target.getPosition().y);
                     open.add(new Pair(n, q.g+1, h));
@@ -57,10 +55,17 @@ public class A_star {
         return closed;
     }
 
+    private boolean inClosed(Tile n, List<Tile> closed) {
+        for (Tile x : closed) {
+            if (x == n) return true;
+        }
+        return false;
+    }
+
     /**
      * (Tile, g(t)) pair, defining a tile and the corresponding f(t) weight function.
      */
-    private class Pair {
+    private class Pair implements Comparable<Pair> {
         Tile t;
         int g, f, h;
 
@@ -68,6 +73,11 @@ public class A_star {
             this.t = t;
             this.g = g; this.h = h;
             this.f = this.g + this.h;
+        }
+
+        @Override
+        public int compareTo(Pair o) {
+            if(this.f > o.f) return 1; else return -1;
         }
     }
 }
