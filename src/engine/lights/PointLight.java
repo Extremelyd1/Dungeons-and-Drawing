@@ -5,33 +5,50 @@
  */
 package engine.lights;
 
+import graphics.ShadowMap;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class PointLight {
-
     private Vector3f color;
-
     private Vector3f position;
-
     private float intensity;
-
     private Attenuation attenuation;
+    private ShadowMap shadowMap;
+    private Vector2f plane;
     
-    public PointLight(Vector3f color, Vector3f position, float intensity) {
+    public PointLight(Vector3f color, Vector3f position, float intensity, Vector2f plane) {
+        try {
+            shadowMap = new ShadowMap(1024);
+            shadowMap.initShadowCubeMap();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         attenuation = new Attenuation(1, 0, 0);
         this.color = color;
         this.position = position;
         this.intensity = intensity;
+        this.plane = plane;
     }
 
-    public PointLight(Vector3f color, Vector3f position, float intensity, Attenuation attenuation) {
-        this(color, position, intensity);
+    public PointLight(Vector3f color, Vector3f position, float intensity, Attenuation attenuation, Vector2f plane) {
+        this(color, position, intensity, plane);
         this.attenuation = attenuation;
+    }
+
+    private PointLight(Vector3f color, Vector3f position, float intensity, Attenuation attenuation, ShadowMap shadowMap, Vector2f plane) {
+        this.color = color;
+        this.position = position;
+        this.intensity = intensity;
+        this.attenuation = attenuation;
+        this.shadowMap = shadowMap;
+        this.plane = plane;
     }
 
     public PointLight(PointLight pointLight) {
         this(new Vector3f(pointLight.getColor()), new Vector3f(pointLight.getPosition()),
-                pointLight.getIntensity(), pointLight.getAttenuation());
+                pointLight.getIntensity(), pointLight.getAttenuation(), pointLight.getShadowMap(), pointLight.getPlane());
     }
 
     public Vector3f getColor() {
@@ -52,6 +69,10 @@ public class PointLight {
 
     public float getIntensity() {
         return intensity;
+    }
+
+    public ShadowMap getShadowMap() {
+        return shadowMap;
     }
 
     public void setIntensity(float intensity) {
@@ -103,5 +124,13 @@ public class PointLight {
         public void setExponent(float exponent) {
             this.exponent = exponent;
         }
+    }
+
+    public Vector2f getPlane() {
+        return plane;
+    }
+
+    public void setPlane(Vector2f plane) {
+        this.plane = plane;
     }
 }

@@ -11,6 +11,7 @@ import game.LevelController;
 import game.Renderer;
 import graphics.Material;
 import graphics.Mesh;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -45,7 +46,7 @@ public class TestLevel extends Level {
         // Set up a point light
         Vector3f lightPosition = new Vector3f(1.0f, 1.0f, -7.0f);
         float lightIntensity = 2.0f;
-        PointLight pointLight = new PointLight(new Vector3f(1.0f, 0.3f, 0.0f), lightPosition, lightIntensity);
+        PointLight pointLight = new PointLight(new Vector3f(1.0f, 0.3f, 0.0f), lightPosition, lightIntensity, new Vector2f(1f, 100f));
         PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
         pointLight.setAttenuation(att);
         sceneLight.pointLights.add(pointLight);

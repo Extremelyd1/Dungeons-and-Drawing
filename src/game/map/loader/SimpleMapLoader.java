@@ -6,6 +6,7 @@ import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 /**
  * This simple map loader is meant for testing purposes.
@@ -22,19 +23,19 @@ public class SimpleMapLoader implements MapLoader {
 
         return new Tile[][]{
                 {
-                        new Tile(new Vector2i(0, 0), new Vector3f(0, 0, 0), mesh,true),
-                        new Tile(new Vector2i(1, 0), new Vector3f(0, 90, 0), mesh,true),
-                        new Tile(new Vector2i(2, 0), new Vector3f(0, 270, 0), mesh,true)
+                        new Tile(new Vector2i(0, 0), new Vector3f(-90, 0, 0), mesh,true),
+                        new Tile(new Vector2i(1, 0), new Vector3f(-90, 0, 0), mesh,true),
+                        new Tile(new Vector2i(2, 0), new Vector3f(-90, 0, 0), mesh,true)
                 },
                 {
-                        new Tile(new Vector2i(0, 1), new Vector3f(0, 0, 0), mesh,true),
-                        new Tile(new Vector2i(1, 1), new Vector3f(0, 90, 0), mesh,true),
-                        new Tile(new Vector2i(2, 1), new Vector3f(0, 90, 0), mesh,true)
+                        new Tile(new Vector2i(0, 1), new Vector3f(-90, 0, 0), mesh,true),
+                        new Tile(new Vector2i(1, 1), new Vector3f(-90, 0, 0), mesh,true),
+                        new Tile(new Vector2i(2, 1), new Vector3f(-90, 0, 0), mesh,true)
                 },
                 {
-                        new Tile(new Vector2i(0, 2), new Vector3f(0, 180, 0), mesh,true),
-                        new Tile(new Vector2i(1, 2), new Vector3f(0, 90, 0), mesh,true),
-                        new Tile(new Vector2i(2, 2), new Vector3f(0, 180, 0), mesh,true)
+                        new Tile(new Vector2i(0, 2), new Vector3f(-90, 0, 0), mesh,true),
+                        new Tile(new Vector2i(1, 2), new Vector3f(-90, 0, 0), mesh,true),
+                        new Tile(new Vector2i(2, 2), new Vector3f(-90, 0, 0), mesh,true)
                 }
         };
     }
