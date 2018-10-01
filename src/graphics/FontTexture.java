@@ -101,7 +101,6 @@ public class FontTexture {
         for (char c : allChars.toCharArray()) {
             CharInfo charInfo = new CharInfo(this.width, fontMetrics.charWidth(c));
             charMap.put(c, charInfo);
-            System.out.println("c: " + c + " startX: " + width + " width: " + fontMetrics.charWidth(c));
 
             width += charInfo.getWidth() + spacing;
         }
@@ -123,7 +122,6 @@ public class FontTexture {
             String charString = String.valueOf(c);
 
             g2D.drawString(charString, drawX, drawY);
-            System.out.println("c: " + c + " drawX: " + drawX);
             drawX += charMap.get(c).getWidth() + spacing;
         }
         g2D.dispose();
