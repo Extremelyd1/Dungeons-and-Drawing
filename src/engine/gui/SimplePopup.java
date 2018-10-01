@@ -55,7 +55,7 @@ public class SimplePopup extends GUIComponentParent {
         };
 
         // Indices array
-        int[] indices = new int[] {0, 1, 2, 1, 2, 3};
+        int[] indices = new int[] {0, 1, 2, 3, 2, 1};
 
         // Create the mesh and add the texture
         Mesh mesh = new Mesh(new OBJData(vertices, normals, textureCoordinates, indices));
