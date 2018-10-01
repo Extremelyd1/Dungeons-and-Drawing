@@ -39,7 +39,7 @@ public class MapTestLevel extends Level {
         map = new Map();
         map.load(new SimpleMapLoader());
         A_star alg = new A_star();
-        alg.computePath(map.getTile(0,0), map.getTile(2, 0), map);
+        alg.computePath(map.getTile(0,3), map.getTile(3, 3), map);
 
         ambientLight = new Vector3f(0.6f, 0.6f, 0.6f);
 
