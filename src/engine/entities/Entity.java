@@ -8,10 +8,10 @@ import org.joml.Vector3f;
  */
 public class Entity {
 
-    private final Mesh mesh;
-    private final Vector3f position;
-    private final Vector3f rotation;
-    private final Vector3f scale;
+    protected Mesh mesh;
+    protected Vector3f position;
+    protected Vector3f rotation;
+    protected Vector3f scale;
 
     public Entity(Mesh mesh) {
         this.mesh = mesh;
