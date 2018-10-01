@@ -81,6 +81,12 @@ public class Transformation {
      */
     private final Matrix4f viewMatrix;
 
+    /**
+     * Required for Shadows
+     */
+    private final Matrix4f lightViewMatrix;
+    private final Matrix4f modelLightMatrix;
+    private final Matrix4f modelLightViewMatrix;
     private final Matrix4f orthoMatrix;
 
     public Transformation() {
@@ -88,6 +94,11 @@ public class Transformation {
         modelViewMatrix = new Matrix4f();
         projectionMatrix = new Matrix4f();
         viewMatrix = new Matrix4f();
+
+        lightViewMatrix = new Matrix4f();
+        modelLightMatrix = new Matrix4f();
+        modelLightViewMatrix = new Matrix4f();
+
         orthoMatrix = new Matrix4f();
     }
 
@@ -98,6 +109,14 @@ public class Transformation {
         return projectionMatrix;
     }
 
+    public Matrix4f getWorldMatrix(Vector3f offset, Vector3f rotation, Vector3f scale) {
+        worldMatrix.identity().translate(offset).
+                rotateX((float) Math.toRadians(rotation.x)).
+                rotateY((float) Math.toRadians(rotation.y)).
+                rotateZ((float) Math.toRadians(rotation.z)).
+                scale(scale);
+        return worldMatrix;
+    }
     public final Matrix4f getOrthoProjectionMatrix(float left, float right, float bottom, float top) {
         orthoMatrix.identity();
         orthoMatrix.setOrtho2D(left, right, bottom, top);
@@ -135,6 +154,29 @@ public class Transformation {
                 scale(entity.getScale());
         Matrix4f viewCurr = new Matrix4f(viewMatrix);
         return viewCurr.mul(modelViewMatrix);
+    }
+
+    private Matrix4f updateGenericViewMatrix(Vector3f position, Vector3f rotation, Matrix4f matrix) {
+        matrix.identity();
+        // Rotation
+        matrix.rotate((float)Math.toRadians(rotation.x), new Vector3f(1, 0, 0))
+                .rotate((float)Math.toRadians(rotation.y), new Vector3f(0, 1, 0));
+        // Translation
+        matrix.translate(-position.x, -position.y, -position.z);
+        return matrix;
+    }
+
+    public Matrix4f getProjectionWithDirection(Vector3f location, Vector3f lookingDirection, Matrix4f perspective, Vector3f up) {
+        Vector3f center = new Vector3f(location);
+        center.add(lookingDirection);
+
+        Matrix4f lookAt = new Matrix4f();
+        lookAt.setLookAt(
+                location,
+                center,
+                up);
+
+        return new Matrix4f(perspective).mul(lookAt);
     }
 
     public Matrix4f getOrtoProjModelMatrix(GUIComponent guiComponent, Matrix4f orthoMatrix) {

@@ -173,8 +173,8 @@ public class PLYLoader {
             // Have to switch the x and y coordinate as Blender interprets
             // the axes differently than we do.
             positions[vertex * 3] = v.getPositionData().x;
-            positions[vertex * 3 + 2] = v.getPositionData().y; // actually our z
-            positions[vertex * 3 + 1] = v.getPositionData().z; // actually our y
+            positions[vertex * 3 + 1] = v.getPositionData().y; // actually our z
+            positions[vertex * 3 + 2] = v.getPositionData().z; // actually our y
 
             normals[vertex * 3] = v.getNormalData().x;
             normals[vertex * 3 + 1] = v.getNormalData().y;
@@ -268,10 +268,16 @@ public class PLYLoader {
                 this.indices[0] = idx[0];
                 this.indices[1] = idx[1];
                 this.indices[2] = idx[2];
-                this.indices[3] = idx[3];
-                this.indices[4] = idx[2];
+                this.indices[3] = idx[2];
+                this.indices[4] = idx[3];
                 this.indices[5] = idx[0];
-
+                /*
+                this.indices[0] = idx[2];
+                this.indices[1] = idx[1];
+                this.indices[2] = idx[0];
+                this.indices[3] = idx[0];
+                this.indices[4] = idx[3];
+                this.indices[5] = idx[2];*/
             }
         }
 

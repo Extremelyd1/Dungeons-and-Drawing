@@ -6,6 +6,7 @@ import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 /**
  * This simple map loader is meant for testing purposes.
