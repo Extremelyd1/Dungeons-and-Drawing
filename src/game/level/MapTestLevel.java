@@ -3,6 +3,7 @@ package game.level;
 import engine.MouseInput;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
+import engine.entities.Player;
 import engine.lights.AmbientLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
@@ -27,6 +28,8 @@ public class MapTestLevel extends Level {
     private Map map;
 
     private GUI gui;
+
+    private Player player;
 
     public MapTestLevel(LevelController levelController) {
         super(levelController);
@@ -62,6 +65,11 @@ public class MapTestLevel extends Level {
 
         light = new Entity(mesh_light, new Vector3f(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z), 0.05f * lightIntensity);
 
+        Mesh cube_mesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
+        cube_mesh.setMaterial(new Material(0.1f));
+
+        player = new Player(cube_mesh, map, new Vector3f(3, 1, 3), 0.5f);
+
         Mesh tree = PLYLoader.loadMesh("/models/PLY/tree.ply");
         Material material = new Material(0.1f);
         tree.setMaterial(material);
@@ -71,20 +79,20 @@ public class MapTestLevel extends Level {
         g.setPosition(0.0f, 0.0f, 0.0f);
         g.setRotation(-90,0,0);
 
-        gameEntities = new Entity[]{g, light};
+        gameEntities = new Entity[]{g, light, player};
     }
 
     @Override
     public void input(MouseInput mouseInput) {
         // Move the camera based on input
-        if (camera instanceof FreeCamera) {
+        if (camera instanceof FreeCamera && mouseInput.isRightButtonPressed()) {
             ((FreeCamera) camera).handleInput(mouseInput);
         }
     }
 
     @Override
     public void update(float interval, MouseInput mouseInput) {
-
+        player.update(interval);
     }
 
     @Override
