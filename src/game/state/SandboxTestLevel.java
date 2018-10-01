@@ -4,9 +4,7 @@ import engine.*;
 import engine.camera.Camera;
 import engine.input.KeyBinding;
 import engine.entities.Entity;
-import engine.lights.DirectionalLight;
-import engine.lights.PointLight;
-import engine.lights.SpotLight;
+import engine.lights.*;
 import engine.loader.OBJLoader;
 import engine.loader.PLYLoader;
 import game.GUI;
@@ -40,10 +38,7 @@ public class SandboxTestLevel implements IGameLogic {
 
     private GUI gui;
 
-    private Vector3f ambientLight;
-    private PointLight[] pointLightList;
-    private SpotLight[] spotLightList;
-    private DirectionalLight directionalLight;
+    private SceneLight sceneLight;
     private float lightAngle;
 
     private static final float CAMERA_POS_STEP = 0.10f;
@@ -62,8 +57,10 @@ public class SandboxTestLevel implements IGameLogic {
 
         renderer.init();
 
+        sceneLight = new SceneLight();
+
         float farPlane = 100f;
-        ambientLight = new Vector3f(0.02f, 0.02f, 0.02f);
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.02f, 0.02f, 0.02f));
 
         // Spot Light 1
         Vector3f lightPosition5 = new Vector3f(15.5f, 0.0f, -10.0f);
@@ -84,7 +81,8 @@ public class SandboxTestLevel implements IGameLogic {
         SpotLight spotLight2 = new SpotLight(new Vector3f(1.0f, 1.0f, 1.0f), lightPosition6,
                 lightIntensity6, coneDir2, cutoff2, outerCutOff2, att6, new Vector2f(1.0f, farPlane));
         // Add Spot Lights
-        spotLightList = new SpotLight[]{spotLight, spotLight2};
+        sceneLight.spotLights.add(spotLight);
+        sceneLight.spotLights.add(spotLight2);
 
         // Point Light 1
         Vector3f lightPosition = new Vector3f(0.0f, 2.0f, 7.0f);
@@ -105,7 +103,9 @@ public class SandboxTestLevel implements IGameLogic {
         PointLight.Attenuation att3 = new PointLight.Attenuation(0.0f, 0.0f, 0.5f);
         pointLight.setAttenuation(att3);
         // Add Point Lights
-        pointLightList = new PointLight[]{pointLight, pointLight2, pointLight3};
+        sceneLight.pointLights.add(pointLight);
+        sceneLight.pointLights.add(pointLight2);
+        sceneLight.pointLights.add(pointLight3);
 
         Entity light, light2, light3, light4, light5;
         if (GameEngine.DEBUG_MODE) {
@@ -227,7 +227,7 @@ public class SandboxTestLevel implements IGameLogic {
         }
 
         Entity gameEntity = gameEntities[8];
-        PointLight pointLight = pointLightList[1];
+        PointLight pointLight = sceneLight.pointLights.get(1);
 
         move += 0.01f;
         if (move > 99999) move = 0;
@@ -237,7 +237,7 @@ public class SandboxTestLevel implements IGameLogic {
         pointLight.setPosition(pos);
 
         Entity gameEntity2 = gameEntities[9];
-        SpotLight spotLight = spotLightList[1];
+        SpotLight spotLight = sceneLight.spotLights.get(1);
 
         Vector3f pos2 = new Vector3f(12.5f + 8 * (float)Math.sin(move), 2.0f, 10.0f + 8 * (float)Math.cos(move));
         gameEntity2.setPosition(pos2);
@@ -254,10 +254,7 @@ public class SandboxTestLevel implements IGameLogic {
                 camera,
                 null,
                 gameEntities,
-                ambientLight,
-                pointLightList,
-                spotLightList,
-                new DirectionalLight(new Vector3f(0.3f, 0.3f, 0.3f), new Vector3f(-1, 0, 0), 1f),
+                sceneLight,
                 null
         );
     }

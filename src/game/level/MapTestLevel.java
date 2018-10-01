@@ -3,8 +3,9 @@ package game.level;
 import engine.MouseInput;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
+import engine.lights.AmbientLight;
 import engine.lights.PointLight;
-import engine.lights.SpotLight;
+import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
 import game.GUI;
 import game.LevelController;
@@ -21,8 +22,7 @@ public class MapTestLevel extends Level {
 
     private Entity[] gameEntities;
 
-    private Vector3f ambientLight;
-    private PointLight[] pointLightList;
+    private SceneLight sceneLight;
 
     private Map map;
 
@@ -33,18 +33,19 @@ public class MapTestLevel extends Level {
 
         renderer = new Renderer();
         camera = new FreeCamera();
+        sceneLight = new SceneLight();
     }
 
     @Override
     public void init() throws Exception {
         renderer.init();
 
-        gui = new GUI("Dungeons and Drawings!");
+        //gui = new GUI("Dungeons and Drawings!");
 
         map = new Map();
         map.load(new SimpleMapLoader());
 
-        ambientLight = new Vector3f(0.5f, 0.5f, 0.5f);
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.5f, 0.5f, 0.5f));
 
         // Set up a point light
         Vector3f lightPosition = new Vector3f(1.0f, 1.0f, -1.0f);
@@ -52,7 +53,7 @@ public class MapTestLevel extends Level {
         PointLight pointLight = new PointLight(new Vector3f(1.0f, 0.3f, 0.0f), lightPosition, lightIntensity, new Vector2f(1f, 100f));
         PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 0.5f);
         pointLight.setAttenuation(att);
-        pointLightList = new PointLight[]{pointLight};
+        sceneLight.pointLights.add(pointLight);
 
         Entity light;
         Mesh mesh_light = PLYLoader.loadMesh("/models/PLY/light.ply");
@@ -92,10 +93,7 @@ public class MapTestLevel extends Level {
                 camera,
                 gui,
                 gameEntities,
-                ambientLight,
-                pointLightList,
-                new SpotLight[]{},
-                null,
+                sceneLight,
                 map
         );
     }
