@@ -1,5 +1,6 @@
 package engine.entities;
 
+import game.map.Map;
 import graphics.Mesh;
 import org.joml.Vector3f;
 
@@ -8,20 +9,20 @@ import org.joml.Vector3f;
  */
 public class Enemy extends LivingEntity {
 
-    public Enemy(Mesh mesh){
-        super(mesh);
+    public Enemy(Mesh mesh, Map map){
+        super(mesh, map);
     }
 
-    public Enemy(Mesh mesh, Vector3f position, Vector3f rotation) {
-        super(mesh, position, rotation);
+    public Enemy(Mesh mesh, Map map, Vector3f position, Vector3f rotation) {
+        super(mesh, map, position, rotation);
     }
 
-    public Enemy(Mesh mesh, Vector3f position, Vector3f rotation, float speed) {
-        super(mesh, position, rotation, speed);
+    public Enemy(Mesh mesh, Map map, Vector3f position, Vector3f rotation, float speed) {
+        super(mesh, map, position, rotation, speed);
     }
 
-    public Enemy(Mesh mesh, Vector3f position, Vector3f rotation, float speed, float scale) {
-        super(mesh, position, rotation, speed, scale);
+    public Enemy(Mesh mesh, Map map, Vector3f position, Vector3f rotation, float speed, float scale) {
+        super(mesh, map, position, rotation, speed, scale);
     }
 
 }

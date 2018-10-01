@@ -36,6 +36,10 @@ public class Text extends GUIComponent {
     // The text to be rendered
     private String text;
 
+    // For better positioning
+    private float width;
+    private float height;
+
     /**
      * Constructor that defines most of the components properties on creation
      *
@@ -113,8 +117,8 @@ public class Text extends GUIComponent {
             positions.add(startXPosition); // x
             positions.add(0.0f); //y
             positions.add(ZPOS); //z
-            textCoords.add( (float)charInfo.getStartX() / (float)fontTexture.getWidth());
-            textCoords.add(0.0f);
+            textCoords.add((float)charInfo.getStartX() / (float)fontTexture.getWidth());
+            textCoords.add(0f);
             indices.add(i * VERTICES_PER_QUAD);
 
             // Left Bottom vertex
@@ -122,23 +126,23 @@ public class Text extends GUIComponent {
             positions.add((float)fontTexture.getHeight()); //y
             positions.add(ZPOS); //z
             textCoords.add((float)charInfo.getStartX() / (float)fontTexture.getWidth());
-            textCoords.add(1.0f);
+            textCoords.add(1f);
             indices.add(i * VERTICES_PER_QUAD + 1);
 
             // Right Bottom vertex
             positions.add(startXPosition + charInfo.getWidth()); // x
             positions.add((float)fontTexture.getHeight()); //y
             positions.add(ZPOS); //z
-            textCoords.add((float)(charInfo.getStartX() + charInfo.getWidth() )/ (float)fontTexture.getWidth());
-            textCoords.add(1.0f);
+            textCoords.add((float)(charInfo.getStartX() + charInfo.getWidth()) / (float)fontTexture.getWidth());
+            textCoords.add(1f);
             indices.add(i * VERTICES_PER_QUAD + 2);
 
             // Right Top vertex
             positions.add(startXPosition + charInfo.getWidth()); // x
             positions.add(0.0f); //y
             positions.add(ZPOS); //z
-            textCoords.add((float)(charInfo.getStartX() + charInfo.getWidth() )/ (float)fontTexture.getWidth());
-            textCoords.add(0.0f);
+            textCoords.add((float)(charInfo.getStartX() + charInfo.getWidth()) / (float)fontTexture.getWidth());
+            textCoords.add(0f);
             indices.add(i * VERTICES_PER_QUAD + 3);
 
             // Add indices for left top and bottom right vertices
@@ -148,6 +152,9 @@ public class Text extends GUIComponent {
             // Update position for next character
             startXPosition += charInfo.getWidth();
         }
+
+        height = fontTexture.getHeight();
+        width = startXPosition;
 
         // Convert the lists to arrays so it can be used to create a Mesh
         float[] posArr = Utilities.listToArray(positions);
@@ -175,5 +182,13 @@ public class Text extends GUIComponent {
     /* Update the color */
     public void setColor(Vector3f color) {
         this.getMesh().getMaterial().setAmbientColour(new Vector4f(color, 1.0f));
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
     }
 }
