@@ -16,6 +16,7 @@ public class GameEngine implements Runnable {
     // Display extra information if in debug mode to find errors more easily
     public static final boolean DEBUG_MODE = true; 
     public static final int TARGET_UPS = 60; // updates per second
+    public static final int TARGET_FPS = 120; // frames per second
     
     // Threads
     private Thread thread;   
@@ -27,13 +28,17 @@ public class GameEngine implements Runnable {
     
     // Input / Output
     private final MouseInput mouseInput;
-    private GameWindow window;
    
     /**
      * Constructor that starts the game engine
      * @param gameLogic the (logic of the) game we want to run
      */
     public GameEngine(IGameLogic gameLogic) {
+
+        // Needed to use the AWT Font class on OSX
+        System.setProperty("java.awt.headless", "true");
+
+
         this.gameLogic = gameLogic; 
         timer = new Timer(); 
         mouseInput = new MouseInput();
@@ -41,7 +46,7 @@ public class GameEngine implements Runnable {
     
     /**
      * Starts the game application on a new thread. 
-     * Calls {@link GameEngine.run()}
+     * Calls {@link GameEngine#run()}
      */
     public synchronized void start() {
 
@@ -73,7 +78,7 @@ public class GameEngine implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-//            terminate();
+            terminate();
         }        
     }
     
@@ -84,11 +89,9 @@ public class GameEngine implements Runnable {
                     Version.getVersion() + "!");
         }
 
-        window = GameWindow.getGameWindow();
-
         timer.init();
-        mouseInput.init(window);
-        gameLogic.init(window);
+        mouseInput.init();
+        gameLogic.init();
     }
 
     /** Update all game components with a given frequency */
@@ -99,45 +102,64 @@ public class GameEngine implements Runnable {
         float interval = 1f / TARGET_UPS;
 
         isRunning = true; 
-        while (isRunning && !window.shouldClose()) {
+        while (isRunning && !GameWindow.getGameWindow().shouldClose()) {
+            // Store the start time of the iteration
+            double iterationStartTime = timer.getTime();
+            // Calculate the time that elapsed since the previous game iteration
             elapsedTime = timer.getElapsedTime();
             accumulator += elapsedTime;
 
             input();
 
             while (accumulator >= interval) {
-                update(interval);
+                update(elapsedTime);
                 accumulator -= interval;
             }
-
             render();
+            // If the iteration did not take the expected time, let the thread sleep
+            // for the remaining time
+            sync(iterationStartTime);
+        }
+    }
+
+    /** Let the thread sleep the rest of how long the game iteration should have lasted */
+    private void sync(double loopStartTime) {
+        float loopSlot = 1f / TARGET_FPS;
+        double endTime = loopStartTime + loopSlot;
+        while(timer.getTime() < endTime) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ie) {
+                // TODO: Do something with exception?
+            }
         }
     }
     
     /** Gather and start processing the user input */
     protected void input() {
-        mouseInput.input(window);
-        gameLogic.input(window, mouseInput);
+        mouseInput.input();
+        gameLogic.input(mouseInput);
     }
     
     /** 
      * Update the game state
-     * @param interval the frequence at which to render
+     * @param delta the frequence at which to render
      */
-    protected void update(float interval) {
-        gameLogic.update(interval, mouseInput);
+    protected void update(float delta) {
+        gameLogic.update(delta, mouseInput);
     }
     
     /** Update the game graphics */
     protected void render() {
-        gameLogic.render(window);
+        GameWindow window = GameWindow.getGameWindow();
+        gameLogic.render();
         window.render();
     }
     
     /** Terminate all game components */
     protected void terminate() {
-        gameLogic.terminate(); 
-        window.terminate();
+        gameLogic.terminate();
+        GameWindow.getGameWindow().terminate();
     }
 }
 

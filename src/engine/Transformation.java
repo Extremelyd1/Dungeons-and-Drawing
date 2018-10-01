@@ -1,5 +1,9 @@
 package engine;
 
+import engine.camera.Camera;
+import engine.gui.GUIComponent;
+import engine.entities.Entity;
+import game.map.tile.Tile;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -83,7 +87,7 @@ public class Transformation {
     private final Matrix4f lightViewMatrix;
     private final Matrix4f modelLightMatrix;
     private final Matrix4f modelLightViewMatrix;
-    private final Matrix4f orthoProjMatrix;
+    private final Matrix4f orthoMatrix;
 
     public Transformation() {
         worldMatrix = new Matrix4f();
@@ -94,7 +98,8 @@ public class Transformation {
         lightViewMatrix = new Matrix4f();
         modelLightMatrix = new Matrix4f();
         modelLightViewMatrix = new Matrix4f();
-        orthoProjMatrix = new Matrix4f();
+
+        orthoMatrix = new Matrix4f();
     }
 
     public final Matrix4f getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
@@ -105,6 +110,20 @@ public class Transformation {
     }
 
     public Matrix4f getWorldMatrix(Vector3f offset, Vector3f rotation, Vector3f scale) {
+        worldMatrix.identity().translate(offset).
+                rotateX((float) Math.toRadians(rotation.x)).
+                rotateY((float) Math.toRadians(rotation.y)).
+                rotateZ((float) Math.toRadians(rotation.z)).
+                scale(scale);
+        return worldMatrix;
+    }
+    public final Matrix4f getOrthoProjectionMatrix(float left, float right, float bottom, float top) {
+        orthoMatrix.identity();
+        orthoMatrix.setOrtho2D(left, right, bottom, top);
+        return orthoMatrix;
+    }
+
+    public Matrix4f getWorldMatrix(Vector3f offset, Vector3f rotation, float scale) {
         worldMatrix.identity().translate(offset).
                 rotateX((float) Math.toRadians(rotation.x)).
                 rotateY((float) Math.toRadians(rotation.y)).
@@ -126,7 +145,7 @@ public class Transformation {
         return viewMatrix;
     }
 
-    public Matrix4f getModelViewMatrix(GameEntity entity, Matrix4f viewMatrix) {
+    public Matrix4f getModelViewMatrix(Entity entity, Matrix4f viewMatrix) {
         Vector3f rotation = entity.getRotation();
         modelViewMatrix.identity().translate(entity.getPosition()).
                 rotateX((float) Math.toRadians(-rotation.x)).
@@ -137,21 +156,6 @@ public class Transformation {
         return viewCurr.mul(modelViewMatrix);
     }
 
-    /**
-     * lightViewMatrix
-     */
-    public Matrix4f getLightViewMatrix() {
-        return lightViewMatrix;
-    }
-
-    public void setLightViewMatrix(Matrix4f lightViewMatrix) {
-        this.lightViewMatrix.set(lightViewMatrix);
-    }
-
-    public Matrix4f updateLightViewMatrix(Vector3f position, Vector3f rotation) {
-        return updateGenericViewMatrix(position, rotation, lightViewMatrix);
-    }
-
     private Matrix4f updateGenericViewMatrix(Vector3f position, Vector3f rotation, Matrix4f matrix) {
         matrix.identity();
         // Rotation
@@ -160,27 +164,6 @@ public class Transformation {
         // Translation
         matrix.translate(-position.x, -position.y, -position.z);
         return matrix;
-    }
-
-    public Matrix4f updateOrthoProjectionMatrix(float left, float right, float bottom, float top, float zNear, float zFar) {
-        orthoProjMatrix.identity();
-        orthoProjMatrix.setOrtho(left, right, bottom, top, zNear, zFar);
-        return orthoProjMatrix;
-    }
-
-    public Matrix4f getOrthoProjectionMatrix(){
-        return orthoProjMatrix;
-    }
-
-    public Matrix4f updateModelLightViewMatrix(GameEntity gameItem, Matrix4f matrix) {
-        Vector3f rotation = gameItem.getRotation();
-        modelLightMatrix.identity().translate(gameItem.getPosition()).
-                rotateX((float)Math.toRadians(-rotation.x)).
-                rotateY((float)Math.toRadians(-rotation.y)).
-                rotateZ((float)Math.toRadians(-rotation.z)).
-                scale(gameItem.getScale());
-        modelLightViewMatrix.set(matrix);
-        return modelLightViewMatrix.mul(modelLightMatrix);
     }
 
     public Matrix4f getProjectionWithDirection(Vector3f location, Vector3f lookingDirection, Matrix4f perspective, Vector3f up) {
@@ -194,5 +177,29 @@ public class Transformation {
                 up);
 
         return new Matrix4f(perspective).mul(lookAt);
+    }
+
+    public Matrix4f getOrtoProjModelMatrix(GUIComponent guiComponent, Matrix4f orthoMatrix) {
+        Vector3f rotation = guiComponent.getRotation();
+        Matrix4f modelMatrix = new Matrix4f();
+        modelMatrix.identity().translate(guiComponent.getPosition()).
+                rotateX((float) Math.toRadians(-rotation.x)).
+                rotateY((float) Math.toRadians(-rotation.y)).
+                rotateZ((float) Math.toRadians(-rotation.z)).
+                scale(guiComponent.getScale());
+        Matrix4f orthoMatrixCurr = new Matrix4f(orthoMatrix);
+        orthoMatrixCurr.mul(modelMatrix);
+        return orthoMatrixCurr;
+    }
+
+    public Matrix4f getModelViewMatrix(Tile tile, Matrix4f viewMatrix) {
+        Vector3f rotation = tile.getRotation();
+        modelViewMatrix.identity().translate(new Vector3f(tile.getPosition().x, 0, tile.getPosition().y)).
+                rotateX((float) Math.toRadians(-rotation.x)).
+                rotateY((float) Math.toRadians(-rotation.y)).
+                rotateZ((float) Math.toRadians(-rotation.z)).
+                scale(0.5f);
+        Matrix4f viewCurr = new Matrix4f(viewMatrix);
+        return viewCurr.mul(modelViewMatrix);
     }
 }

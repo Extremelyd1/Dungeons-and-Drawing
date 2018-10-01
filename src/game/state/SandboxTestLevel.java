@@ -1,11 +1,15 @@
 package game.state;
 
 import engine.*;
+import engine.camera.Camera;
+import engine.input.KeyBinding;
+import engine.entities.Entity;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.loader.OBJLoader;
 import engine.loader.PLYLoader;
+import game.GUI;
 import game.Renderer;
 import graphics.Material;
 import graphics.Mesh;
@@ -32,7 +36,9 @@ public class SandboxTestLevel implements IGameLogic {
     private final Camera camera;
     private final Vector3f cameraInc;
     private final Renderer renderer;
-    private GameEntity[] gameEntities;
+    private Entity[] gameEntities;
+
+    private GUI gui;
 
     private Vector3f ambientLight;
     private PointLight[] pointLightList;
@@ -47,13 +53,14 @@ public class SandboxTestLevel implements IGameLogic {
         renderer = new Renderer();
         camera = new Camera();
         cameraInc = new Vector3f(0.0f, 0.0f, 0.0f);
-
-        camera.setRotation(0.0f, 0.0f, 0.0f);
     }
 
     @Override
-    public void init(GameWindow window) throws Exception {
-        renderer.init(window);
+    public void init() throws Exception {
+
+        gui = new GUI("Test");
+
+        renderer.init();
 
         float farPlane = 100f;
         ambientLight = new Vector3f(0.02f, 0.02f, 0.02f);
@@ -100,30 +107,30 @@ public class SandboxTestLevel implements IGameLogic {
         // Add Point Lights
         pointLightList = new PointLight[]{pointLight, pointLight2, pointLight3};
 
-        GameEntity light, light2, light3, light4, light5;
+        Entity light, light2, light3, light4, light5;
         if (GameEngine.DEBUG_MODE) {
             Mesh mesh_light = PLYLoader.loadMesh("/models/PLY/light.ply");
             Material material_light = new Material(new Vector4f(pointLight.getColor(), 1), 0.1f);
             mesh_light.setMaterial(material_light);
 
-            light = new GameEntity(mesh_light);
-            light.setPosition(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z);
+            light = new Entity(mesh_light);
+            light.setPosition(new Vector3f(pointLight.getPosition()));
             light.setScale(new Vector3f(0.05f,0.05f,0.05f));
 
-            light2 = new GameEntity(mesh_light);
-            light2.setPosition(pointLight2.getPosition().x, pointLight2.getPosition().y, pointLight2.getPosition().z);
+            light2 = new Entity(mesh_light);
+            light2.setPosition(new Vector3f(pointLight2.getPosition()));
             light2.setScale(new Vector3f(0.05f,0.05f,0.05f));
 
-            light3 = new GameEntity(mesh_light);
-            light3.setPosition(pointLight3.getPosition().x, pointLight3.getPosition().y, pointLight3.getPosition().z);
+            light3 = new Entity(mesh_light);
+            light3.setPosition(new Vector3f(pointLight3.getPosition()));
             light3.setScale(new Vector3f(0.05f,0.05f,0.05f));
 
-            light4 = new GameEntity(mesh_light);
-            light4.setPosition(spotLight.getPosition().x, spotLight.getPosition().y, spotLight.getPosition().z);
+            light4 = new Entity(mesh_light);
+            light4.setPosition(new Vector3f(spotLight.getPosition()));
             light4.setScale(new Vector3f(0.05f,0.05f,0.05f));
 
-            light5 = new GameEntity(mesh_light);
-            light5.setPosition(spotLight2.getPosition().x, spotLight2.getPosition().y, spotLight2.getPosition().z);
+            light5 = new Entity(mesh_light);
+            light5.setPosition(new Vector3f(spotLight2.getPosition()));
             light5.setScale(new Vector3f(0.05f,0.05f,0.05f));
         }
         Mesh cube = PLYLoader.loadMesh("/models/PLY/cube.ply");
@@ -134,67 +141,68 @@ public class SandboxTestLevel implements IGameLogic {
         tree.setMaterial(material);
 
         // Tree 1
-        GameEntity g = new GameEntity(tree);
+        Entity g = new Entity(tree);
         g.setPosition(0.0f, -2.0f, 0.0f);
         g.setRotation(-90,0,0);
         // Tree 2
-        GameEntity g6 = new GameEntity(tree);
+        Entity g6 = new Entity(tree);
         g6.setPosition(-5.0f, -2.0f, 7.0f);
         g6.setRotation(-90,0,0);
         // Tree 3
-        GameEntity g7 = new GameEntity(tree);
+        Entity g7 = new Entity(tree);
         g7.setPosition(7.5f, -2.2f, -10.0f);
         g7.setRotation(-90,0,0);
         g7.setScale(0.2f);
         // Tree 4
-        GameEntity g8 = new GameEntity(tree);
+        Entity g8 = new Entity(tree);
         g8.setPosition(12.5f, -2.2f, 10.0f);
         g8.setRotation(-90,0,0);
         g8.setScale(0.4f);
 
         // Floor
-        GameEntity g2 = new GameEntity(cube);
+        Entity g2 = new Entity(cube);
         g2.setPosition(0.0f, -3.15f, 0.0f);
         g2.setScale(new Vector3f(25f,1f,25f));
 
         // Wall 1
-        GameEntity g3 = new GameEntity(cube);
+        Entity g3 = new Entity(cube);
         g3.setPosition(-2.0f, 1.0f, 9.0f);
         g3.setScale(new Vector3f(1f,3.2f,6f));
         // Wall 2
-        GameEntity g4 = new GameEntity(cube);
+        Entity g4 = new Entity(cube);
         g4.setPosition(2.9f, 1.0f, -8.0f);
         g4.setScale(new Vector3f(1f,3.2f,6f));
         // Wall 3
-        GameEntity g5 = new GameEntity(cube);
+        Entity g5 = new Entity(cube);
         g5.setPosition(-8.0f, 1.0f, 0.0f);
         g5.setScale(new Vector3f(1f,3.2f,6f));
 
         if (GameEngine.DEBUG_MODE) {
-            gameEntities = new GameEntity[]{g, g2, g3, g4, g5, g6, g7, g8, light, light2, light3, light4, light5};
+            gameEntities = new Entity[]{g, g2, g3, g4, g5, g6, g7, g8, light, light2, light3, light4, light5};
         } else {
-            gameEntities = new GameEntity[]{g, g2, g3, g4, g5, g6, g7};
+            gameEntities = new Entity[]{g, g2, g3, g4, g5, g6, g7};
         }
 
     }
 
     @Override
-    public void input(GameWindow window, MouseInput mouseInput) {
+    public void input(MouseInput mouseInput) {
+        GameWindow window = GameWindow.getGameWindow();
         cameraInc.set(0, 0, 0);
-        if (window.isKeyPressed(GLFW_KEY_W) || window.isKeyPressed(GLFW_KEY_UP)) {
+        if (KeyBinding.isForwardPressed()) {
             cameraInc.z = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_S) || window.isKeyPressed(GLFW_KEY_DOWN)) {
+        } else if (KeyBinding.isBackwardPressed()) {
             cameraInc.z = 1;
         }
-        if (window.isKeyPressed(GLFW_KEY_A) || window.isKeyPressed(GLFW_KEY_LEFT)) {
+        if (KeyBinding.isLeftPressed()) {
             cameraInc.x = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_D) || window.isKeyPressed(GLFW_KEY_RIGHT)) {
+        } else if (KeyBinding.isRightPressed()) {
             cameraInc.x = 1;
         }
         if (GameEngine.DEBUG_MODE) {
-            if (window.isKeyPressed(GLFW_KEY_Z)) {
+            if (KeyBinding.isUpPressed()) {
                 cameraInc.y = -1;
-            } else if (window.isKeyPressed(GLFW_KEY_X)) {
+            } else if (KeyBinding.isDownPressed()) {
                 cameraInc.y = 1;
             }
         }
@@ -204,21 +212,21 @@ public class SandboxTestLevel implements IGameLogic {
     @Override
     public void update(float interval, MouseInput mouseInput) {
         // Update camera position
-        camera.movePosition(
+        camera.moveRelative(
                 cameraInc.x * CAMERA_POS_STEP,
                 cameraInc.y * CAMERA_POS_STEP,
                 cameraInc.z * CAMERA_POS_STEP
         );
 
-        // Update camera based on mouse            
+        // Update camera based on mouse
         if (GameEngine.DEBUG_MODE) {
             if (mouseInput.isRightButtonPressed()) {
                 Vector2f rotVec = mouseInput.getDisplVec();
-                camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
+                camera.getRotation().add(new Vector3f(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0));
             }
         }
 
-        GameEntity gameEntity = gameEntities[8];
+        Entity gameEntity = gameEntities[8];
         PointLight pointLight = pointLightList[1];
 
         move += 0.01f;
@@ -228,7 +236,7 @@ public class SandboxTestLevel implements IGameLogic {
         gameEntity.setPosition(pos);
         pointLight.setPosition(pos);
 
-        GameEntity gameEntity2 = gameEntities[9];
+        Entity gameEntity2 = gameEntities[9];
         SpotLight spotLight = spotLightList[1];
 
         Vector3f pos2 = new Vector3f(12.5f + 8 * (float)Math.sin(move), 2.0f, 10.0f + 8 * (float)Math.cos(move));
@@ -241,15 +249,16 @@ public class SandboxTestLevel implements IGameLogic {
     }
 
     @Override
-    public void render(GameWindow window) {
+    public void render() {
         renderer.render(
-                window,
                 camera,
+                null,
                 gameEntities,
                 ambientLight,
                 pointLightList,
                 spotLightList,
-                directionalLight
+                new DirectionalLight(new Vector3f(0.3f, 0.3f, 0.3f), new Vector3f(-1, 0, 0), 1f),
+                null
         );
     }
 
@@ -257,7 +266,7 @@ public class SandboxTestLevel implements IGameLogic {
     public void terminate() {
         renderer.terminate();
 
-        for (GameEntity ge : gameEntities) {
+        for (Entity ge : gameEntities) {
             ge.getMesh().terminate();
         }
     }

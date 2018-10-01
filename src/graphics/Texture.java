@@ -3,6 +3,7 @@ package graphics;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -17,40 +18,20 @@ public class Texture {
 
     private final int id;
 
-    public Texture(int id) {
-        this.id = id;
-    }
+    private final int width;
+
+    private final int height;
 
     public Texture(String fileName) throws Exception {
-        this(loadTexture(fileName));
+        this(Texture.class.getResourceAsStream(fileName));
     }
 
-    public Texture(int width, int height, int pixelFormat) {
-        this.id = glGenTextures();
-
-        glBindTexture(GL_TEXTURE_2D, this.id);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-        float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height,
-                0, pixelFormat, GL_FLOAT, (ByteBuffer)null);
-
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-    public void bind() {
-        glBindTexture(GL_TEXTURE_2D, id);
-    }
-
-    private static int loadTexture(String fileName) throws Exception {
+    public Texture(InputStream is) throws Exception {
         // Load Texture file
-        PNGDecoder decoder = new PNGDecoder(Texture.class.getResourceAsStream(fileName));
+        PNGDecoder decoder = new PNGDecoder(is);
+
+        this.width = decoder.getWidth();
+        this.height = decoder.getHeight();
 
         // Load texture contents into a byte buffer
         ByteBuffer buf = ByteBuffer.allocateDirect(
@@ -58,33 +39,38 @@ public class Texture {
         decoder.decode(buf, decoder.getWidth() * 4, Format.RGBA);
         buf.flip();
 
-        // Create a new OpenGL texture 
-        int textureId = glGenTextures();
+        // Create a new OpenGL texture
+        this.id = glGenTextures();
 
         // Bind the texture
-        glBindTexture(GL_TEXTURE_2D, textureId);
+        glBindTexture(GL_TEXTURE_2D, this.id);
 
         // Tell OpenGL how to unpack the RGBA bytes. Each component is 1 byte size
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         // Upload the texture data
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0,
-                GL_RGBA, GL_UNSIGNED_BYTE, buf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
 
         // Generate Mip Map
         glGenerateMipmap(GL_TEXTURE_2D);
+    }
 
-        return textureId;
+    public void bind() {
+        glBindTexture(GL_TEXTURE_2D, id);
+    }
+
+    public int getId() {
+        return id;
     }
 
     public void cleanup() {
         glDeleteTextures(id);
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getWidth() { return this.width; }
+
+    public int getHeight() { return this.height; }
 }
