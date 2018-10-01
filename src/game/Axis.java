@@ -1,42 +1,27 @@
 package game;
 
 import engine.entities.Entity;
-import engine.loader.PLYLoader;
+import graphics.Material;
 import graphics.Mesh;
-import org.joml.Vector3f;
 
-public class Axis  {
+/**
+ * Utility object that is used in the debug menu to show the axis in game
+ */
+public class Axis extends Entity {
 
-    private Mesh mesh;
-    private final Vector3f position;
-    private final Vector3f rotation;
-    private float scale;
+    public Axis(Mesh mesh) {
+        super(mesh);
 
-
-    public Axis(Vector3f position, Vector3f rotation, float scale) {
-        this.position = position;
-        this.rotation = rotation;
-        this.scale = scale;
-        try {
-            mesh = PLYLoader.loadMesh("/models/PLY/axis.ply");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.getMesh().setMaterial(new Material(0f));
     }
 
-    public Vector3f getPosition() {
-        return position;
-    }
-
-    public Vector3f getRotation() {
-        return rotation;
-    }
-
-    public float getScale() {
-        return scale;
+    public void update() {
+        // TODO: Here we should determine the position of the axis.
+        // TODO: It should be at the center of the screen
     }
 
     public void render() {
+        // TODO: The axis should be rendered in front of all objects
         mesh.render();
     }
 
