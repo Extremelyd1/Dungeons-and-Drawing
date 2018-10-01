@@ -14,8 +14,8 @@ import org.lwjgl.*;
 public class GameEngine implements Runnable {
 
     // Display extra information if in debug mode to find errors more easily
-    public static final boolean DEBUG_MODE = true; 
-    public static final int TARGET_UPS = 60; // updates per second
+    public static final boolean DEBUG_MODE = true;
+
     public static final int TARGET_FPS = 120; // frames per second
     
     // Threads
@@ -98,8 +98,6 @@ public class GameEngine implements Runnable {
     private void loop() {      
         
         float elapsedTime;
-        float accumulator = 0f;
-        float interval = 1f / TARGET_UPS;
 
         isRunning = true; 
         while (isRunning && !GameWindow.getGameWindow().shouldClose()) {
@@ -107,15 +105,13 @@ public class GameEngine implements Runnable {
             double iterationStartTime = timer.getTime();
             // Calculate the time that elapsed since the previous game iteration
             elapsedTime = timer.getElapsedTime();
-            accumulator += elapsedTime;
 
             input();
 
-            while (accumulator >= interval) {
-                update(elapsedTime);
-                accumulator -= interval;
-            }
+            // Update and render
+            update(elapsedTime);
             render();
+
             // If the iteration did not take the expected time, let the thread sleep
             // for the remaining time
             sync(iterationStartTime);
@@ -123,11 +119,15 @@ public class GameEngine implements Runnable {
     }
 
     /** Let the thread sleep the rest of how long the game iteration should have lasted */
-    private void sync(double loopStartTime) {
+    private void sync(double iterationStartTime) {
+        // The amount of time available for this frame
         float loopSlot = 1f / TARGET_FPS;
-        double endTime = loopStartTime + loopSlot;
+        // The end time of the frame
+        double endTime = iterationStartTime + loopSlot;
+        // Loop until end time reached
         while(timer.getTime() < endTime) {
             try {
+                // Sleep to allow system to do other things
                 Thread.sleep(1);
             } catch (InterruptedException ie) {
                 // TODO: Do something with exception?
