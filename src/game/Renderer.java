@@ -5,6 +5,7 @@ import engine.entities.Entity;
 import engine.GameWindow;
 import engine.Transformation;
 import engine.gui.GUIComponent;
+import engine.gui.Layer;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
@@ -18,6 +19,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import sun.security.ssl.Debug;
+
 
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
@@ -446,21 +448,28 @@ public class Renderer {
     }
 
     private void renderGui(GUI gui) {
+
         guiShader.bind();
 
         Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, GameWindow.getGameWindow().getWindowWidth(),
                 GameWindow.getGameWindow().getWindowHeight(), 0);
 
-        for (GUIComponent gameItem : gui.getGUIComponents()) {
-            Mesh mesh = gameItem.getMesh();
-            // Set ortohtaphic and model matrix for this HUD item
-            Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(gameItem, ortho);
-            guiShader.setUniform("projModelMatrix", projModelMatrix);
-            guiShader.setUniform("colour", mesh.getMaterial().getAmbientColour());
-            guiShader.setUniform("hasTexture", mesh.getMaterial().isTextured() ? 1 : 0);
+        for (Layer layer : gui.getLayers()) {
 
-            // Render the mesh for this HUD item
-            mesh.render();
+            for (GUIComponent element : layer.getElements()) {
+
+                // Set ortohtaphic and model matrix for this HUD item
+                Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(element, ortho);
+                guiShader.setUniform("projModelMatrix", projModelMatrix);
+
+                Mesh mesh = element.getMesh();
+
+                guiShader.setUniform("colour", mesh.getMaterial().getAmbientColour());
+                guiShader.setUniform("hasTexture", mesh.getMaterial().isTextured() ? 1 : 0);
+
+                // Render the mesh for this HUD item
+                mesh.render();
+            }
         }
 
         guiShader.unbind();

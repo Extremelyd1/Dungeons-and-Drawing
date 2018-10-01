@@ -4,6 +4,9 @@ import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Base class for all GUI component we would want to add. Defines a position, mesh, scale and rotation.
  *
@@ -20,7 +23,7 @@ public class GUIComponent {
     private final Vector3f rotation; // Rotation (in degrees) of the GUI Component
 
     /** Constructs an empty Component with no mesh and default position, rotation, scale */
-    public GUIComponent() {
+    public GUIComponent() { ;
         this.position = new Vector3f(0, 0, 0);
         this.rotation = new Vector3f(0, 0, 0);
         this.scale = 1.0f;
@@ -45,6 +48,7 @@ public class GUIComponent {
         this.position = new Vector3f(position, 0);
         this.rotation = new Vector3f(0, 0, rotation);
         this.scale = 1.0f;
+
         this.mesh = mesh;
     }
 
@@ -52,6 +56,7 @@ public class GUIComponent {
     public Vector3f getPosition() {
         return position;
     }
+
     /* Sets the position */
     public void setPosition(float x, float y) {
         this.position.x = x;
@@ -83,8 +88,9 @@ public class GUIComponent {
         return mesh;
     }
 
-    /* Sets the mesh */
+
     public void setMesh(Mesh mesh) {
         this.mesh = mesh;
     }
+
 }
