@@ -3,6 +3,9 @@ package engine.lights;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Record type to store each individual light
+ */
 public class SceneLight {
 
     public List<PointLight> pointLights;
