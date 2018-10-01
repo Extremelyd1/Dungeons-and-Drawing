@@ -3,6 +3,8 @@ package engine.entities;
 import engine.GameWindow;
 import engine.KeyboardInput;
 import engine.input.KeyBinding;
+import game.map.Map;
+import game.map.tile.Tile;
 import graphics.Mesh;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -12,19 +14,22 @@ import org.lwjgl.glfw.GLFW;
  */
 public class Player extends LivingEntity {
 
-    public Player(Mesh mesh){
-        super(mesh);
+    public Player(Mesh mesh, Map map){
+        super(mesh, map);
     }
 
-    public Player(Mesh mesh, Vector3f position, Vector3f rotation) {
-        super(mesh, position, rotation);
+    public Player(Mesh mesh, Map map, Vector3f position, Vector3f rotation) {
+        super(mesh, map, position, rotation);
     }
 
-    public Player(Mesh mesh, Vector3f position, Vector3f rotation, float speed) {
-        super(mesh, position, rotation, speed);
+    public Player(Mesh mesh, Map map, Vector3f position, Vector3f rotation, float speed) {
+        super(mesh, map, position, rotation, speed);
     }
 
-    // TODO: parameter delta currently passed is not actually delta
+    public Player(Mesh mesh, Map map, Vector3f position, float scale) {
+        super(mesh, map, position, new Vector3f(0), scale, 1);
+    }
+
     /**
      * Updates the player logic
      * @param delta the time in seconds since previous update call
@@ -37,44 +42,75 @@ public class Player extends LivingEntity {
         boolean left = KeyBinding.isLeftPressed();
         boolean right = KeyBinding.isRightPressed();
 
+        float xChange = 0;
+        float zChange = 0;
+
         if (forward) {
             if (left) {
-                this.getPosition().add((float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)));
+                xChange = (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2));
+                zChange = (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2));
 
                 this.getRotation().set(0, 315, 0);
             } else if (right) {
-                this.getPosition().add((float) (delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)));
+                xChange = (float) (delta * this.getSpeed() * 1 / Math.sqrt(2));
+                zChange = (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2));
 
                 this.getRotation().set(0, 45, 0);
             } else {
-                this.getPosition().add(0, 0,-delta * this.getSpeed());
+                zChange = -delta * this.getSpeed();
 
                 this.getRotation().set(0, 0, 0);
             }
         } else if (backward) {
             if (left) {
-                this.getPosition().add((float) (-delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (delta * this.getSpeed() * 1 / Math.sqrt(2)));
+                xChange = (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2));
+                zChange = (float) (delta * this.getSpeed() * 1 / Math.sqrt(2));
 
                 this.getRotation().set(0, 225, 0);
             } else if (right) {
-                this.getPosition().add((float) (delta * this.getSpeed() * 1 / Math.sqrt(2)), 0, (float) (delta * this.getSpeed() * 1 / Math.sqrt(2)));
+                xChange = (float) (delta * this.getSpeed() * 1 / Math.sqrt(2));
+                zChange = (float) (delta * this.getSpeed() * 1 / Math.sqrt(2));
 
                 this.getRotation().set(0, 135, 0);
             } else {
-                this.getPosition().add(0, 0, delta * this.getSpeed());
+                zChange = delta * this.getSpeed();
 
                 this.getRotation().set(0, 180, 0);
             }
         } else if (left) {
-            this.getPosition().add(-delta * this.getSpeed(), 0, 0);
+            xChange = -delta * this.getSpeed();
 
             this.getRotation().set(0,270, 0);
         } else if (right) {
-            this.getPosition().add(delta * this.getSpeed(), 0, 0);
+            xChange = delta * this.getSpeed();
 
             this.getRotation().set(0, 90, 0);
         }
 
+        if (xChange == 0 && zChange == 0) {
+            return;
+        }
+
+        /*
+        Collision detection
+         */
+        Vector3f newPosition = new Vector3f(getPosition()).add(xChange, 0, zChange);
+
+        int x = (int) Math.floor(getPosition().x);
+        int z = (int) Math.floor(getPosition().z);
+
+        int xNew = (int) Math.floor(newPosition.x);
+        int zNew = (int) Math.floor(newPosition.z);
+
+        Tile xChangeTile = getMap().getTile(xNew, z);
+        Tile zChangeTile = getMap().getTile(x, zNew);
+
+        if (!xChangeTile.isSolid()) {
+            getPosition().add(xChange, 0, 0);
+        }
+        if (!zChangeTile.isSolid()) {
+            getPosition().add(0, 0, zChange);
+        }
     }
 
 }
