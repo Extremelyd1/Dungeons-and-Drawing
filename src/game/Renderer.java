@@ -300,53 +300,15 @@ public class Renderer {
         // Process Point Lights
         int numLights = sceneLight.pointLights != null ? sceneLight.pointLights.size() : 0;
         for (int i = 0; i < numLights; i++) {
-//<<<<<<< HEAD
-//            // Get a copy of the point light object and transform its position to view coordinates
-//            PointLight currPointLight = new PointLight(sceneLight.pointLights.get(i));
-//            Vector3f lightPos = currPointLight.getPosition();
-//            Vector4f aux = new Vector4f(lightPos, 1);
-//            aux.mul(viewMatrix);
-//            lightPos.x = aux.x;
-//            lightPos.y = aux.y;
-//            lightPos.z = aux.z;
-//            sceneShader.setUniform("pointLights", currPointLight, i);
-//=======
             sceneShader.setUniform("pointLights", sceneLight.pointLights.get(i), i);
-//>>>>>>> master
         }
         // Process Spot Ligths
         numLights = sceneLight.spotLights != null ? sceneLight.spotLights.size() : 0;
         for (int i = 0; i < numLights; i++) {
-//<<<<<<< HEAD
-//            // Get a copy of the spot light object and transform its position and cone direction to view coordinates
-//            SpotLight currSpotLight = new SpotLight(sceneLight.spotLights.get(i));
-//            Vector4f dir = new Vector4f(currSpotLight.getConeDirection(), 0);
-//            dir.mul(viewMatrix);
-//            currSpotLight.setConeDirection(new Vector3f(dir.x, dir.y, dir.z));
-//            Vector3f lightPos = currSpotLight.getPointLight().getPosition();
-//
-//            Vector4f aux = new Vector4f(lightPos, 1);
-//            aux.mul(viewMatrix);
-//            lightPos.x = aux.x;
-//            lightPos.y = aux.y;
-//            lightPos.z = aux.z;
-//
-//            sceneShader.setUniform("spotLights", currSpotLight, i);
-//=======
             sceneShader.setUniform("spotLights", sceneLight.spotLights.get(i), i);
-//>>>>>>> master
         }
     }
 
-//<<<<<<< HEAD
-//        // Get a copy of the directional light object and transform its position to view coordinates
-//        if (sceneLight.directionalLight != null) {
-//            DirectionalLight currDirLight = new DirectionalLight(sceneLight.directionalLight);
-//            Vector4f dir = new Vector4f(currDirLight.getDirection(), 0);
-//            dir.mul(viewMatrix);
-//            currDirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
-//            sceneShader.setUniform("directionalLight", currDirLight);
-//=======
     /**
      * Renders the Depth Map (CHECKED OK)
      */
@@ -468,7 +430,6 @@ public class Renderer {
             //Unbind FBO and shader
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             depthShader.unbind();
-//>>>>>>> master
         }
     }
 
