@@ -83,8 +83,9 @@ public class Renderer {
         // Shadow mapping related uniforms
         sceneShader.createUniform("viewPos");
         sceneShader.createUniform("model");
-        sceneShader.createUniform("view");
-        sceneShader.createUniform("projection");
+        //sceneShader.createUniform("view");
+        //sceneShader.createUniform("projection");
+        sceneShader.createUniform("projectionViewModel");
 
         GameWindow.getGameWindow().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
@@ -195,7 +196,7 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
 
         // Update Shadows
-        renderDepthMap(camera, entities, pointLightList, spotLightList, directionalLight);
+        renderDepthMap(camera, entities, pointLightList, spotLightList, directionalLight, map);
 
         GameWindow window = GameWindow.getGameWindow();
         //WORKAROUND width and height are fixed because the viewport is wrong?
@@ -206,10 +207,13 @@ public class Renderer {
         // Update Lights
         renderLights(viewMatrix, ambientLight, pointLightList, spotLightList, directionalLight);
 
-        sceneShader.setUniform("projection", projectionMatrix);
-        sceneShader.setUniform("view", viewMatrix);
+        //sceneShader.setUniform("projection", projectionMatrix);
+        //sceneShader.setUniform("view", viewMatrix);
         sceneShader.setUniform("texture_sampler", 0);
         sceneShader.setUniform("viewPos", camera.getPosition());
+
+        Matrix4f projectionAndView = new Matrix4f(projectionMatrix);
+        projectionAndView.mul(viewMatrix);
 
         int numPointLights = pointLightList != null ? pointLightList.length : 0;
         int numSpotLights = spotLightList != null ? spotLightList.length : 0;
@@ -220,6 +224,8 @@ public class Renderer {
             sceneShader.setUniform("spotLights[" + i + "].shadowMap", 1 + numPointLights + i);
         }
 
+        Matrix4f model;
+        Matrix4f projectionViewModel;
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         if (map != null) {
@@ -227,15 +233,27 @@ public class Renderer {
                 for (Tile tile : row) {
                     Mesh mesh = tile.getMesh();
                     // Set model view matrix for this item
-                    sceneShader.setUniform("model",
-                            transformation.getWorldMatrix(
-                                    new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
-                                    tile.getRotation(),
-                                    0.5f)
-                    );
+                    model = transformation.getWorldMatrix(
+                            new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
+                            tile.getRotation(),
+                            0.5f);
+                    sceneShader.setUniform("model", model);
+
+                    projectionViewModel = new Matrix4f(projectionAndView);
+                    projectionViewModel.mul(model);
+                    sceneShader.setUniform("projectionViewModel", projectionViewModel);
 
                     // Render the mes for this game item
                     sceneShader.setUniform("material", mesh.getMaterial());
+
+                    for (int i = 0; i < numPointLights; i++) {
+                        glActiveTexture(GL_TEXTURE1 + i);
+                        glBindTexture(GL_TEXTURE_CUBE_MAP, pointLightList[i].getShadowMap().getDepthMap());
+                    }
+                    for (int i = 0; i < numSpotLights; i++) {
+                        glActiveTexture(GL_TEXTURE1 + numPointLights + i);
+                        glBindTexture(GL_TEXTURE_2D, spotLightList[i].getShadowMap().getDepthMap());
+                    }
 
                     mesh.render();
                 }
@@ -245,10 +263,14 @@ public class Renderer {
         for (Entity entity : entities) {
 
             Mesh mesh = entity.getMesh();
+            model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
 
             sceneShader.setUniform("material", mesh.getMaterial());
-            sceneShader.setUniform("model",
-                    transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector()));
+            sceneShader.setUniform("model", model);
+
+            projectionViewModel = new Matrix4f(projectionAndView);
+            projectionViewModel.mul(model);
+            sceneShader.setUniform("projectionViewModel", projectionViewModel);
 
             for (int i = 0; i < numPointLights; i++) {
                 glActiveTexture(GL_TEXTURE1 + i);
@@ -307,7 +329,8 @@ public class Renderer {
             Entity[] entities,
             PointLight[] pointLightList,
             SpotLight[] spotLightList,
-            DirectionalLight directionalLight){
+            DirectionalLight directionalLight,
+            Map map){
         int numLights;
         // Loop through all point light sources
         glDisable(GL_CULL_FACE);
@@ -361,6 +384,20 @@ public class Renderer {
             depthShaderCube.setUniform("shadowMatrices", views, 6);
             depthShaderCube.setUniform("lightPos", pointLightList[i].getPosition());
             depthShaderCube.setUniform("far_plane", pointLightList[i].getPlane().y);
+            if (map != null) {
+                for (Tile[] row : map.getTiles()) {
+                    for (Tile tile : row) {
+                        Mesh mesh = tile.getMesh();
+                        // Set model view matrix for this item
+                        depthShaderCube.setUniform("modelMatrix", transformation.getWorldMatrix(
+                                new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
+                                tile.getRotation(),
+                                0.5f));
+
+                        mesh.render();
+                    }
+                }
+            }
             for (Entity entity : entities) {
                 Mesh mesh = entity.getMesh();
                 depthShaderCube.setUniform("modelMatrix",
@@ -382,6 +419,20 @@ public class Renderer {
 
             depthShader.bind();
             depthShader.setUniform("lightSpaceMatrix", spotLightList[i].getLightSpaceMatrix());
+            if (map != null) {
+                for (Tile[] row : map.getTiles()) {
+                    for (Tile tile : row) {
+                        Mesh mesh = tile.getMesh();
+                        // Set model view matrix for this item
+                        depthShader.setUniform("modelMatrix", transformation.getWorldMatrix(
+                                new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
+                                tile.getRotation(),
+                                0.5f));
+
+                        mesh.render();
+                    }
+                }
+            }
             for (Entity entity : entities) {
                 Mesh mesh = entity.getMesh();
                 depthShader.setUniform("modelMatrix",

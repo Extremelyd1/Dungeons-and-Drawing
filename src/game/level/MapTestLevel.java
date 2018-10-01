@@ -44,13 +44,13 @@ public class MapTestLevel extends Level {
         map = new Map();
         map.load(new SimpleMapLoader());
 
-        ambientLight = new Vector3f(0.6f, 0.6f, 0.6f);
+        ambientLight = new Vector3f(0.5f, 0.5f, 0.5f);
 
         // Set up a point light
-        Vector3f lightPosition = new Vector3f(1.0f, 1.0f, -7.0f);
-        float lightIntensity = 2.0f;
+        Vector3f lightPosition = new Vector3f(1.0f, 1.0f, -1.0f);
+        float lightIntensity = 1.0f;
         PointLight pointLight = new PointLight(new Vector3f(1.0f, 0.3f, 0.0f), lightPosition, lightIntensity, new Vector2f(1f, 100f));
-        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
+        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 0.5f);
         pointLight.setAttenuation(att);
         pointLightList = new PointLight[]{pointLight};
 
@@ -61,7 +61,16 @@ public class MapTestLevel extends Level {
 
         light = new Entity(mesh_light, new Vector3f(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z), 0.05f * lightIntensity);
 
-        gameEntities = new Entity[]{light};
+        Mesh tree = PLYLoader.loadMesh("/models/PLY/tree.ply");
+        Material material = new Material(0.1f);
+        tree.setMaterial(material);
+
+        // Tree 1
+        Entity g = new Entity(tree);
+        g.setPosition(0.0f, 0.0f, 0.0f);
+        g.setRotation(-90,0,0);
+
+        gameEntities = new Entity[]{g, light};
     }
 
     @Override
