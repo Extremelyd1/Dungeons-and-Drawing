@@ -36,6 +36,10 @@ public class Text extends GUIComponent {
     // The text to be rendered
     private String text;
 
+    // For better positioning
+    private float width;
+    private float height;
+
     /**
      * Constructor that defines most of the components properties on creation
      *
@@ -149,6 +153,9 @@ public class Text extends GUIComponent {
             startXPosition += charInfo.getWidth();
         }
 
+        height = fontTexture.getHeight();
+        width = startXPosition;
+
         // Convert the lists to arrays so it can be used to create a Mesh
         float[] posArr = Utilities.listToArray(positions);
         float[] textCoordsArr = Utilities.listToArray(textCoords);
@@ -175,5 +182,13 @@ public class Text extends GUIComponent {
     /* Update the color */
     public void setColor(Vector3f color) {
         this.getMesh().getMaterial().setAmbientColour(new Vector4f(color, 1.0f));
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
     }
 }

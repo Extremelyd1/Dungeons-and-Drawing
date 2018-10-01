@@ -1,10 +1,13 @@
 package engine.gui;
 
-import org.joml.Vector3f;
-
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class that extends the normal GUI Component with a parent-child system. If the parent is
+ * transformed (moved, rotated or scaled), all children are transformed as well in the same
+ * way.
+ */
 public class GUIComponentParent extends GUIComponent {
 
     private List<GUIComponent> children;
@@ -14,6 +17,9 @@ public class GUIComponentParent extends GUIComponent {
         children = new ArrayList<>();
     }
 
+    /**
+     * Sets the position for the parent and moves all children along
+     */
     @Override
     public void setPosition(float x, float y) {
         float differenceX = x - this.getPosition().x;
@@ -27,7 +33,10 @@ public class GUIComponentParent extends GUIComponent {
         }
     }
 
-    /* Sets the scale */
+    /**
+     * Sets the scale for the parent and scales all children along
+     */
+    @Override
     public void setScale(float scale) {
         float difference = scale / this.getScale();
         super.setScale(scale);
@@ -38,7 +47,10 @@ public class GUIComponentParent extends GUIComponent {
         }
     }
 
-    /* Sets the rotation */
+    /**
+     * Sets the rotation for the parent and rotates all children along
+     */
+    @Override
     public void setRotation(float amount) {
         float difference = amount - this.getRotation().z;
         super.setRotation(amount);
@@ -49,6 +61,10 @@ public class GUIComponentParent extends GUIComponent {
         }
     }
 
+    /**
+     * Adds a child to the parent
+     * @param component the child
+     */
     public void addChild(GUIComponent component) {
         children.add(component);
     }
