@@ -117,8 +117,8 @@ public class Text extends GUIComponent {
             positions.add(startXPosition); // x
             positions.add(0.0f); //y
             positions.add(ZPOS); //z
-            textCoords.add( (float)charInfo.getStartX() / (float)fontTexture.getWidth());
-            textCoords.add(0.0f);
+            textCoords.add((float)charInfo.getStartX() / (float)fontTexture.getWidth());
+            textCoords.add(0f);
             indices.add(i * VERTICES_PER_QUAD);
 
             // Left Bottom vertex
@@ -126,23 +126,23 @@ public class Text extends GUIComponent {
             positions.add((float)fontTexture.getHeight()); //y
             positions.add(ZPOS); //z
             textCoords.add((float)charInfo.getStartX() / (float)fontTexture.getWidth());
-            textCoords.add(1.0f);
+            textCoords.add(1f);
             indices.add(i * VERTICES_PER_QUAD + 1);
 
             // Right Bottom vertex
             positions.add(startXPosition + charInfo.getWidth()); // x
             positions.add((float)fontTexture.getHeight()); //y
             positions.add(ZPOS); //z
-            textCoords.add((float)(charInfo.getStartX() + charInfo.getWidth() )/ (float)fontTexture.getWidth());
-            textCoords.add(1.0f);
+            textCoords.add((float)(charInfo.getStartX() + charInfo.getWidth()) / (float)fontTexture.getWidth());
+            textCoords.add(1f);
             indices.add(i * VERTICES_PER_QUAD + 2);
 
             // Right Top vertex
             positions.add(startXPosition + charInfo.getWidth()); // x
             positions.add(0.0f); //y
             positions.add(ZPOS); //z
-            textCoords.add((float)(charInfo.getStartX() + charInfo.getWidth() )/ (float)fontTexture.getWidth());
-            textCoords.add(0.0f);
+            textCoords.add((float)(charInfo.getStartX() + charInfo.getWidth()) / (float)fontTexture.getWidth());
+            textCoords.add(0f);
             indices.add(i * VERTICES_PER_QUAD + 3);
 
             // Add indices for left top and bottom right vertices

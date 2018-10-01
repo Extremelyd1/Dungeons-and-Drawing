@@ -91,15 +91,19 @@ public class FontTexture {
 
         String allChars = getAllAvailableChars(charSetName);
 
-        this.width = 0;
-        this.height = 0;
+        // Define spacing between the characters
+        final int spacing = 5;
+
+        this.width = spacing;
+        this.height = fontMetrics.getHeight();
 
         // Loop through all characters and update width and height variables
         for (char c : allChars.toCharArray()) {
-            CharInfo charInfo = new CharInfo(width, fontMetrics.charWidth(c));
+            CharInfo charInfo = new CharInfo(this.width, fontMetrics.charWidth(c));
             charMap.put(c, charInfo);
-            width += charInfo.getWidth();
-            height = Math.max(height, fontMetrics.getHeight());
+            System.out.println("c: " + c + " startX: " + width + " width: " + fontMetrics.charWidth(c));
+
+            width += charInfo.getWidth() + spacing;
         }
 
         g2D.dispose();
@@ -111,11 +115,21 @@ public class FontTexture {
         g2D.setFont(font);
         fontMetrics = g2D.getFontMetrics();
         g2D.setColor(Color.WHITE);
-        g2D.drawString(allChars, 0, fontMetrics.getAscent());
+
+        int drawX = spacing;
+        int drawY = fontMetrics.getAscent();
+        // Draw all characters individually on the texture image
+        for (char c : allChars.toCharArray()) {
+            String charString = String.valueOf(c);
+
+            g2D.drawString(charString, drawX, drawY);
+            System.out.println("c: " + c + " drawX: " + drawX);
+            drawX += charMap.get(c).getWidth() + spacing;
+        }
         g2D.dispose();
 
         // If you would want to, you can save the generated image with the following line
-        // ImageIO.write(img, IMAGE_FORMAT, new java.io.File("Temp.png"));
+        //ImageIO.write(img, IMAGE_FORMAT, new java.io.File("Temp.png"));
 
         // Dump image to a byte buffer
         InputStream is;
