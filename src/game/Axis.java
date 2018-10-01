@@ -7,7 +7,7 @@ import org.joml.Vector3f;
 
 public class Axis  {
 
-    private Mesh mesh = null;
+    private Mesh mesh;
     private final Vector3f position;
     private final Vector3f rotation;
     private float scale;
