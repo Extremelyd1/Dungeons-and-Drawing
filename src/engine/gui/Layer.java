@@ -34,10 +34,12 @@ public class Layer extends GUIComponent {
 
     public void add(GUIComponent element) {
         this.elements.add(element);
+        element.getPosition().z = this.getPosition().z;
     }
 
     public void add(GUIComponent element, int order) {
         this.elements.add(order, element);
+        element.getPosition().z = this.getPosition().z;
     }
 
     public List<GUIComponent> getElements() {

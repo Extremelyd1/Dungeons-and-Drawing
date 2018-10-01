@@ -10,30 +10,29 @@ import java.util.List;
 /**
  * Class to render a simple popup to the screen. The popup only has text.
  */
-public class SimplePopup extends GUIComponent {
-
-    private Text text;
+public class PopupWindow extends GUIComponentParent {
 
     /**
      *
      */
-    public SimplePopup(Text text, List<Button> buttons) throws Exception{
+    public PopupWindow(Text text, int width, int height) throws Exception{
         super();
-        setMesh(buildMesh(text));
+        setMesh(buildMesh(width, height));
+        addChild(text);
     }
 
     /**
      *
      * @return
      */
-    private Mesh buildMesh(Text text) throws Exception {
+    private Mesh buildMesh(int width, int height) throws Exception {
 
         float[] normals = new float[0];
         float[] vertices = new float[] {
                 0, 0, 0,
-                0, 50, 0,
-                300, 0, 0,
-                300, 50, 0,
+                0, height, 0,
+                width, 0, 0,
+                width, height, 0,
         };
 
         float[] textureCoordinates = new float[] {
@@ -50,4 +49,7 @@ public class SimplePopup extends GUIComponent {
 
         return mesh;
     }
+
+
+
 }

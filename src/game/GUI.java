@@ -3,7 +3,7 @@ package game;
 import engine.GameWindow;
 import engine.gui.GUIComponent;
 import engine.gui.Layer;
-import engine.gui.SimplePopup;
+import engine.gui.PopupWindow;
 import engine.gui.Text;
 import graphics.FontTexture;
 import org.joml.Vector3f;
@@ -30,13 +30,13 @@ public class GUI {
 
         layers = new ArrayList<>();
 
-        Layer layer1 = Layer.getLayer(1);
-        Layer layer2 = Layer.getLayer(0);
+        Layer layer1 = Layer.getLayer(0);
+        Layer layer2 = Layer.getLayer(1);
 
         FontTexture fontTexture = new FontTexture(FONT, CHARSET);
-        text = new Text(initText, fontTexture, new Vector3f(0.25f, 0.2f, 0.2f));
 
-        SimplePopup pop = new SimplePopup(text, null);
+        text = new Text(initText, fontTexture, new Vector3f(0.25f, 0.2f, 0.2f));
+        PopupWindow pop = new PopupWindow(text, 300, 100);
 
         layer1.add(pop);
         layer2.add(text);

@@ -273,11 +273,11 @@ public class Renderer {
 
         for (Layer layer : gui.getLayers()) {
 
-            // Set ortohtaphic and model matrix for this HUD item
-            Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(layer, ortho);
-            guiShader.setUniform("projModelMatrix", projModelMatrix);
-
             for (GUIComponent element : layer.getElements()) {
+
+                // Set ortohtaphic and model matrix for this HUD item
+                Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(element, ortho);
+                guiShader.setUniform("projModelMatrix", projModelMatrix);
 
                 Mesh mesh = element.getMesh();
 
