@@ -103,10 +103,7 @@ public class Renderer {
      *
      * @param camera           Camera
      * @param entities         List of entities to draw
-     * @param ambientLight     Ambient light
-     * @param pointLightList   List of point lights
-     * @param spotLightList    List of spot lights
-     * @param directionalLight Directional light
+     * @param sceneLight       The scene light object
      */
     public void render(
             Camera camera,
@@ -197,10 +194,7 @@ public class Renderer {
      * Renders the lights
      *
      * @param viewMatrix       View matrix
-     * @param ambientLight     Ambient light
-     * @param pointLightList   List of point lights
-     * @param spotLightList    List of spot lights
-     * @param directionalLight Direction light
+     * @param sceneLight       The scene light object
      */
     private void renderLights(
             Matrix4f viewMatrix,
