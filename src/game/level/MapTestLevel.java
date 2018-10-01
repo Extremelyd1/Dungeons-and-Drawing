@@ -51,8 +51,8 @@ public class MapTestLevel extends Level {
         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.5f, 0.5f, 0.5f));
 
         // Set up a point light
-        Vector3f lightPosition = new Vector3f(1.0f, 1.0f, -1.0f);
-        float lightIntensity = 1.0f;
+        Vector3f lightPosition = new Vector3f(1.0f, 3.0f, -1.0f);
+        float lightIntensity = 0.5f;
         PointLight pointLight = new PointLight(new Vector3f(1.0f, 0.3f, 0.0f), lightPosition, lightIntensity, new Vector2f(1f, 100f));
         PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 0.5f);
         pointLight.setAttenuation(att);
@@ -68,7 +68,7 @@ public class MapTestLevel extends Level {
         Mesh cube_mesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
         cube_mesh.setMaterial(new Material(0.1f));
 
-        player = new Player(cube_mesh, map, new Vector3f(3, 1, 3), 0.5f);
+//        player = new Player(cube_mesh, map, new Vector3f(3, 1, 3), 0.5f);
 
         Mesh tree = PLYLoader.loadMesh("/models/PLY/tree.ply");
         Material material = new Material(0.1f);
@@ -79,20 +79,20 @@ public class MapTestLevel extends Level {
         g.setPosition(0.0f, 0.0f, 0.0f);
         g.setRotation(-90,0,0);
 
-        gameEntities = new Entity[]{g, light, player};
+        gameEntities = new Entity[]{g, light};
     }
 
     @Override
     public void input(MouseInput mouseInput) {
         // Move the camera based on input
-        if (camera instanceof FreeCamera && mouseInput.isRightButtonPressed()) {
+        if (camera instanceof FreeCamera) {
             ((FreeCamera) camera).handleInput(mouseInput);
         }
     }
 
     @Override
     public void update(float interval, MouseInput mouseInput) {
-        player.update(interval);
+//        player.update(interval);
     }
 
     @Override
