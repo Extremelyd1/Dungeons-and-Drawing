@@ -18,13 +18,7 @@ public class SimpleMapLoader implements MapLoader {
     public Tile[][] load() throws Exception {
 
         Mesh mesh = PLYLoader.loadMesh("/models/test_1.ply");
-        mesh.setMaterial(new Material(
-                new Vector4f(1f, 1f, 1f, 1f),
-                new Vector4f(0.1f, 0.1f, 0.1f, 0.1f),
-                new Vector4f(0.0f, 0.0f, 0.0f, 0.0f),
-                null,
-                0.1f
-        ));
+        mesh.setMaterial(new Material(0.1f));
         Tile tile = new Tile(new Vector2i(0, 0), new Vector3f(0, 0, 0), mesh,true);
 
         return new Tile[][]{
