@@ -75,7 +75,7 @@ public class SandboxTestLevel implements IGameLogic {
         Vector3f lightPosition6 = new Vector3f(15.5f, 0.0f, -10.0f);
         float lightIntensity6 = 0.1f;
         PointLight.Attenuation att6 = new PointLight.Attenuation(0.0f, 0.0f, 0.5f);
-        Vector3f coneDir2 = new Vector3f(-1f, -0.2f, 0);
+        Vector3f coneDir2 = new Vector3f(-1f, -0.5f, 0);
         float cutoff2 = (float) Math.cos(Math.toRadians(6.5f));
         float outerCutOff2 = (float) Math.cos(Math.toRadians(11.5f));
         SpotLight spotLight2 = new SpotLight(new Vector3f(1.0f, 1.0f, 1.0f), lightPosition6,

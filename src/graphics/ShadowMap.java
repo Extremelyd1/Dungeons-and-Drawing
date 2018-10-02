@@ -24,7 +24,7 @@ public class ShadowMap {
         // Create depth map texture
         glBindTexture(GL_TEXTURE_CUBE_MAP, depthMap);
         for (int i = 0; i < 6; i++) {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT32F,
                     resolution, resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, (ByteBuffer)null);
         }
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -51,7 +51,7 @@ public class ShadowMap {
     public void initShadowMap() throws Exception {
         // Create depth map texture
         glBindTexture(GL_TEXTURE_2D, depthMap);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, resolution, resolution,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, resolution, resolution,
                 0, GL_DEPTH_COMPONENT, GL_FLOAT, (ByteBuffer)null);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

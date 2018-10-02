@@ -319,7 +319,8 @@ public class Renderer {
             Map map){
         int numLights;
         // Loop through all point light sources
-        glDisable(GL_CULL_FACE);
+        //glDisable(GL_CULL_FACE);
+        glCullFace(GL_FRONT);
         // Point Light Depth Shader
         numLights = sceneLight.pointLights != null ? sceneLight.pointLights.size() : 0;
         for (int i = 0; i < numLights; i++) {
@@ -431,6 +432,7 @@ public class Renderer {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             depthShader.unbind();
         }
+        glCullFace(GL_BACK);
     }
 
     private void renderGui(GUI gui) {

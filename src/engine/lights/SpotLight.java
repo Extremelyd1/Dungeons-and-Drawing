@@ -26,7 +26,7 @@ public class SpotLight {
 
     public SpotLight(Vector3f color, Vector3f position, float intensity, Vector3f coneDirection, float cutOffAngle, float outerCutOffAngle, Vector2f plane) {
         try {
-            shadowMap = new ShadowMap(1024);
+            shadowMap = new ShadowMap(8096);
             shadowMap.initShadowMap();
         } catch (Exception e) {
             e.printStackTrace();
@@ -41,6 +41,17 @@ public class SpotLight {
         this.cutOff = cutOffAngle;
         this.outerCutOff = outerCutOffAngle;
         setPlane(plane);
+    }
+
+    public SpotLight(Vector3f color, Vector3f position, float intensity, Vector3f coneDirection, float cutOffAngle, float outerCutOffAngle, Vector2f plane, int resolution) {
+        this(color, position, intensity, coneDirection, cutOffAngle, outerCutOffAngle, plane);
+        try {
+            shadowMap.cleanup();
+            shadowMap = new ShadowMap(resolution);
+            shadowMap.initShadowMap();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public SpotLight(Vector3f color, Vector3f position, float intensity, Vector3f coneDirection, float cutOffAngle, float outerCutOff,
@@ -130,6 +141,7 @@ public class SpotLight {
 
     public void setOuterCutOff(float outerCutOff) {
         this.outerCutOff = outerCutOff;
+        this.setPlane(plane);
     }
 
     public Matrix4f getLightSpaceMatrix(){
@@ -143,7 +155,7 @@ public class SpotLight {
     public void setPlane(Vector2f plane) {
         this.plane = plane;
         Matrix4f projection = new Matrix4f();
-        projection.setPerspective((float)Math.toRadians(90.0f), 1.0f, plane.x, plane.y);
+        projection.setPerspective(outerCutOff, 1.0f, plane.x, plane.y);
 
         Matrix4f lightViewMatrix = new Matrix4f();
         lightViewMatrix.lookAt(

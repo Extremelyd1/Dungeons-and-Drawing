@@ -7,6 +7,7 @@ import engine.entities.Player;
 import engine.lights.AmbientLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
+import engine.lights.SpotLight;
 import engine.loader.PLYLoader;
 import engine.util.ColorInterpolator;
 import game.GUI;
@@ -55,19 +56,36 @@ public class MapTestLevel extends Level {
         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f, 0.2f, 0.2f));
 
         // Set up a point light
-        Vector3f lightPosition = new Vector3f(1.0f, 3.0f, -1.0f);
-        float lightIntensity = 0.5f;
-        PointLight pointLight = new PointLight(new Vector3f(0.88f, 0.72f, 0.13f), lightPosition, lightIntensity, new Vector2f(1f, 100f));
-        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.2f, 0.5f);
-        pointLight.setAttenuation(att);
-        sceneLight.pointLights.add(pointLight);
+        Vector3f lightPosition1 = new Vector3f(1.0f, 3.0f, -1.0f);
+        float lightIntensity1 = 0.0f;
+        PointLight pointLight1 = new PointLight(new Vector3f(0.88f, 0.72f, 0.13f), lightPosition1, lightIntensity1, new Vector2f(1f, 10f));
+        PointLight.Attenuation att1 = new PointLight.Attenuation(0.0f, 0.2f, 0.5f);
+        pointLight1.setAttenuation(att1);
+        sceneLight.pointLights.add(pointLight1);
 
-        Entity light;
+        // Set up a spot light
+        Vector3f lightPosition2 = new Vector3f(-5.0f, 1.0f, -5.0f);
+        float lightIntensity2 = 0.3f;
+        SpotLight spotLight1 = new SpotLight(
+                new Vector3f(0.88f, 0.72f, 0.13f),
+                lightPosition2,
+                lightIntensity2,
+                new Vector3f(1f, -0.1f, 1f),
+                (float)Math.cos(Math.toRadians(7)),
+                (float)Math.cos(Math.toRadians(25)),
+                new Vector2f(1.0f, 6.5f),
+                4096);
+        PointLight.Attenuation att2 = new PointLight.Attenuation(0.0f, 0.2f, 0.0f);
+        spotLight1.setAttenuation(att2);
+        sceneLight.spotLights.add(spotLight1);
+
+        Entity light1, light2;
         Mesh mesh_light = PLYLoader.loadMesh("/models/PLY/light.ply");
-        Material material_light = new Material(new Vector4f(pointLight.getColor(), 1), 0.1f);
+        Material material_light = new Material(new Vector4f(pointLight1.getColor(), 1), 0.1f);
         mesh_light.setMaterial(material_light);
 
-        light = new Entity(mesh_light, new Vector3f(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z), 0.05f * lightIntensity);
+        light1 = new Entity(mesh_light, new Vector3f(pointLight1.getPosition().x, pointLight1.getPosition().y, pointLight1.getPosition().z), 0.05f * lightIntensity1);
+        light2 = new Entity(mesh_light, new Vector3f(spotLight1.getPosition().x, spotLight1.getPosition().y, spotLight1.getPosition().z), 0.05f * lightIntensity2);
 
         Mesh cube_mesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
         cube_mesh.setMaterial(new Material(0.1f));
@@ -75,20 +93,27 @@ public class MapTestLevel extends Level {
 //        player = new Player(cube_mesh, map, new Vector3f(3, 1, 3), 0.5f);
 
         Mesh tree = PLYLoader.loadMesh("/models/PLY/tree.ply");
-        Material material = new Material(0.1f);
+        Material material = new Material(
+                new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+                new Vector4f(0.15f, 0.15f, 0.15f, 1.0f),
+                new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+                null,
+                0.0f
+        );
         tree.setMaterial(material);
 
         // Tree 1
         Entity g = new Entity(tree);
-        g.setPosition(0.0f, 0.0f, 0.0f);
-        g.setRotation(-90,0,0);
+        g.setScale(0.25f);
+        g.setPosition(-3.0f, 0.5f, -3.0f);
+        g.setRotation(-90,0,23);
 
         // Tree 2
         Entity g2 = new Entity(tree);
         g2.setPosition(-10.0f, 0.0f, 10.0f);
         g2.setRotation(-90,0,0);
 
-        gameEntities = new Entity[]{g, g2, light};
+        gameEntities = new Entity[]{g, g2, light1, light2};
     }
 
     @Override
