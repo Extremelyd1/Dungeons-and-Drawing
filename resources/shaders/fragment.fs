@@ -105,9 +105,9 @@ void setupColours(Material material, vec2 textCoord)
     }
     else
     {
-        ambientC = material.ambient;
-        diffuseC = material.diffuse;
-        speculrC = material.specular;
+        ambientC = fs_in.Color * material.ambient;
+        diffuseC = fs_in.Color * material.diffuse;
+        speculrC = fs_in.Color * material.specular;
     }
 }
 

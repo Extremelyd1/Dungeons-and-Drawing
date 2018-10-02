@@ -8,6 +8,7 @@ import engine.lights.AmbientLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
+import engine.util.ColorInterpolator;
 import game.GUI;
 import game.LevelController;
 import game.Renderer;
@@ -18,6 +19,9 @@ import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import sun.security.ssl.Debug;
+
+import java.util.Random;
 
 public class MapTestLevel extends Level {
 
@@ -48,13 +52,13 @@ public class MapTestLevel extends Level {
         map = new Map();
         map.load(new SimpleMapLoader());
 
-        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.5f, 0.5f, 0.5f));
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f, 0.2f, 0.2f));
 
         // Set up a point light
         Vector3f lightPosition = new Vector3f(1.0f, 3.0f, -1.0f);
         float lightIntensity = 0.5f;
-        PointLight pointLight = new PointLight(new Vector3f(1.0f, 0.3f, 0.0f), lightPosition, lightIntensity, new Vector2f(1f, 100f));
-        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 0.5f);
+        PointLight pointLight = new PointLight(new Vector3f(0.88f, 0.72f, 0.13f), lightPosition, lightIntensity, new Vector2f(1f, 100f));
+        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.2f, 0.5f);
         pointLight.setAttenuation(att);
         sceneLight.pointLights.add(pointLight);
 
@@ -79,7 +83,12 @@ public class MapTestLevel extends Level {
         g.setPosition(0.0f, 0.0f, 0.0f);
         g.setRotation(-90,0,0);
 
-        gameEntities = new Entity[]{g, light};
+        // Tree 2
+        Entity g2 = new Entity(tree);
+        g2.setPosition(-10.0f, 0.0f, 10.0f);
+        g2.setRotation(-90,0,0);
+
+        gameEntities = new Entity[]{g, g2, light};
     }
 
     @Override
@@ -90,10 +99,23 @@ public class MapTestLevel extends Level {
         }
     }
 
+    private Random rand = new Random(1234);
+    private ColorInterpolator flame = new ColorInterpolator();
     @Override
     public void update(float interval, MouseInput mouseInput) {
+        PointLight light = sceneLight.pointLights.get(0);
+        if (flame.getStatus()){
+            Vector3f color =
+                    new Vector3f(0.88f, 0.72f, 0.13f).add(
+                            new Vector3f(0.01f, -0.05f, -0.005f).mul((rand.nextInt(2) / 1.0f)));
+            flame.setInterpolation(light.getColor(), color, 14.28f / 15f);
+        }
+        flame.updateColor(interval * 1000f);
+        light.setColor(flame.getInterpolationResult());
 //        player.update(interval);
     }
+
+
 
     @Override
     public void render() {
