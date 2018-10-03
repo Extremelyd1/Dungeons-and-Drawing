@@ -40,6 +40,10 @@ public class LivingEntity extends Entity {
         return speed;
     }
 
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
     public Map getMap() {
         return map;
     }

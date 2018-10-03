@@ -2,10 +2,14 @@ package game.level;
 
 import engine.MouseInput;
 import engine.camera.Camera;
+import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
 import engine.entities.Player;
+import engine.input.KeyBinding;
+import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
+import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
 import game.LevelController;
@@ -14,6 +18,7 @@ import game.map.Map;
 import game.map.loader.TempTutorialMapLoader;
 import graphics.Material;
 import graphics.Mesh;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class TutorialLevel extends Level {
@@ -38,18 +43,37 @@ public class TutorialLevel extends Level {
         // Setup rendering
         renderer = new Renderer();
         renderer.init();
-        camera = new FreeCamera();
 
         // Setup player
         Mesh playerMesh = PLYLoader.loadMesh("/models/basic/basic_cylinder_two_colors_1.ply");
         playerMesh.setMaterial(new Material(0.5f));
         player = new Player(playerMesh, map);
-        player.setPosition(new Vector3f(0, 0.5f, 1)); // TODO: Coordinate is 0.5 ??
+        player.setPosition(new Vector3f(0, 0.5f, 2));
+        player.setSpeed(5);
 
         entities = new Entity[]{player};
 
+        // Setup camera
+        camera = new FollowCamera(
+                player,
+                new Vector3f(75f, -10f, 0f),
+                new Vector3f(3, 11, 3)
+        );
+
         // Setup lights
         sceneLight = new SceneLight();
+        sceneLight.pointLights.add(new PointLight(
+                new Vector3f(1f, 1f, 1f),
+                new Vector3f(6f, 2.5f, 4f),
+                0.5f,
+                new Vector2f(1f, 100f)
+        ));
+        sceneLight.pointLights.add(new PointLight(
+                new Vector3f(0.2f, 0.6f, 0.7f),
+                new Vector3f(2f, 3.5f, 2f),
+                0.2f,
+                new Vector2f(1f, 100f)
+        ));
     }
 
     @Override
@@ -61,7 +85,8 @@ public class TutorialLevel extends Level {
 
     @Override
     public void update(float interval, MouseInput mouseInput) {
-
+        camera.update();
+        player.update(interval);
     }
 
     @Override
