@@ -128,6 +128,12 @@ vec4 calcBlinnPhong(vec3 light_color, float light_intensity, vec3 position, vec3
     }
 }
 
+// Calculate Direction Light
+vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal)
+{
+    return calcBlinnPhong(light.colour, light.intensity, position, normalize(light.direction), normal);
+}
+
 // Calculate Point Light
 vec4 calcPointLight(PointLight light, vec3 position, vec3 normal)
 {
@@ -213,6 +219,8 @@ void main()
     vec4 diffuseSpecularComp = vec4(0,0,0,0);
     float shadow = 0;
     vec4 component = vec4(0,0,0,0);
+
+    diffuseSpecularComp += calcDirectionalLight(directionalLight, fs_in.FragPos, fs_in.Normal);
 
     // Calculate Point Lights
     for (int i=0; i<MAX_POINT_LIGHTS; i++)

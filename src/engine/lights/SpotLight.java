@@ -26,7 +26,7 @@ public class SpotLight {
 
     public SpotLight(Vector3f color, Vector3f position, float intensity, Vector3f coneDirection, float cutOffAngle, float outerCutOffAngle, Vector2f plane) {
         try {
-            shadowMap = new ShadowMap(8096);
+            shadowMap = new ShadowMap(1024);
             shadowMap.initShadowMap();
         } catch (Exception e) {
             e.printStackTrace();

@@ -81,7 +81,7 @@ public class Renderer {
         sceneShader.createUniform("ambientLight");
         sceneShader.createPointLightListUniform("pointLights", MAX_POINT_LIGHTS);
         sceneShader.createSpotLightListUniform("spotLights", MAX_SPOT_LIGHTS);
-        //sceneShader.createDirectionalLightUniform("directionalLight"); // NOT IMPLEMENTED
+        sceneShader.createDirectionalLightUniform("directionalLight");
 
         // Shadow mapping related uniforms
         sceneShader.createUniform("viewPos");
@@ -255,7 +255,6 @@ public class Renderer {
         }
 
         for (Entity entity : entities) {
-
             Mesh mesh = entity.getMesh();
             model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
 
@@ -297,6 +296,10 @@ public class Renderer {
         sceneShader.setUniform("ambientLight", sceneLight.ambientLight.getLight());
         sceneShader.setUniform("specularPower", specularPower);
 
+        //Process Directional Lights
+        if (sceneLight.directionalLight != null) {
+            sceneShader.setUniform("directionalLight", sceneLight.directionalLight);
+        }
         // Process Point Lights
         int numLights = sceneLight.pointLights != null ? sceneLight.pointLights.size() : 0;
         for (int i = 0; i < numLights; i++) {

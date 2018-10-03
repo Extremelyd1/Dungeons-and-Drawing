@@ -4,10 +4,7 @@ import engine.MouseInput;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
 import engine.entities.Player;
-import engine.lights.AmbientLight;
-import engine.lights.PointLight;
-import engine.lights.SceneLight;
-import engine.lights.SpotLight;
+import engine.lights.*;
 import engine.loader.PLYLoader;
 import engine.util.ColorInterpolator;
 import game.GUI;
@@ -53,6 +50,10 @@ public class MapTestLevel extends Level {
         map = new Map();
         map.load(new SimpleMapLoader());
 
+        sceneLight.directionalLight = new DirectionalLight(
+                new Vector3f(1, 1, 1),
+                new Vector3f(0.2f, 1.0f, 0.5f),
+                0.3f);
         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f, 0.2f, 0.2f));
 
         // Set up a point light
