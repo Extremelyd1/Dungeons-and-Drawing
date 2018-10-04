@@ -179,6 +179,7 @@ public class Shader {
         createUniform(uniformName + ".intensity");
         createUniform(uniformName + ".shadowMap");
         createUniform(uniformName + ".lightSpaceMatrix");
+        createUniform(uniformName + ".shadowEnable");
     }
 
     public void createMaterialUniform(String uniformName) throws Exception {
@@ -291,6 +292,7 @@ public class Shader {
         setUniform(uniformName + ".direction", dirLight.getDirection());
         setUniform(uniformName + ".intensity", dirLight.getIntensity());
         setUniform(uniformName + ".lightSpaceMatrix", dirLight.getLightSpaceMatrix());
+        setUniform(uniformName + ".shadowEnable", dirLight.isShadowEnabled());
     }
 
     public void setUniform(String uniformName, Material material) {

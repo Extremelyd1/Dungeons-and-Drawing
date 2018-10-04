@@ -78,9 +78,9 @@ public class TutorialLevel extends Level {
                 new Vector3f(0.0f,7.0f,0.0f),       // position
                 new Vector3f(0.8f, 0.8f, 0.8f),     // color
                 new Vector3f(0.0f, 1.0f, 0.4f),     // direction
-                0.8f,                                // intensity
+                0.2f,                                // intensity
                 new Vector2f(1.0f, 10.0f),             // near-far plane
-                2048);
+                false);
     }
 
     @Override

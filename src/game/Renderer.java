@@ -341,7 +341,7 @@ public class Renderer {
         glDisable(GL_CULL_FACE);
         glCullFace(GL_FRONT);
         // Directional Light Depth Shader
-        if (sceneLight.directionalLight != null) {
+        if (sceneLight.directionalLight != null && sceneLight.directionalLight.isShadowEnabled()) {
             ShadowMap shadowMap = sceneLight.directionalLight.getShadowMap();
 
             glViewport(0, 0, shadowMap.getResolution(), shadowMap.getResolution());

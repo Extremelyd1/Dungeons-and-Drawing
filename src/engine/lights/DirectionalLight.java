@@ -20,8 +20,9 @@ public class DirectionalLight {
     private Matrix4f ortho;
     private Matrix4f lightSpaceMatrix;
     private Vector2f plane;
+    private boolean shadowEnable;
 
-    public DirectionalLight(Vector3f position, Vector3f color, Vector3f direction, float intensity, Vector2f plane) {
+    public DirectionalLight(Vector3f position, Vector3f color, Vector3f direction, float intensity, Vector2f plane, boolean shadowEnable) {
         try {
             shadowMap = new ShadowMap(1024);
             shadowMap.initShadowMap();
@@ -33,11 +34,12 @@ public class DirectionalLight {
         this.direction = direction;
         this.intensity = intensity;
         this.plane = plane;
+        this.shadowEnable = shadowEnable;
         setOrthoProjection(-10.0f, 10.0f, -10.0f, 10.0f, plane);
     }
 
     public DirectionalLight(Vector3f position, Vector3f color, Vector3f direction, float intensity, Vector2f plane, int resolution) {
-        this(position, color, direction, intensity, plane);
+        this(position, color, direction, intensity, plane, true);
         try {
             shadowMap.cleanup();
             shadowMap = new ShadowMap(resolution);
@@ -123,5 +125,13 @@ public class DirectionalLight {
 
     public Vector2f getPlane() {
         return plane;
+    }
+
+    public boolean isShadowEnabled() {
+        return shadowEnable;
+    }
+
+    public void setShadowEnable(boolean shadowEnable) {
+        this.shadowEnable = shadowEnable;
     }
 }
