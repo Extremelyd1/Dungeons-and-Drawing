@@ -2,7 +2,10 @@ package game.map;
 
 import game.map.loader.MapLoader;
 import game.map.tile.Tile;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,5 +88,32 @@ public class Map {
         }
 
         return filteredTiles.toArray(new Tile[]{});
+    }
+
+    /**
+     * Checks whether the specified square collides with
+     * any solid tiles in this map
+     * @return whether the circle collides with any solid tiles
+     */
+    public boolean collidesSolid(float x1, float x2, float y1, float y2) {
+        Vector2f[] points = new Vector2f[]{
+                new Vector2f(x1, y1),
+                new Vector2f(x2, y1),
+                new Vector2f(x1, y2),
+                new Vector2f(x2, y2)
+        };
+
+        for (Vector2f point : points) {
+            int x = Math.round(point.x);
+            int y = Math.round(point.y);
+
+            if (x < 0 || y < 0 || x >= tiles.length || y >= tiles[x].length) {
+                return true;
+            }
+            if (getTile(x, y).isSolid()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

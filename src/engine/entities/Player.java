@@ -1,13 +1,10 @@
 package engine.entities;
 
 import engine.GameWindow;
-import engine.KeyboardInput;
 import engine.input.KeyBinding;
 import game.map.Map;
-import game.map.tile.Tile;
 import graphics.Mesh;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * Player class, the controllable PC of the game
@@ -15,26 +12,26 @@ import org.lwjgl.glfw.GLFW;
 public class Player extends LivingEntity {
 
     // The range of the cylindrical collision box around the player
-    float collisionRange;
+    float collisionSize;
 
     public Player(Mesh mesh, Map map){
         super(mesh, map);
-        collisionRange = 0.3f;
+        collisionSize = 0.45f;
     }
 
     public Player(Mesh mesh, Map map, Vector3f position, Vector3f rotation) {
         super(mesh, map, position, rotation);
-        collisionRange = 0.3f;
+        collisionSize = 0.45f;
     }
 
     public Player(Mesh mesh, Map map, Vector3f position, Vector3f rotation, float speed) {
         super(mesh, map, position, rotation, speed);
-        collisionRange = 0.3f;
+        collisionSize = 0.45f;
     }
 
     public Player(Mesh mesh, Map map, Vector3f position, float scale) {
         super(mesh, map, position, new Vector3f(0), scale, 1);
-        collisionRange = 0.3f;
+        collisionSize = 0.45f;
     }
 
     /**
@@ -104,28 +101,17 @@ public class Player extends LivingEntity {
         Collision detection
          */
         // The position the player is occupying if applying the movement
-        Vector3f newPosition = new Vector3f(getPosition()).add(xChange, 0, zChange);
-        // The added range to account for a collision box
-        float xCollisionAddition = collisionRange * (xChange < 0 ? -1 : 1);
-        float zCollisionAddition = collisionRange * (zChange < 0 ? -1 : 1);
+        Vector3f newPosition = new Vector3f(getPosition()).add(xChange, 0, 0);
 
-        // The old player position
-        int x = (int) Math.floor(getPosition().x);
-        int z = (int) Math.floor(getPosition().z);
-        // New coordinates based on position, movement and collision range
-        int xNew = (int) Math.floor(newPosition.x + xCollisionAddition);
-        int zNew = (int) Math.floor(newPosition.z + zCollisionAddition);
-
-        // The respective tiles in x and z direction
-        // that the player will occupy after movement
-        Tile xChangeTile = getMap().getTile(xNew, z);
-        Tile zChangeTile = getMap().getTile(x, zNew);
-        // If not solid, move in x direction
-        if (!xChangeTile.isSolid()) {
+        if (!getMap().collidesSolid(newPosition.x - collisionSize, newPosition.x + collisionSize
+                , getPosition().z - collisionSize, getPosition().z + collisionSize)) {
             getPosition().add(xChange, 0, 0);
         }
-        // If not solid, move in z direction
-        if (!zChangeTile.isSolid()) {
+
+        newPosition = new Vector3f(getPosition()).add(0, 0, zChange);
+
+        if (!getMap().collidesSolid(getPosition().x - collisionSize, getPosition().x + collisionSize
+                , newPosition.z - collisionSize, newPosition.z + collisionSize)) {
             getPosition().add(0, 0, zChange);
         }
     }
