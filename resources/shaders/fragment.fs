@@ -53,6 +53,7 @@ struct DirectionalLight
     float intensity;
     mat4 lightSpaceMatrix;
     sampler2D shadowMap;
+    bool shadowEnable;
 };
 
 struct Material
@@ -232,9 +233,11 @@ void main()
 
     // Calculate directional light
     component = calcDirectionalLight(directionalLight, fs_in.FragPos, fs_in.Normal);
-    if (length(component) > 0) {
+    if (length(component) > 0 && directionalLight.shadowEnable) {
         shadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.shadowMap, shadowEnable);
         diffuseSpecularComp += shadow * component;
+    } else {
+        diffuseSpecularComp += component;
     }
 
     // Calculate Point Lights

@@ -74,6 +74,13 @@ public class TutorialLevel extends Level {
                 0.2f,
                 new Vector2f(1f, 100f)
         ));
+        sceneLight.directionalLight = new DirectionalLight(
+                new Vector3f(0.0f,7.0f,0.0f),       // position
+                new Vector3f(0.8f, 0.8f, 0.8f),     // color
+                new Vector3f(0.0f, 1.0f, 0.4f),     // direction
+                0.2f,                                // intensity
+                new Vector2f(1.0f, 10.0f),             // near-far plane
+                false);
     }
 
     @Override
@@ -87,6 +94,7 @@ public class TutorialLevel extends Level {
     public void update(float interval, MouseInput mouseInput) {
         camera.update();
         player.update(interval);
+        sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
     }
 
     @Override

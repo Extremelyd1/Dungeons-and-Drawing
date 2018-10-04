@@ -20,8 +20,9 @@ public class DirectionalLight {
     private Matrix4f ortho;
     private Matrix4f lightSpaceMatrix;
     private Vector2f plane;
+    private boolean shadowEnable;
 
-    public DirectionalLight(Vector3f position, Vector3f color, Vector3f direction, float intensity, Vector2f plane) {
+    public DirectionalLight(Vector3f position, Vector3f color, Vector3f direction, float intensity, Vector2f plane, boolean shadowEnable) {
         try {
             shadowMap = new ShadowMap(1024);
             shadowMap.initShadowMap();
@@ -33,11 +34,12 @@ public class DirectionalLight {
         this.direction = direction;
         this.intensity = intensity;
         this.plane = plane;
+        this.shadowEnable = shadowEnable;
         setOrthoProjection(-10.0f, 10.0f, -10.0f, 10.0f, plane);
     }
 
     public DirectionalLight(Vector3f position, Vector3f color, Vector3f direction, float intensity, Vector2f plane, int resolution) {
-        this(position, color, direction, intensity, plane);
+        this(position, color, direction, intensity, plane, true);
         try {
             shadowMap.cleanup();
             shadowMap = new ShadowMap(resolution);
@@ -53,7 +55,14 @@ public class DirectionalLight {
 
     public void setPosition(Vector3f position) {
         this.position = position;
-        Matrix4f lightView = new Matrix4f().lookAt(position, new Vector3f(position).add(direction), new Vector3f(0.0f, 1.0f, 0.0f));
+
+        float lightAngleX = (float)Math.toDegrees(Math.acos(direction.z));
+        float lightAngleY = (float)Math.toDegrees(Math.asin(direction.x));
+        Matrix4f lightView = new Matrix4f().identity();
+        lightView.rotate((float)Math.toRadians(lightAngleX), new Vector3f(1,0 ,0))
+                .rotate((float)Math.toRadians(lightAngleY), new Vector3f(0, 1, 0));
+        lightView.translate(-position.x, -position.y, -position.z);
+
         lightSpaceMatrix = new Matrix4f(ortho).mul(lightView);
     }
 
@@ -72,7 +81,13 @@ public class DirectionalLight {
     public void setDirection(Vector3f direction) {
         this.direction = direction;
 
-        Matrix4f lightView = new Matrix4f().lookAt(position, new Vector3f(position).add(direction), new Vector3f(0.0f, 1.0f, 0.0f));
+        float lightAngleX = (float)Math.toDegrees(Math.acos(direction.z));
+        float lightAngleY = (float)Math.toDegrees(Math.asin(direction.x));
+        Matrix4f lightView = new Matrix4f().identity();
+        lightView.rotate((float)Math.toRadians(lightAngleX), new Vector3f(1,0 ,0))
+                .rotate((float)Math.toRadians(lightAngleY), new Vector3f(0, 1, 0));
+        lightView.translate(-position.x, -position.y, -position.z);
+
         lightSpaceMatrix = new Matrix4f(ortho).mul(lightView);
     }
 
@@ -110,5 +125,13 @@ public class DirectionalLight {
 
     public Vector2f getPlane() {
         return plane;
+    }
+
+    public boolean isShadowEnabled() {
+        return shadowEnable;
+    }
+
+    public void setShadowEnable(boolean shadowEnable) {
+        this.shadowEnable = shadowEnable;
     }
 }

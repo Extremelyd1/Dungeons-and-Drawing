@@ -1,6 +1,7 @@
 package engine;
 
 import game.LevelController;
+import game.level.TutorialLevel;
 import game.state.SandboxTestLevel;
 import sun.security.ssl.Debug;
 
@@ -43,7 +44,7 @@ public class Launcher {
         try {
             Debug.println("PID", ManagementFactory.getRuntimeMXBean().getName());
             //TimeUnit.SECONDS.sleep(8);
-            (new GameEngine(new LevelController())).start();
+            (new GameEngine(new TutorialLevel(new LevelController()))).start();
         } catch (Exception e) {
             e.printStackTrace(System.out);
             System.exit(-1);
