@@ -74,4 +74,24 @@ public class A_star implements Pathfinding{
     public Set<Tile> getClosedTiles() {
         return closed.keySet();
     }
+    /**
+     * (Tile, g(t)) pair, defining a tile and the corresponding f(t) weight function.
+     */
+    class Node implements Comparable<Node> {
+        Tile t;
+        int g, f, h;
+        Node p;
+
+        public Node(Tile t, int g, int h, Node p) {
+            this.t = t;
+            this.g = g; this.h = h;
+            this.f = this.g + this.h;
+            this.p = p;
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            if(o.f < this.f) return 1; else return -1;
+        }
+    }
 }

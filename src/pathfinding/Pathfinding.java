@@ -16,25 +16,4 @@ public interface Pathfinding {
      * @return List<Tile> containing the shortest computed path from start to target
      */
     List<Tile> computePath(Tile start, Tile target, Map map);
-
-    /**
-     * (Tile, g(t)) pair, defining a tile and the corresponding f(t) weight function.
-     */
-    class Node implements Comparable<Node> {
-        Tile t;
-        int g, f, h;
-        Node p;
-
-        public Node(Tile t, int g, int h, Node p) {
-            this.t = t;
-            this.g = g; this.h = h;
-            this.f = this.g + this.h;
-            this.p = p;
-        }
-
-        @Override
-        public int compareTo(Node o) {
-            if(o.f < this.f) return 1; else return -1;
-        }
-    }
 }
