@@ -28,6 +28,7 @@ public class GameWindow {
     
     // Defaults
     private final String DEFAULT_WINDOW_TITLE = "Dungeons And Drawings";
+    private final boolean FULL_SCREEN = false;
     private final int DEFAULT_WINDOW_WIDTH = 1280;
     private final int DEFAULT_WINDOW_HEIGHT = 720;
     
@@ -145,7 +146,10 @@ public class GameWindow {
         GL.createCapabilities();
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glEnable(GL_DEPTH_TEST);
-        
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         // Wireframe model
         //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
     }
@@ -213,17 +217,6 @@ public class GameWindow {
         glfwSwapBuffers(windowHandle); // swap the buffers (render new frame)
         glfwPollEvents(); // process all pending events
     }
-
-    /**
-     * Return whether a certain key is pressed down
-     * 
-     * @param keyCode the code of the key to check
-     * @return whether the key is pressed or not
-     */
-    public boolean isKeyPressed(int keyCode) {
-        return glfwGetKey(windowHandle, keyCode) == GLFW_PRESS;
-    }
-
     
     /** 
      * Returns whether the window should be closed
