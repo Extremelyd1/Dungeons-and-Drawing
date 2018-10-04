@@ -60,27 +60,6 @@ public class SpotLight {
         this.attenuation = attenuation;
     }
 
-    private SpotLight(Vector3f color, Vector3f position, float intensity, Vector3f coneDirection, float cutOffAngle, float outerCutOff,
-                      PointLight.Attenuation attenuation, ShadowMap shadowMap, Vector2f plane) {
-        this.color = color;
-        this.position = position;
-        this.intensity = intensity;
-        this.attenuation = attenuation;
-        this.shadowMap = shadowMap;
-
-        this.coneDirection = coneDirection;
-        this.cutOff = cutOffAngle;
-        this.outerCutOff = outerCutOff;
-        this.setPlane(plane);
-    }
-
-
-    public SpotLight(SpotLight spotLight) {
-        this(new Vector3f(spotLight.getColor()), new Vector3f(spotLight.getPosition()), spotLight.getIntensity(),
-                spotLight.getConeDirection(), spotLight.getCutOff(), spotLight.getOuterCutOff(), spotLight.getAttenuation(),
-                spotLight.getShadowMap(), spotLight.getPlane());
-    }
-
     public Vector3f getColor() {
         return color;
     }

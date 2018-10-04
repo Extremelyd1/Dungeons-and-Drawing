@@ -50,11 +50,17 @@ public class MapTestLevel extends Level {
         map = new Map();
         map.load(new SimpleMapLoader());
 
-        sceneLight.directionalLight = new DirectionalLight(
-                new Vector3f(1, 1, 1),
-                new Vector3f(0.2f, 1.0f, 0.5f),
-                0.3f);
+        //Set up ambient light of the scene
         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f, 0.2f, 0.2f));
+
+        //Set up a directional light
+        sceneLight.directionalLight = new DirectionalLight(
+                new Vector3f(0.0f,10.0f,0.0f),      // position
+                new Vector3f(0.5f, 0.5f, 0.8f),     // color
+                new Vector3f(0.0f, 1.0f, 0.0f),     // direction
+            0.2f,                                    // intensity
+                new Vector2f(1.0f, 10.0f),             // near-far plane
+                2048);                              // resolution
 
         // Set up a point light
         Vector3f lightPosition1 = new Vector3f(1.0f, 3.0f, -1.0f);
@@ -84,19 +90,16 @@ public class MapTestLevel extends Level {
         Mesh mesh_light = PLYLoader.loadMesh("/models/PLY/light.ply");
         Material material_light = new Material(new Vector4f(pointLight1.getColor(), 1), 0.1f);
         mesh_light.setMaterial(material_light);
-
         light1 = new Entity(mesh_light, new Vector3f(pointLight1.getPosition().x, pointLight1.getPosition().y, pointLight1.getPosition().z), 0.05f * lightIntensity1);
         light2 = new Entity(mesh_light, new Vector3f(spotLight1.getPosition().x, spotLight1.getPosition().y, spotLight1.getPosition().z), 0.05f * lightIntensity2);
 
         Mesh cube_mesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
         cube_mesh.setMaterial(new Material(0.1f));
 
-//        player = new Player(cube_mesh, map, new Vector3f(3, 1, 3), 0.5f);
-
         Mesh tree = PLYLoader.loadMesh("/models/PLY/tree.ply");
         Material material = new Material(
                 new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
-                new Vector4f(0.15f, 0.15f, 0.15f, 1.0f),
+                new Vector4f(0.25f, 0.25f, 0.25f, 1.0f),
                 new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
                 null,
                 0.0f
@@ -111,10 +114,12 @@ public class MapTestLevel extends Level {
 
         // Tree 2
         Entity g2 = new Entity(tree);
-        g2.setPosition(-10.0f, 0.0f, 10.0f);
+        g2.setPosition(-2.0f, 0.0f, 2.0f);
         g2.setRotation(-90,0,0);
 
         gameEntities = new Entity[]{g, g2, light1, light2};
+
+        //        player = new Player(cube_mesh, map, new Vector3f(3, 1, 3), 0.5f);
     }
 
     @Override

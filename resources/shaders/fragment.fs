@@ -36,7 +36,6 @@ struct SpotLight
     vec3 position;
     float intensity;
     Attenuation att;
-    vec2 plane;
     //Shadow map
     sampler2D shadowMap;
     // Spotlight specific parameters
@@ -52,6 +51,8 @@ struct DirectionalLight
     vec3 colour;
     vec3 direction;
     float intensity;
+    mat4 lightSpaceMatrix;
+    sampler2D shadowMap;
 };
 
 struct Material
@@ -186,7 +187,7 @@ float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2
     return shadow;
 }
 
-float calcShadow2D(mat4 matrix, vec3 position, vec3 light_position, sampler2D shadowMap, vec2 plane)
+float calcShadow2D(mat4 matrix, vec3 position, sampler2D shadowMap)
 {
     vec4 coord = matrix * vec4(position, 1.0);
     vec3 projCoords = coord.xyz / coord.w;
@@ -220,7 +221,12 @@ void main()
     float shadow = 0;
     vec4 component = vec4(0,0,0,0);
 
-    diffuseSpecularComp += calcDirectionalLight(directionalLight, fs_in.FragPos, fs_in.Normal);
+    // Calculate directional light
+    component = calcDirectionalLight(directionalLight, fs_in.FragPos, fs_in.Normal);
+    if (length(component) > 0) {
+        shadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.shadowMap);
+        diffuseSpecularComp += shadow * component;
+    }
 
     // Calculate Point Lights
     for (int i=0; i<MAX_POINT_LIGHTS; i++)
@@ -241,7 +247,7 @@ void main()
         {
             component = calcSpotLight(spotLights[i], fs_in.FragPos, fs_in.Normal);
             if (length(component) > 0) {
-               shadow = calcShadow2D(spotLights[i].lightSpaceMatrix, fs_in.FragPos, spotLights[i].position, spotLights[i].shadowMap, spotLights[i].plane);
+               shadow = calcShadow2D(spotLights[i].lightSpaceMatrix, fs_in.FragPos, spotLights[i].shadowMap);
                diffuseSpecularComp += shadow * component;
             }
 
