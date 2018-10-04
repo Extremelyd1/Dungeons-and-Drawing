@@ -6,8 +6,6 @@ import engine.entities.Entity;
 import engine.lights.PointLight;
 import engine.lights.SpotLight;
 import engine.loader.PLYLoader;
-import game.map.tile.Tile;
-import pathfinding.A_star;
 import game.LevelController;
 import game.Renderer;
 import game.map.Map;
@@ -16,11 +14,6 @@ import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import pathfinding.Pathfinding;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 public class MapTestLevel extends Level {
 
@@ -44,10 +37,8 @@ public class MapTestLevel extends Level {
 
         map = new Map();
         map.load(new SimpleMapLoader());
-        Pathfinding alg = new A_star();
-        List<Tile> path = alg.computePath(map.getTile(0,3), map.getTile(3, 3), map);
         ambientLight = new Vector3f(0.6f, 0.6f, 0.6f);
-        Collection<Tile> f = alg.getOpenedTiles();
+
 
         // Set up a point light
         Vector3f lightPosition = new Vector3f(1.0f, 1.0f, -7.0f);

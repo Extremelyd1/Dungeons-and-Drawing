@@ -2,8 +2,6 @@ package pathfinding;
 
 import game.map.Map;
 import game.map.tile.Tile;
-
-import java.util.Collection;
 import java.util.List;
 
 public interface Pathfinding {
