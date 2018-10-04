@@ -1,6 +1,11 @@
 package engine;
 
 import game.LevelController;
+import game.state.SandboxTestLevel;
+import sun.security.ssl.Debug;
+
+import java.lang.management.ManagementFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Main class of this Java Application to test the Light Weight Java Gaming
@@ -36,6 +41,8 @@ public class Launcher {
      */
     public static void main(String[] args) {
         try {
+//            Debug.println("PID", ManagementFactory.getRuntimeMXBean().getName());
+            //TimeUnit.SECONDS.sleep(8);
             (new GameEngine(new LevelController())).start();
         } catch (Exception e) {
             e.printStackTrace(System.out);

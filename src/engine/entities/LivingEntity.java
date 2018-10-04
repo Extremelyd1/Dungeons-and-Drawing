@@ -1,5 +1,6 @@
 package engine.entities;
 
+import game.map.Map;
 import graphics.Mesh;
 import org.joml.Vector3f;
 
@@ -9,29 +10,38 @@ import org.joml.Vector3f;
 public class LivingEntity extends Entity {
 
     private float speed;
+    private Map map;
 
-    public LivingEntity(Mesh mesh) {
+    public LivingEntity(Mesh mesh, Map map) {
         super(mesh);
+        this.map = map;
         speed = 1;
     }
 
-    public LivingEntity(Mesh mesh, Vector3f position, Vector3f rotation) {
+    public LivingEntity(Mesh mesh, Map map, Vector3f position, Vector3f rotation) {
         super(mesh, position, rotation);
+        this.map = map;
         speed = 1;
     }
 
-    public LivingEntity(Mesh mesh, Vector3f position, Vector3f rotation, float speed) {
+    public LivingEntity(Mesh mesh, Map map, Vector3f position, Vector3f rotation, float speed) {
         super(mesh, position, rotation);
+        this.map = map;
         this.speed = speed;
     }
 
-    public LivingEntity(Mesh mesh, Vector3f position, Vector3f rotation, float scale, float speed) {
+    public LivingEntity(Mesh mesh, Map map, Vector3f position, Vector3f rotation, float scale, float speed) {
         super(mesh, position, rotation, scale);
+        this.map = map;
         this.speed = speed;
     }
 
     public float getSpeed() {
         return speed;
+    }
+
+    public Map getMap() {
+        return map;
     }
 
 }

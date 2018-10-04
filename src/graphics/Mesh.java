@@ -1,5 +1,6 @@
 package graphics;
 
+import engine.GameEntity;
 import engine.loader.data.OBJData;
 import engine.loader.data.PLYData;
 import org.lwjgl.system.MemoryUtil;
@@ -9,6 +10,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -116,7 +118,7 @@ public class Mesh {
 
             // Create buffers
             buffers.add(createVBO(objData.positions, 0, 3));
-            buffers.add(createVBO(objData.textureCoords, 1, 3));
+            buffers.add(createVBO(objData.textureCoords, 1, 2));
             buffers.add(createVBO(objData.normals, 3, 3));
             buffers.add(createVBO(objData.indicies));
 
@@ -179,7 +181,7 @@ public class Mesh {
     /**
      * Renders the mesh
      */
-    public void render() {
+    public void initRender() {
         if (material.isTextured()) {
             //Get the texture
             Texture texture = material.getTexture();
@@ -199,9 +201,17 @@ public class Mesh {
             glEnableVertexAttribArray(2);
         }
         glEnableVertexAttribArray(3);
+    }
+
+    public void render() {
+        initRender();
 
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
 
+        endRender();
+    }
+
+    public void endRender() {
         // Restore state
         glDisableVertexAttribArray(0);
         if (hasTextureCoords) {
@@ -251,6 +261,20 @@ public class Mesh {
         Texture texture = material.getTexture();
         if (texture != null) {
             texture.cleanup();
+        }
+
+        // Delete the VAO
+        glBindVertexArray(0);
+        glDeleteVertexArrays(vaoId);
+    }
+
+    public void deleteBuffers() {
+        glDisableVertexAttribArray(0);
+
+        // Delete the VBOs
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        for (int vboId : vboIdList) {
+            glDeleteBuffers(vboId);
         }
 
         // Delete the VAO

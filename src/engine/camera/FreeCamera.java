@@ -2,6 +2,7 @@ package engine.camera;
 
 import engine.GameWindow;
 import engine.MouseInput;
+import engine.input.KeyBinding;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -24,19 +25,19 @@ public class FreeCamera extends Camera {
     public void handleInput(MouseInput mouseInput) {
         GameWindow window = GameWindow.getGameWindow();
         Vector3i cameraInc = new Vector3i(0, 0, 0);
-        if (window.isKeyPressed(GLFW_KEY_W) || window.isKeyPressed(GLFW_KEY_UP)) {
+        if (KeyBinding.isForwardPressed()) {
             cameraInc.z = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_S) || window.isKeyPressed(GLFW_KEY_DOWN)) {
+        } else if (KeyBinding.isBackwardPressed()) {
             cameraInc.z = 1;
         }
-        if (window.isKeyPressed(GLFW_KEY_A) || window.isKeyPressed(GLFW_KEY_LEFT)) {
+        if (KeyBinding.isLeftPressed()) {
             cameraInc.x = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_D) || window.isKeyPressed(GLFW_KEY_RIGHT)) {
+        } else if (KeyBinding.isRightPressed()) {
             cameraInc.x = 1;
         }
-        if (window.isKeyPressed(GLFW_KEY_Z)) {
+        if (KeyBinding.isUpPressed()) {
             cameraInc.y = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_X)) {
+        } else if (KeyBinding.isDownPressed()) {
             cameraInc.y = 1;
         }
 
