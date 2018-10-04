@@ -81,7 +81,7 @@ public class Renderer {
         sceneShader.createUniform("ambientLight");
         sceneShader.createPointLightListUniform("pointLights", MAX_POINT_LIGHTS);
         sceneShader.createSpotLightListUniform("spotLights", MAX_SPOT_LIGHTS);
-        //sceneShader.createDirectionalLightUniform("directionalLight"); // NOT IMPLEMENTED
+        sceneShader.createDirectionalLightUniform("directionalLight");
 
         // Shadow mapping related uniforms
         sceneShader.createUniform("viewPos");
@@ -217,6 +217,9 @@ public class Renderer {
         for (int i = 0; i < numSpotLights; i++) {
             sceneShader.setUniform("spotLights[" + i + "].shadowMap", 1 + numPointLights + i);
         }
+        if (sceneLight.directionalLight != null) {
+            sceneShader.setUniform("directionalLight.shadowMap", 1 + numPointLights + numSpotLights);
+        }
 
         Matrix4f model;
         Matrix4f projectionViewModel;
@@ -232,12 +235,11 @@ public class Renderer {
                             tile.getRotation(),
                             0.5f);
                     sceneShader.setUniform("model", model);
-
+                    // Pre-compute projection and view matrix
                     projectionViewModel = new Matrix4f(projectionAndView);
                     projectionViewModel.mul(model);
                     sceneShader.setUniform("projectionViewModel", projectionViewModel);
-
-                    // Render the mes for this game item
+                    // Mesh material
                     sceneShader.setUniform("material", mesh.getMaterial());
 
                     for (int i = 0; i < numPointLights; i++) {
@@ -248,6 +250,10 @@ public class Renderer {
                         glActiveTexture(GL_TEXTURE1 + numPointLights + i);
                         glBindTexture(GL_TEXTURE_2D, sceneLight.spotLights.get(i).getShadowMap().getDepthMap());
                     }
+                    if (sceneLight.directionalLight != null) {
+                        glActiveTexture(GL_TEXTURE1 + numPointLights + numSpotLights);
+                        glBindTexture(GL_TEXTURE_2D, sceneLight.directionalLight.getShadowMap().getDepthMap());
+                    }
 
                     mesh.render();
                 }
@@ -255,16 +261,15 @@ public class Renderer {
         }
 
         for (Entity entity : entities) {
-
             Mesh mesh = entity.getMesh();
             model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
-
-            sceneShader.setUniform("material", mesh.getMaterial());
             sceneShader.setUniform("model", model);
-
+            // Pre-compute projection and view matrix
             projectionViewModel = new Matrix4f(projectionAndView);
             projectionViewModel.mul(model);
             sceneShader.setUniform("projectionViewModel", projectionViewModel);
+            // Mesh material
+            sceneShader.setUniform("material", mesh.getMaterial());
 
             for (int i = 0; i < numPointLights; i++) {
                 glActiveTexture(GL_TEXTURE1 + i);
@@ -273,6 +278,10 @@ public class Renderer {
             for (int i = 0; i < numSpotLights; i++) {
                 glActiveTexture(GL_TEXTURE1 + numPointLights + i);
                 glBindTexture(GL_TEXTURE_2D, sceneLight.spotLights.get(i).getShadowMap().getDepthMap());
+            }
+            if (sceneLight.directionalLight != null) {
+                glActiveTexture(GL_TEXTURE1 + numPointLights + numSpotLights);
+                glBindTexture(GL_TEXTURE_2D, sceneLight.directionalLight.getShadowMap().getDepthMap());
             }
 
             mesh.render();
@@ -297,6 +306,10 @@ public class Renderer {
         sceneShader.setUniform("ambientLight", sceneLight.ambientLight.getLight());
         sceneShader.setUniform("specularPower", specularPower);
 
+        //Process Directional Lights
+        if (sceneLight.directionalLight != null) {
+            sceneShader.setUniform("directionalLight", sceneLight.directionalLight);
+        }
         // Process Point Lights
         int numLights = sceneLight.pointLights != null ? sceneLight.pointLights.size() : 0;
         for (int i = 0; i < numLights; i++) {
@@ -320,93 +333,17 @@ public class Renderer {
         int numLights;
         // Loop through all point light sources
         glDisable(GL_CULL_FACE);
-        // Point Light Depth Shader
-        numLights = sceneLight.pointLights != null ? sceneLight.pointLights.size() : 0;
-        for (int i = 0; i < numLights; i++) {
-            PointLight pointLight = sceneLight.pointLights.get(i);
-            ShadowMap shadowMap = pointLight.getShadowMap();
-
-            glViewport(0, 0, shadowMap.getResolution(), shadowMap.getResolution());
-            glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
-            glClear(GL_DEPTH_BUFFER_BIT);
-
-            Matrix4f shadowProj = new Matrix4f();
-            shadowProj.setPerspective((float) Math.toRadians(90), 1.0f,
-                    pointLight.getPlane().x,
-                    pointLight.getPlane().y);
-            Matrix4f views[] = new Matrix4f[6];
-
-            views[0] = transformation.getProjectionWithDirection(
-                    pointLight.getPosition(),
-                    new Vector3f(1.0f, 0.0f, 0.0f),
-                    shadowProj,
-                    new Vector3f(0.0f, -1.0f, 0.0f));
-            views[1] = transformation.getProjectionWithDirection(
-                    pointLight.getPosition(),
-                    new Vector3f(-1.0f, 0.0f, 0.0f),
-                    shadowProj,
-                    new Vector3f(0.0f, -1.0f, 0.0f));
-            views[2] = transformation.getProjectionWithDirection(
-                    pointLight.getPosition(),
-                    new Vector3f(0.0f, 1.0f, 0.0f),
-                    shadowProj,
-                    new Vector3f(0.0f, 0.0f, 1.0f));
-            views[3] = transformation.getProjectionWithDirection(
-                    pointLight.getPosition(),
-                    new Vector3f(0.0f, -1.0f, 0.0f),
-                    shadowProj,
-                    new Vector3f(0.0f, 0.0f, -1.0f));
-            views[4] = transformation.getProjectionWithDirection(
-                    pointLight.getPosition(),
-                    new Vector3f(0.0f, 0.0f, 1.0f),
-                    shadowProj,
-                    new Vector3f(0.0f, -1.0f, 0.0f));
-            views[5] = transformation.getProjectionWithDirection(
-                    pointLight.getPosition(),
-                    new Vector3f(0.0f, 0.0f, -1.0f),
-                    shadowProj,
-                    new Vector3f(0.0f, -1.0f, 0.0f));
-
-            depthShaderCube.bind();
-            depthShaderCube.setUniform("shadowMatrices", views, 6);
-            depthShaderCube.setUniform("lightPos", pointLight.getPosition());
-            depthShaderCube.setUniform("far_plane", pointLight.getPlane().y);
-            if (map != null) {
-                for (Tile[] row : map.getTiles()) {
-                    for (Tile tile : row) {
-                        Mesh mesh = tile.getMesh();
-                        // Set model view matrix for this item
-                        depthShaderCube.setUniform("modelMatrix", transformation.getWorldMatrix(
-                                new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
-                                tile.getRotation(),
-                                0.5f));
-
-                        mesh.render();
-                    }
-                }
-            }
-            for (Entity entity : entities) {
-                Mesh mesh = entity.getMesh();
-                depthShaderCube.setUniform("modelMatrix",
-                        transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector()));
-                mesh.render();
-            }
-            //Unbind FBO and shader
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            depthShaderCube.unbind();
-        }
-        // Spot Light Depth Shader
-        numLights = sceneLight.spotLights != null ? sceneLight.spotLights.size() : 0;
-        for (int i = 0; i < numLights; i++) {
-            SpotLight spotLight = sceneLight.spotLights.get(i);
-            ShadowMap shadowMap = spotLight.getShadowMap();
+        glCullFace(GL_FRONT);
+        // Directional Light Depth Shader
+        if (sceneLight.directionalLight != null) {
+            ShadowMap shadowMap = sceneLight.directionalLight.getShadowMap();
 
             glViewport(0, 0, shadowMap.getResolution(), shadowMap.getResolution());
             glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
             glClear(GL_DEPTH_BUFFER_BIT);
 
             depthShader.bind();
-            depthShader.setUniform("lightSpaceMatrix", spotLight.getLightSpaceMatrix());
+            depthShader.setUniform("lightSpaceMatrix", sceneLight.directionalLight.getLightSpaceMatrix());
             if (map != null) {
                 for (Tile[] row : map.getTiles()) {
                     for (Tile tile : row) {
@@ -431,6 +368,122 @@ public class Renderer {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             depthShader.unbind();
         }
+        // Point Light Depth Shader
+        numLights = sceneLight.pointLights != null ? sceneLight.pointLights.size() : 0;
+        for (int i = 0; i < numLights; i++) {
+            if (sceneLight.pointLights.get(i).getIntensity() > 0) {
+                PointLight pointLight = sceneLight.pointLights.get(i);
+                ShadowMap shadowMap = pointLight.getShadowMap();
+
+                glViewport(0, 0, shadowMap.getResolution(), shadowMap.getResolution());
+                glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
+                glClear(GL_DEPTH_BUFFER_BIT);
+
+                Matrix4f shadowProj = new Matrix4f();
+                shadowProj.setPerspective((float) Math.toRadians(90), 1.0f,
+                        pointLight.getPlane().x,
+                        pointLight.getPlane().y);
+                Matrix4f views[] = new Matrix4f[6];
+
+                views[0] = transformation.getProjectionWithDirection(
+                        pointLight.getPosition(),
+                        new Vector3f(1.0f, 0.0f, 0.0f),
+                        shadowProj,
+                        new Vector3f(0.0f, -1.0f, 0.0f));
+                views[1] = transformation.getProjectionWithDirection(
+                        pointLight.getPosition(),
+                        new Vector3f(-1.0f, 0.0f, 0.0f),
+                        shadowProj,
+                        new Vector3f(0.0f, -1.0f, 0.0f));
+                views[2] = transformation.getProjectionWithDirection(
+                        pointLight.getPosition(),
+                        new Vector3f(0.0f, 1.0f, 0.0f),
+                        shadowProj,
+                        new Vector3f(0.0f, 0.0f, 1.0f));
+                views[3] = transformation.getProjectionWithDirection(
+                        pointLight.getPosition(),
+                        new Vector3f(0.0f, -1.0f, 0.0f),
+                        shadowProj,
+                        new Vector3f(0.0f, 0.0f, -1.0f));
+                views[4] = transformation.getProjectionWithDirection(
+                        pointLight.getPosition(),
+                        new Vector3f(0.0f, 0.0f, 1.0f),
+                        shadowProj,
+                        new Vector3f(0.0f, -1.0f, 0.0f));
+                views[5] = transformation.getProjectionWithDirection(
+                        pointLight.getPosition(),
+                        new Vector3f(0.0f, 0.0f, -1.0f),
+                        shadowProj,
+                        new Vector3f(0.0f, -1.0f, 0.0f));
+
+                depthShaderCube.bind();
+                depthShaderCube.setUniform("shadowMatrices", views, 6);
+                depthShaderCube.setUniform("lightPos", pointLight.getPosition());
+                depthShaderCube.setUniform("far_plane", pointLight.getPlane().y);
+                if (map != null) {
+                    for (Tile[] row : map.getTiles()) {
+                        for (Tile tile : row) {
+                            Mesh mesh = tile.getMesh();
+                            // Set model view matrix for this item
+                            depthShaderCube.setUniform("modelMatrix", transformation.getWorldMatrix(
+                                    new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
+                                    tile.getRotation(),
+                                    0.5f));
+
+                            mesh.render();
+                        }
+                    }
+                }
+                for (Entity entity : entities) {
+                    Mesh mesh = entity.getMesh();
+                    depthShaderCube.setUniform("modelMatrix",
+                            transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector()));
+                    mesh.render();
+                }
+                //Unbind FBO and shader
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                depthShaderCube.unbind();
+            }
+        }
+        // Spot Light Depth Shader
+        numLights = sceneLight.spotLights != null ? sceneLight.spotLights.size() : 0;
+        for (int i = 0; i < numLights; i++) {
+            if (sceneLight.spotLights.get(i).getIntensity() > 0) {
+                SpotLight spotLight = sceneLight.spotLights.get(i);
+                ShadowMap shadowMap = spotLight.getShadowMap();
+
+                glViewport(0, 0, shadowMap.getResolution(), shadowMap.getResolution());
+                glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
+                glClear(GL_DEPTH_BUFFER_BIT);
+
+                depthShader.bind();
+                depthShader.setUniform("lightSpaceMatrix", spotLight.getLightSpaceMatrix());
+                if (map != null) {
+                    for (Tile[] row : map.getTiles()) {
+                        for (Tile tile : row) {
+                            Mesh mesh = tile.getMesh();
+                            // Set model view matrix for this item
+                            depthShader.setUniform("modelMatrix", transformation.getWorldMatrix(
+                                    new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
+                                    tile.getRotation(),
+                                    0.5f));
+
+                            mesh.render();
+                        }
+                    }
+                }
+                for (Entity entity : entities) {
+                    Mesh mesh = entity.getMesh();
+                    depthShader.setUniform("modelMatrix",
+                            transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector()));
+                    mesh.render();
+                }
+                //Unbind FBO and shader
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                depthShader.unbind();
+            }
+        }
+        glCullFace(GL_BACK);
     }
 
     private void renderGui(GUI gui) {

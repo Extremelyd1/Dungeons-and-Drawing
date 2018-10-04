@@ -1,4 +1,4 @@
-#version 330
+#version 400
 
 const int MAX_POINT_LIGHTS = 5;
 const int MAX_SPOT_LIGHTS = 5;
@@ -36,7 +36,6 @@ struct SpotLight
     vec3 position;
     float intensity;
     Attenuation att;
-    vec2 plane;
     //Shadow map
     sampler2D shadowMap;
     // Spotlight specific parameters
@@ -52,6 +51,8 @@ struct DirectionalLight
     vec3 colour;
     vec3 direction;
     float intensity;
+    mat4 lightSpaceMatrix;
+    sampler2D shadowMap;
 };
 
 struct Material
@@ -105,9 +106,9 @@ void setupColours(Material material, vec2 textCoord)
     }
     else
     {
-        ambientC = material.ambient;
-        diffuseC = material.diffuse;
-        speculrC = material.specular;
+        ambientC = fs_in.Color * material.ambient;
+        diffuseC = fs_in.Color * material.diffuse;
+        speculrC = fs_in.Color * material.specular;
     }
 }
 
@@ -115,14 +116,23 @@ void setupColours(Material material, vec2 textCoord)
 vec4 calcBlinnPhong(vec3 light_color, float light_intensity, vec3 position, vec3 light_direction, vec3 normal){
     // Diffuse component
     float diff = max(dot(light_direction, normal), 0.0);
-    vec4 diffuse = diffuseC * vec4(light_color, 1.0) * light_intensity * diff;
-    // Specular component
-    vec3 viewDir = normalize(viewPos - position);
-    vec3 halfwayDir = normalize(light_direction + viewDir);
-    float spec = pow(max(dot(normal, halfwayDir), 0.0), specularPower);
-    vec4 specular = speculrC * light_intensity * spec * material.reflectance * vec4(light_color, 1.0);
+    if (diff != 0 ) {
+        vec4 diffuse = diffuseC * vec4(light_color, 1.0) * light_intensity * diff;
+        // Specular component
+        vec3 viewDir = normalize(viewPos - position);
+        vec3 halfwayDir = normalize(light_direction + viewDir);
+        float spec = pow(max(dot(normal, halfwayDir), 0.0), specularPower);
+        vec4 specular = speculrC * light_intensity * spec * material.reflectance * vec4(light_color, 1.0);
+        return (diffuse + specular);
+    } else {
+        return vec4(0, 0, 0, 0);
+    }
+}
 
-    return (diffuse + specular);
+// Calculate Direction Light
+vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal)
+{
+    return calcBlinnPhong(light.colour, light.intensity, position, normalize(light.direction), normal);
 }
 
 // Calculate Point Light
@@ -163,9 +173,9 @@ float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2
     float currentDepth = length(fragToLight);
 
     float shadow = 0.0f;
-    float bias = 0.0125f; //0.001f
+    float bias = 0.004f; //0.001f
     int samples = 20;
-    float diskRadius = 0.001; //Regulates the softness of shadows 0.0015 is ideal
+    float diskRadius = 0.00028f; //Regulates the softness of shadows 0.0015 is ideal
     for (int i = 0; i < samples; ++i){
         float closestDepth = texture(shadowMap, fragToLight + shadowSamplingGrid[i] * diskRadius).r;
         closestDepth *= plane.y;
@@ -177,14 +187,14 @@ float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2
     return shadow;
 }
 
-float calcShadow2D(mat4 matrix, vec3 position, vec3 light_position, sampler2D shadowMap)
+float calcShadow2D(mat4 matrix, vec3 position, sampler2D shadowMap)
 {
     vec4 coord = matrix * vec4(position, 1.0);
     vec3 projCoords = coord.xyz / coord.w;
     projCoords = projCoords * 0.5 + 0.5;
 
     float currentDepth = projCoords.z;
-    float bias = 0.0014f; //0.001f
+    float bias = 0.0001f; //0.001f
 
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
@@ -206,27 +216,41 @@ void main()
     // Setup Material
     setupColours(material, fs_in.TexCoords);
 
+    // Variables
     vec4 diffuseSpecularComp = vec4(0,0,0,0);
+    float shadow = 0;
+    vec4 component = vec4(0,0,0,0);
+
+    // Calculate directional light
+    component = calcDirectionalLight(directionalLight, fs_in.FragPos, fs_in.Normal);
+    if (length(component) > 0) {
+        shadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.shadowMap);
+        diffuseSpecularComp += shadow * component;
+    }
+
     // Calculate Point Lights
     for (int i=0; i<MAX_POINT_LIGHTS; i++)
     {
-        if ( pointLights[i].intensity > 0 )
+        if (pointLights[i].intensity > 0 )
         {
-            diffuseSpecularComp +=
-                calcPointLight(pointLights[i], fs_in.FragPos, fs_in.Normal) *
-                calcShadow(fs_in.FragPos, pointLights[i].position, pointLights[i].shadowMap, pointLights[i].plane);
+            component = calcPointLight(pointLights[i], fs_in.FragPos, fs_in.Normal);
+            if (length(component) > 0) {
+                shadow = calcShadow(fs_in.FragPos, pointLights[i].position, pointLights[i].shadowMap, pointLights[i].plane);
+                diffuseSpecularComp += shadow * component;
+            }
         }
     }
     // Calculate Spot Lights
     for (int i=0; i<MAX_SPOT_LIGHTS; i++)
     {
-        if ( spotLights[i].intensity > 0 )
+        if (spotLights[i].intensity > 0 )
         {
-            vec4 component = calcSpotLight(spotLights[i], fs_in.FragPos, fs_in.Normal);
+            component = calcSpotLight(spotLights[i], fs_in.FragPos, fs_in.Normal);
             if (length(component) > 0) {
-                component *= calcShadow2D(spotLights[i].lightSpaceMatrix, fs_in.FragPos, spotLights[i].position, spotLights[i].shadowMap);
+               shadow = calcShadow2D(spotLights[i].lightSpaceMatrix, fs_in.FragPos, spotLights[i].shadowMap);
+               diffuseSpecularComp += shadow * component;
             }
-            diffuseSpecularComp += component;
+
         }
     }
 

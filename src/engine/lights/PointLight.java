@@ -37,20 +37,6 @@ public class PointLight {
         this.attenuation = attenuation;
     }
 
-    private PointLight(Vector3f color, Vector3f position, float intensity, Attenuation attenuation, ShadowMap shadowMap, Vector2f plane) {
-        this.color = color;
-        this.position = position;
-        this.intensity = intensity;
-        this.attenuation = attenuation;
-        this.shadowMap = shadowMap;
-        this.plane = plane;
-    }
-
-    public PointLight(PointLight pointLight) {
-        this(new Vector3f(pointLight.getColor()), new Vector3f(pointLight.getPosition()),
-                pointLight.getIntensity(), pointLight.getAttenuation(), pointLight.getShadowMap(), pointLight.getPlane());
-    }
-
     public Vector3f getColor() {
         return color;
     }
