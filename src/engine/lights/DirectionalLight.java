@@ -92,13 +92,11 @@ public class DirectionalLight {
         lightView.rotate(())*/
         float lightAngleX = (float)Math.toDegrees(Math.acos(direction.z));
         float lightAngleY = (float)Math.toDegrees(Math.asin(direction.x));
-        //Matrix4f lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowPosMult()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
         Matrix4f lightView = new Matrix4f().identity();
         lightView.rotate((float)Math.toRadians(lightAngleX), new Vector3f(1,0 ,0))
                  .rotate((float)Math.toRadians(lightAngleY), new Vector3f(0, 1, 0));
         lightView.translate(-position.x, -position.y, -position.z);
 
-        //Matrix4f lightView = new Matrix4f().lookAt(position, new Vector3f(position).add(direction), new Vector3f(-1.0f, 0.0f, 0.0f));
         lightSpaceMatrix = new Matrix4f(ortho).mul(lightView);
     }
 

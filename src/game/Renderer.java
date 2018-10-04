@@ -235,12 +235,11 @@ public class Renderer {
                             tile.getRotation(),
                             0.5f);
                     sceneShader.setUniform("model", model);
-
+                    // Pre-compute projection and view matrix
                     projectionViewModel = new Matrix4f(projectionAndView);
                     projectionViewModel.mul(model);
                     sceneShader.setUniform("projectionViewModel", projectionViewModel);
-
-                    // Render the mes for this game item
+                    // Mesh material
                     sceneShader.setUniform("material", mesh.getMaterial());
 
                     for (int i = 0; i < numPointLights; i++) {
@@ -251,8 +250,10 @@ public class Renderer {
                         glActiveTexture(GL_TEXTURE1 + numPointLights + i);
                         glBindTexture(GL_TEXTURE_2D, sceneLight.spotLights.get(i).getShadowMap().getDepthMap());
                     }
-                    glActiveTexture(GL_TEXTURE1 + numPointLights + numSpotLights);
-                    glBindTexture(GL_TEXTURE_2D, sceneLight.directionalLight.getShadowMap().getDepthMap());
+                    if (sceneLight.directionalLight != null) {
+                        glActiveTexture(GL_TEXTURE1 + numPointLights + numSpotLights);
+                        glBindTexture(GL_TEXTURE_2D, sceneLight.directionalLight.getShadowMap().getDepthMap());
+                    }
 
                     mesh.render();
                 }
@@ -262,13 +263,13 @@ public class Renderer {
         for (Entity entity : entities) {
             Mesh mesh = entity.getMesh();
             model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
-
-            sceneShader.setUniform("material", mesh.getMaterial());
             sceneShader.setUniform("model", model);
-
+            // Pre-compute projection and view matrix
             projectionViewModel = new Matrix4f(projectionAndView);
             projectionViewModel.mul(model);
             sceneShader.setUniform("projectionViewModel", projectionViewModel);
+            // Mesh material
+            sceneShader.setUniform("material", mesh.getMaterial());
 
             for (int i = 0; i < numPointLights; i++) {
                 glActiveTexture(GL_TEXTURE1 + i);
@@ -277,6 +278,10 @@ public class Renderer {
             for (int i = 0; i < numSpotLights; i++) {
                 glActiveTexture(GL_TEXTURE1 + numPointLights + i);
                 glBindTexture(GL_TEXTURE_2D, sceneLight.spotLights.get(i).getShadowMap().getDepthMap());
+            }
+            if (sceneLight.directionalLight != null) {
+                glActiveTexture(GL_TEXTURE1 + numPointLights + numSpotLights);
+                glBindTexture(GL_TEXTURE_2D, sceneLight.directionalLight.getShadowMap().getDepthMap());
             }
 
             mesh.render();
@@ -327,7 +332,7 @@ public class Renderer {
             Map map){
         int numLights;
         // Loop through all point light sources
-        //glDisable(GL_CULL_FACE);
+        glDisable(GL_CULL_FACE);
         glCullFace(GL_FRONT);
         // Directional Light Depth Shader
         if (sceneLight.directionalLight != null) {

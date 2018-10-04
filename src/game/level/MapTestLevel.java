@@ -56,11 +56,11 @@ public class MapTestLevel extends Level {
         //Set up a directional light
         sceneLight.directionalLight = new DirectionalLight(
                 new Vector3f(0.0f,10.0f,0.0f),      // position
-                new Vector3f(0.5f, 0.5f, 0.8f),     // color
-                new Vector3f(0.0f, 1.0f, 0.0f),     // direction
-            0.2f,                                    // intensity
+                new Vector3f(0.8f, 0.8f, 0.8f),     // color
+                new Vector3f(0.0f, 1.0f, 0.4f),     // direction
+            0.8f,                                    // intensity
                 new Vector2f(1.0f, 10.0f),             // near-far plane
-                2048);                              // resolution
+                2048);                             // resolution
 
         // Set up a point light
         Vector3f lightPosition1 = new Vector3f(1.0f, 3.0f, -1.0f);
@@ -99,7 +99,7 @@ public class MapTestLevel extends Level {
         Mesh tree = PLYLoader.loadMesh("/models/PLY/tree.ply");
         Material material = new Material(
                 new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
-                new Vector4f(0.25f, 0.25f, 0.25f, 1.0f),
+                new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
                 new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
                 null,
                 0.0f

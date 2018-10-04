@@ -28,7 +28,7 @@ public class SimpleMapLoader implements MapLoader {
         );
         mesh.setMaterial(material);
 
-        return generateGround(mesh,  50);
+        return generateGround(mesh,  10);
     }
 
     private Tile[][] generateGround(Mesh mesh, int gridSize){
