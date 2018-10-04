@@ -2,19 +2,17 @@ package pathfinding;
 
 import game.map.Map;
 import game.map.tile.Tile;
-import org.joml.Vector2i;
-import org.joml.Vector3f;
+import sun.awt.image.ImageWatched;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /**
  * Class that implements the A* algorithm and executes it.
  * @Author Koen Degeling (1018025)
  */
-public class A_star {
+public class A_star implements Pathfinding{
+    private PriorityQueue<Node> open;
+    private Hashtable<Tile, Boolean> closed;
     /**
      * Method that computes the path and returns a list of tiles, the path we have to take to reach
      * the target.
@@ -23,70 +21,56 @@ public class A_star {
      * @param map the map, containing the information of our graph
      * @return List containing the tiles we have to visit in sequence to reach the target.
      */
+    @Override
     public List<Tile> computePath(Tile start, Tile target, Map map) {
         // Initialise our open queue and comparator
-        PriorityQueue<Pair> open = new PriorityQueue<>();
+        open = new PriorityQueue<>();
         // List containing all the 'closed' nodes
-        LinkedList<Pair> closed = new LinkedList<>();
-        open.add(new Pair(start, 0, Math.abs(start.getPosition().x-target.getPosition().x)
+        closed = new Hashtable<>();
+        open.add(new Node(start, 0, Math.abs(start.getPosition().x-target.getPosition().x)
                 + Math.abs(start.getPosition().y-target.getPosition().y), null)); //We add the first node to the open queue
+        Node q = new Node(null, 0, 0, null);
         outerloop:
         while (!open.isEmpty()) {
-            Pair q = open.poll(); // Get the fist tile from the queue
+            q = open.poll(); // Get the fist tile from the queue
             // We get all of q's successors and put them on the open list
             for (Tile n : map.getNeighbours(q.t) ) {
                 // If the tile is walkable, add the tile to the open list
-                if (n.getPosition().x == target.getPosition().x && n.getPosition().y == target.getPosition().y) {
-                    closed.add(q);
-                    closed.add(new Pair(n, q.g+1, 0, q));
+                if (n==target) {
+                    closed.put(q.t, true);
+                    closed.put(n, true);
+                    q = new Node(n, q.g+1, 0, q);
                     break outerloop;
                 }
-                if (!n.isSolid() && !inClosed(n, closed)) {
+                if (!n.isSolid() && !closed.containsKey(n)) {
                     int h = Math.abs(n.getPosition().x-target.getPosition().x)
                         + Math.abs(n.getPosition().y-target.getPosition().y);
-                    open.add(new Pair(n, q.g+1, h, q));
+                    open.add(new Node(n, q.g+1, h, q));
                 }
             }
-            closed.add(q); //We add q to the closed list containing all the tiles
+            closed.put(q.t, true); //We add q to the closed list containing all the opened tiles
         }
-        Pair pt = closed.getLast();
+        Node pt = q;
         LinkedList<Tile> path = new LinkedList<>();
         while (pt.p != null) {
             path.addFirst(pt.t);
             pt = pt.p;
         }
         path.addFirst(pt.t);
-        for (Tile t : path) {
-            System.out.println("("+t.getPosition().x + "," + t.getPosition().y+")");
-        }
         return path;
     }
 
-    private boolean inClosed(Tile n, List<Pair> closed) {
-        for (Pair x : closed) {
-            if (x.t == n) return true;
+    @Override
+    public LinkedList<Tile> getOpenedTiles() {
+        LinkedList<Tile> a = new LinkedList<>();
+        for (Node x : open) {
+            a.add(x.t);
         }
-        return false;
+        return a;
     }
 
-    /**
-     * (Tile, g(t)) pair, defining a tile and the corresponding f(t) weight function.
-     */
-    private class Pair implements Comparable<Pair> {
-        Tile t;
-        int g, f, h;
-        Pair p;
-
-        public Pair(Tile t, int g, int h, Pair p) {
-            this.t = t;
-            this.g = g; this.h = h;
-            this.f = this.g + this.h;
-            this.p = p;
-        }
-
-        @Override
-        public int compareTo(Pair o) {
-            if(o.f < this.f) return 1; else return -1;
-        }
+    @Override
+    public Set<Tile> getClosedTiles() {
+        return closed.keySet();
     }
 }
