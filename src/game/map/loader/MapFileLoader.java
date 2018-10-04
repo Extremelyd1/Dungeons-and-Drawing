@@ -62,7 +62,7 @@ public class MapFileLoader implements MapLoader {
         int rotationIndex = tryParseInt(tileProperties[1]);
         boolean solid = tryParseInt(tileProperties[2]) == 1;
 
-        Vector3f rotation = new Vector3f(0, rotationIndex, 0);
+        Vector3f rotation = new Vector3f(0, rotationIndex * 90, 0);
 
         Vector2i position = new Vector2i(x, y);
 
