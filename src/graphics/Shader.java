@@ -171,13 +171,14 @@ public class Shader {
         createUniform(uniformName + ".cutoff");
         createUniform(uniformName + ".outerCutoff");
         createUniform(uniformName + ".lightSpaceMatrix");
-        createUniform(uniformName + ".plane");
     }
 
     public void createDirectionalLightUniform(String uniformName) throws Exception {
         createUniform(uniformName + ".colour");
         createUniform(uniformName + ".direction");
         createUniform(uniformName + ".intensity");
+        createUniform(uniformName + ".shadowMap");
+        createUniform(uniformName + ".lightSpaceMatrix");
     }
 
     public void createMaterialUniform(String uniformName) throws Exception {
@@ -279,13 +280,13 @@ public class Shader {
         setUniform(uniformName + ".cutoff", spotLight.getCutOff());
         setUniform(uniformName + ".outerCutoff", spotLight.getOuterCutOff());
         setUniform(uniformName + ".lightSpaceMatrix", spotLight.getLightSpaceMatrix());
-        setUniform(uniformName + ".plane", spotLight.getPlane());
     }
 
     public void setUniform(String uniformName, DirectionalLight dirLight) {
         setUniform(uniformName + ".colour", dirLight.getColor());
         setUniform(uniformName + ".direction", dirLight.getDirection());
         setUniform(uniformName + ".intensity", dirLight.getIntensity());
+        setUniform(uniformName + ".lightSpaceMatrix", dirLight.getLightSpaceMatrix());
     }
 
     public void setUniform(String uniformName, Material material) {

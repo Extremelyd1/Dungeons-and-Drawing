@@ -4,6 +4,7 @@ import engine.loader.PLYLoader;
 import game.map.tile.Tile;
 import graphics.Material;
 import graphics.Mesh;
+import org.joml.Random;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -18,58 +19,30 @@ public class SimpleMapLoader implements MapLoader {
     public Tile[][] load() throws Exception {
 
         Mesh mesh = PLYLoader.loadMesh("/models/test_1.ply");
-        mesh.setMaterial(new Material(0.1f));
-        //Tile tile = new Tile(new Vector2i(0, 0), new Vector3f(0, 0, 0), mesh,true);
+        Material material = new Material(
+            new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+            new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+            new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+            null,
+            0.0f
+        );
+        mesh.setMaterial(material);
 
-        return new Tile[][]{
-                {
-                        new Tile(new Vector2i(0, 0), new Vector3f(0, 0, 0), mesh,true),
-                        new Tile(new Vector2i(1, 0), new Vector3f(0, 90, 0), mesh,true),
-                        new Tile(new Vector2i(2, 0), new Vector3f(0, 270, 0), mesh,true),
-                        new Tile(new Vector2i(3, 0), new Vector3f(0, 0, 0), mesh,true),
-                        new Tile(new Vector2i(4, 0), new Vector3f(0, 90, 0), mesh,true),
-                        new Tile(new Vector2i(5, 0), new Vector3f(0, 270, 0), mesh,true)
-                },
-                {
-                        new Tile(new Vector2i(0, 1), new Vector3f(0, 0, 0), mesh,true),
-                        new Tile(new Vector2i(1, 1), new Vector3f(0, 90, 0), mesh,false),
-                        new Tile(new Vector2i(2, 1), new Vector3f(0, 90, 0), mesh,false),
-                        new Tile(new Vector2i(3, 1), new Vector3f(0, 0, 0), mesh,false),
-                        new Tile(new Vector2i(4, 1), new Vector3f(0, 90, 0), mesh,false),
-                        new Tile(new Vector2i(5, 1), new Vector3f(0, 270, 0), mesh,true)
-                },
-                {
-                        new Tile(new Vector2i(0, 2), new Vector3f(0, 180, 0), mesh,true),
-                        new Tile(new Vector2i(1, 2), new Vector3f(0, 90, 0), mesh,false),
-                        new Tile(new Vector2i(2, 2), new Vector3f(0, 180, 0), mesh,false),
-                        new Tile(new Vector2i(3, 2), new Vector3f(0, 0, 0), mesh,false),
-                        new Tile(new Vector2i(4, 2), new Vector3f(0, 90, 0), mesh,false),
-                        new Tile(new Vector2i(5, 2), new Vector3f(0, 270, 0), mesh,true)
-                },
-                {
-                        new Tile(new Vector2i(0, 3), new Vector3f(0, 180, 0), mesh,true),
-                        new Tile(new Vector2i(1, 3), new Vector3f(0, 90, 0), mesh,false),
-                        new Tile(new Vector2i(2, 3), new Vector3f(0, 180, 0), mesh,false),
-                        new Tile(new Vector2i(3, 3), new Vector3f(0, 0, 0), mesh,false),
-                        new Tile(new Vector2i(4, 3), new Vector3f(0, 90, 0), mesh,false),
-                        new Tile(new Vector2i(5, 3), new Vector3f(0, 270, 0), mesh,true)
-                },
-                {
-                        new Tile(new Vector2i(0, 4), new Vector3f(0, 180, 0), mesh,true),
-                        new Tile(new Vector2i(1, 4), new Vector3f(0, 90, 0), mesh,false),
-                        new Tile(new Vector2i(2, 4), new Vector3f(0, 180, 0), mesh,false),
-                        new Tile(new Vector2i(3, 4), new Vector3f(0, 0, 0), mesh,false),
-                        new Tile(new Vector2i(4, 4), new Vector3f(0, 90, 0), mesh,false),
-                        new Tile(new Vector2i(5, 4), new Vector3f(0, 270, 0), mesh,true)
-                },
-                {
-                        new Tile(new Vector2i(0, 5), new Vector3f(0, 180, 0), mesh,true),
-                        new Tile(new Vector2i(1, 5), new Vector3f(0, 90, 0), mesh,true),
-                        new Tile(new Vector2i(2, 5), new Vector3f(0, 180, 0), mesh,true),
-                        new Tile(new Vector2i(3, 5), new Vector3f(0, 0, 0), mesh,true),
-                        new Tile(new Vector2i(4, 5), new Vector3f(0, 90, 0), mesh,true),
-                        new Tile(new Vector2i(5, 5), new Vector3f(0, 270, 0), mesh,true)
-                }
-        };
+        return generateGround(mesh,  10);
+    }
+
+    private Tile[][] generateGround(Mesh mesh, int gridSize){
+        Tile[][] tiles = new Tile[gridSize][gridSize];
+        Random orientation = new Random(1234);
+        int s = gridSize / 2;
+
+        for (int row = -s; row < s; row++){
+            for (int column = -s; column < s; column++) {
+                tiles[row + s][column + s] =
+                        new Tile(new Vector2i(row, column), new Vector3f(-90, 0, 90 * orientation.nextInt(3)), mesh,true);
+            }
+        }
+
+        return tiles;
     }
 }

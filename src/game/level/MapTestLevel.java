@@ -4,10 +4,9 @@ import engine.MouseInput;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
 import engine.entities.Player;
-import engine.lights.AmbientLight;
-import engine.lights.PointLight;
-import engine.lights.SceneLight;
+import engine.lights.*;
 import engine.loader.PLYLoader;
+import engine.util.ColorInterpolator;
 import game.GUI;
 import game.LevelController;
 import game.Renderer;
@@ -18,6 +17,9 @@ import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import sun.security.ssl.Debug;
+
+import java.util.Random;
 
 public class MapTestLevel extends Level {
 
@@ -48,38 +50,76 @@ public class MapTestLevel extends Level {
         map = new Map();
         map.load(new SimpleMapLoader());
 
-        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.5f, 0.5f, 0.5f));
+        //Set up ambient light of the scene
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f, 0.2f, 0.2f));
+
+        //Set up a directional light
+        sceneLight.directionalLight = new DirectionalLight(
+                new Vector3f(0.0f,10.0f,0.0f),      // position
+                new Vector3f(0.8f, 0.8f, 0.8f),     // color
+                new Vector3f(0.0f, 1.0f, 0.4f),     // direction
+            0.8f,                                    // intensity
+                new Vector2f(1.0f, 10.0f),             // near-far plane
+                2048);                             // resolution
 
         // Set up a point light
-        Vector3f lightPosition = new Vector3f(1.0f, 3.0f, -1.0f);
-        float lightIntensity = 0.5f;
-        PointLight pointLight = new PointLight(new Vector3f(1.0f, 0.3f, 0.0f), lightPosition, lightIntensity, new Vector2f(1f, 100f));
-        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 0.5f);
-        pointLight.setAttenuation(att);
-        sceneLight.pointLights.add(pointLight);
+        Vector3f lightPosition1 = new Vector3f(1.0f, 3.0f, -1.0f);
+        float lightIntensity1 = 0.0f;
+        PointLight pointLight1 = new PointLight(new Vector3f(0.88f, 0.72f, 0.13f), lightPosition1, lightIntensity1, new Vector2f(1f, 10f));
+        PointLight.Attenuation att1 = new PointLight.Attenuation(0.0f, 0.2f, 0.5f);
+        pointLight1.setAttenuation(att1);
+        sceneLight.pointLights.add(pointLight1);
 
-        Entity light;
+        // Set up a spot light
+        Vector3f lightPosition2 = new Vector3f(-5.0f, 1.0f, -5.0f);
+        float lightIntensity2 = 0.3f;
+        SpotLight spotLight1 = new SpotLight(
+                new Vector3f(0.88f, 0.72f, 0.13f),
+                lightPosition2,
+                lightIntensity2,
+                new Vector3f(1f, -0.1f, 1f),
+                (float)Math.cos(Math.toRadians(7)),
+                (float)Math.cos(Math.toRadians(25)),
+                new Vector2f(1.0f, 6.5f),
+                4096);
+        PointLight.Attenuation att2 = new PointLight.Attenuation(0.0f, 0.2f, 0.0f);
+        spotLight1.setAttenuation(att2);
+        sceneLight.spotLights.add(spotLight1);
+
+        Entity light1, light2;
         Mesh mesh_light = PLYLoader.loadMesh("/models/PLY/light.ply");
-        Material material_light = new Material(new Vector4f(pointLight.getColor(), 1), 0.1f);
+        Material material_light = new Material(new Vector4f(pointLight1.getColor(), 1), 0.1f);
         mesh_light.setMaterial(material_light);
-
-        light = new Entity(mesh_light, new Vector3f(pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z), 0.05f * lightIntensity);
+        light1 = new Entity(mesh_light, new Vector3f(pointLight1.getPosition().x, pointLight1.getPosition().y, pointLight1.getPosition().z), 0.05f * lightIntensity1);
+        light2 = new Entity(mesh_light, new Vector3f(spotLight1.getPosition().x, spotLight1.getPosition().y, spotLight1.getPosition().z), 0.05f * lightIntensity2);
 
         Mesh cube_mesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
         cube_mesh.setMaterial(new Material(0.1f));
 
-//        player = new Player(cube_mesh, map, new Vector3f(3, 1, 3), 0.5f);
-
         Mesh tree = PLYLoader.loadMesh("/models/PLY/tree.ply");
-        Material material = new Material(0.1f);
+        Material material = new Material(
+                new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+                new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+                new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+                null,
+                0.0f
+        );
         tree.setMaterial(material);
 
         // Tree 1
         Entity g = new Entity(tree);
-        g.setPosition(0.0f, 0.0f, 0.0f);
-        g.setRotation(-90,0,0);
+        g.setScale(0.25f);
+        g.setPosition(-3.0f, 0.5f, -3.0f);
+        g.setRotation(-90,0,23);
 
-        gameEntities = new Entity[]{g, light};
+        // Tree 2
+        Entity g2 = new Entity(tree);
+        g2.setPosition(-2.0f, 0.0f, 2.0f);
+        g2.setRotation(-90,0,0);
+
+        gameEntities = new Entity[]{g, g2, light1, light2};
+
+        //        player = new Player(cube_mesh, map, new Vector3f(3, 1, 3), 0.5f);
     }
 
     @Override
@@ -90,10 +130,23 @@ public class MapTestLevel extends Level {
         }
     }
 
+    private Random rand = new Random(1234);
+    private ColorInterpolator flame = new ColorInterpolator();
     @Override
     public void update(float interval, MouseInput mouseInput) {
+        PointLight light = sceneLight.pointLights.get(0);
+        if (flame.getStatus()){
+            Vector3f color =
+                    new Vector3f(0.88f, 0.72f, 0.13f).add(
+                            new Vector3f(0.01f, -0.05f, -0.005f).mul((rand.nextInt(2) / 1.0f)));
+            flame.setInterpolation(light.getColor(), color, 14.28f / 15f);
+        }
+        flame.updateColor(interval * 1000f);
+        light.setColor(flame.getInterpolationResult());
 //        player.update(interval);
     }
+
+
 
     @Override
     public void render() {

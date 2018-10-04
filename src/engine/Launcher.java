@@ -41,7 +41,7 @@ public class Launcher {
      */
     public static void main(String[] args) {
         try {
-//            Debug.println("PID", ManagementFactory.getRuntimeMXBean().getName());
+            Debug.println("PID", ManagementFactory.getRuntimeMXBean().getName());
             //TimeUnit.SECONDS.sleep(8);
             (new GameEngine(new LevelController())).start();
         } catch (Exception e) {
