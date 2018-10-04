@@ -5,6 +5,7 @@ import engine.MouseInput;
 import game.level.Level;
 import game.level.MapTestLevel;
 import game.level.TestLevel;
+import game.level.TutorialLevel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +18,7 @@ public class LevelController implements IGameLogic {
 
     public LevelController() {
         this.levels = new ArrayList<>(Arrays.asList(
-                new MapTestLevel(this)
+                new TutorialLevel(this)
         ));
         this.active = levels.get(0);
     }
