@@ -52,6 +52,8 @@ public class Renderer {
     private static final int MAX_SPOT_LIGHTS = 5;
     private final float specularPower;
 
+    private boolean shadowEnable = true;
+
     public Renderer() {
         transformation = new Transformation();
         specularPower = 10f;
@@ -89,6 +91,7 @@ public class Renderer {
         //sceneShader.createUniform("view");
         //sceneShader.createUniform("projection");
         sceneShader.createUniform("projectionViewModel");
+        sceneShader.createUniform("shadowEnable");
 
         GameWindow.getGameWindow().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
@@ -190,7 +193,9 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
 
         // Update Shadows
-        renderDepthMap(camera, entities, sceneLight, map);
+        if (shadowEnable) {
+            renderDepthMap(camera, entities, sceneLight, map);
+        }
 
         GameWindow window = GameWindow.getGameWindow();
         //WORKAROUND width and height are fixed because the viewport is wrong?
@@ -205,6 +210,7 @@ public class Renderer {
         //sceneShader.setUniform("view", viewMatrix);
         sceneShader.setUniform("texture_sampler", 0);
         sceneShader.setUniform("viewPos", camera.getPosition());
+        sceneShader.setUniform("shadowEnable", shadowEnable);
 
         Matrix4f projectionAndView = new Matrix4f(projectionMatrix);
         projectionAndView.mul(viewMatrix);
