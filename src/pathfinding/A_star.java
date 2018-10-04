@@ -2,8 +2,6 @@ package pathfinding;
 
 import game.map.Map;
 import game.map.tile.Tile;
-import sun.awt.image.ImageWatched;
-
 import java.util.*;
 
 /**
@@ -11,8 +9,11 @@ import java.util.*;
  * @Author Koen Degeling (1018025)
  */
 public class A_star implements Pathfinding{
+    /* Open queue which keeps track of all the opened Tiles */
     private PriorityQueue<Node> open;
+    /* Closed list which contains all the closed Tiles */
     private Hashtable<Tile, Boolean> closed;
+
     /**
      * Method that computes the path and returns a list of tiles, the path we have to take to reach
      * the target.
@@ -27,9 +28,11 @@ public class A_star implements Pathfinding{
         open = new PriorityQueue<>();
         // List containing all the 'closed' nodes
         closed = new Hashtable<>();
+        //We add the first node to the open queue
         open.add(new Node(start, 0, Math.abs(start.getPosition().x-target.getPosition().x)
-                + Math.abs(start.getPosition().y-target.getPosition().y), null)); //We add the first node to the open queue
+                + Math.abs(start.getPosition().y-target.getPosition().y), null));
         Node q = new Node(null, 0, 0, null);
+
         outerloop:
         while (!open.isEmpty()) {
             q = open.poll(); // Get the fist tile from the queue
@@ -45,7 +48,7 @@ public class A_star implements Pathfinding{
                 if (!n.isSolid() && !closed.containsKey(n)) {
                     int h = Math.abs(n.getPosition().x-target.getPosition().x)
                         + Math.abs(n.getPosition().y-target.getPosition().y);
-                    open.add(new Node(n, q.g+1, h, q));
+                    open.add(new Node(n, q.g+1, h, q)); // Add new node to open queue
                 }
             }
             closed.put(q.t, true); //We add q to the closed list containing all the opened tiles
@@ -56,11 +59,10 @@ public class A_star implements Pathfinding{
             path.addFirst(pt.t);
             pt = pt.p;
         }
-        path.addFirst(pt.t);
+        path.addFirst(pt.t); // Add the start tile (without a parent)
         return path;
     }
 
-    @Override
     public LinkedList<Tile> getOpenedTiles() {
         LinkedList<Tile> a = new LinkedList<>();
         for (Node x : open) {
@@ -69,7 +71,6 @@ public class A_star implements Pathfinding{
         return a;
     }
 
-    @Override
     public Set<Tile> getClosedTiles() {
         return closed.keySet();
     }

@@ -18,17 +18,6 @@ public interface Pathfinding {
     List<Tile> computePath(Tile start, Tile target, Map map);
 
     /**
-     *
-     * @return List<Node> of all the tiles that are in the 'open' list after executing the A*-search
-     */
-    Collection<Tile> getOpenedTiles();
-
-    /**
-     *
-     * @return List<Tile> of all the tiles in the closed list, these are the tiles that have been expanded
-     */
-    Collection<Tile> getClosedTiles();
-    /**
      * (Tile, g(t)) pair, defining a tile and the corresponding f(t) weight function.
      */
     class Node implements Comparable<Node> {
