@@ -35,4 +35,20 @@ public class KeyBinding {
     public static boolean isDownPressed() {
         return glfwGetKey(windowHandle, GLFW_KEY_X) == GLFW_PRESS;
     }
+
+    public static boolean isNextLevelPressed() {
+        return glfwGetKey(windowHandle, GLFW_KEY_F1) == GLFW_PRESS;
+    }
+
+    public static boolean isRestartLevelPressed() {
+        return glfwGetKey(windowHandle, GLFW_KEY_F1) == GLFW_PRESS;
+    }
+
+    public static boolean isPreviousLevelPressed() {
+        return glfwGetKey(windowHandle, GLFW_KEY_F1) == GLFW_PRESS;
+    }
+
+    public static boolean isKeyPressed(int key) {
+        return glfwGetKey(windowHandle, key) == GLFW_PRESS;
+    }
 }

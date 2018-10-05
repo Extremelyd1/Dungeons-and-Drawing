@@ -1,8 +1,8 @@
 package game.level;
 
-import engine.camera.Camera;
 import engine.IGameLogic;
 import engine.MouseInput;
+import engine.camera.Camera;
 import game.LevelController;
 import game.Renderer;
 
