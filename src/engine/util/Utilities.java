@@ -63,6 +63,7 @@ public class Utilities {
 
     /**
      * Utility method that takes in a float list and converts it to an array.
+     *
      * @param list The list to convert to an array
      * @return float array with the elements from the list
      */
@@ -99,11 +100,14 @@ public class Utilities {
                         buffer = resizeBuffer(buffer, buffer.capacity() * 2);
                     }
                 }
+                buffer.flip();
+                return buffer;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
-        buffer.flip();
-        return buffer;
+        return null;
     }
 
     private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {

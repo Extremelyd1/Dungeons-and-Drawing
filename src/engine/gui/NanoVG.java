@@ -6,6 +6,8 @@ import org.lwjgl.nanovg.NVGColor;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.nanovg.NanoVG.*;
 import static org.lwjgl.nanovg.NanoVGGL3.NVG_ANTIALIAS;
@@ -20,6 +22,8 @@ public class NanoVG {
 
     private long nanoVGHandler;
     private static NanoVG nanoVG;
+
+    private List<ByteBuffer> fontData;
 
     private NVGColor color;
 
@@ -62,16 +66,18 @@ public class NanoVG {
      */
     private void initializeFonts() {
 
-        try {
-            ByteBuffer fontBuffer1 = Utilities.ioResourceToByteBuffer("/fonts/Vecna.ttf", 150 * 1024);
-            ByteBuffer fontBuffer2 = Utilities.ioResourceToByteBuffer("/fonts/segoeuib.ttf", 150 * 1024);
-            ByteBuffer fontBuffer3 = Utilities.ioResourceToByteBuffer("/fonts/segoeuil.ttf", 150 * 1024);
-            ByteBuffer fontBuffer4 = Utilities.ioResourceToByteBuffer("/fonts/segoeui.ttf", 150 * 1024);
+        fontData = new ArrayList<>();
 
-            int font1 = nvgCreateFontMem(nanoVGHandler, FONT_TITLE, fontBuffer1, 0);
-            int font2 = nvgCreateFontMem(nanoVGHandler, FONT_PARAGRAPH_BOLD, fontBuffer2, 0);
-            int font3 = nvgCreateFontMem(nanoVGHandler, FONT_PARAGRAPH_LIGHT, fontBuffer3, 0);
-            int font4 = nvgCreateFontMem(nanoVGHandler, FONT_PARAGRAPH, fontBuffer4, 0);
+        try {
+            fontData.add(Utilities.ioResourceToByteBuffer("/fonts/Vecna.ttf", 150 * 1024));
+            fontData.add(Utilities.ioResourceToByteBuffer("/fonts/segoeuib.ttf", 150 * 1024));
+            fontData.add(Utilities.ioResourceToByteBuffer("/fonts/segoeuil.ttf", 150 * 1024));
+            fontData.add(Utilities.ioResourceToByteBuffer("/fonts/segoeui.ttf", 150 * 1024));
+
+            int font1 = nvgCreateFontMem(nanoVGHandler, FONT_TITLE, fontData.get(0), 0);
+            int font2 = nvgCreateFontMem(nanoVGHandler, FONT_PARAGRAPH_BOLD, fontData.get(1), 0);
+            int font3 = nvgCreateFontMem(nanoVGHandler, FONT_PARAGRAPH_LIGHT, fontData.get(2), 0);
+            int font4 = nvgCreateFontMem(nanoVGHandler, FONT_PARAGRAPH, fontData.get(3), 0);
 
             if (font1 == -1 || font2 == -1 || font3 == -1 || font4 == -1) {
                 throw new RuntimeException("engine.gui.NanoVG.intializeFonts() failed: " +
@@ -117,7 +123,7 @@ public class NanoVG {
     public void drawParagraphText(int posX, int posY, String text) {
         nvgFontSize(nanoVGHandler, FONT_SIZE_PARAGRAPH);
         nvgFontFace(nanoVGHandler, FONT_PARAGRAPH);
-        nvgTextAlign(nanoVGHandler, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
         nvgFillColor(nanoVGHandler, rgba(null, color));
         nvgText(nanoVGHandler, posX, posY, text);
     }
@@ -125,7 +131,7 @@ public class NanoVG {
     public void drawTitleText(int posX, int posY, String text) {
         nvgFontSize(nanoVGHandler, FONT_SIZE_TITLE);
         nvgFontFace(nanoVGHandler, FONT_TITLE);
-        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER| NVG_ALIGN_TOP);
         nvgFillColor(nanoVGHandler, rgba(null, color));
         nvgText(nanoVGHandler, posX, posY, text);
     }

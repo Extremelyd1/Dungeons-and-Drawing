@@ -67,7 +67,7 @@ public class SimplePopup extends GUIComponentParent {
         nano.drawRectangle(0, 0, 200, 200, null);
         nano.drawCircle(0, 0, 30, new RGBA(120, 0, 30));
         nano.drawTitleText(300, 300, "Dungeons & Drawings");
-        nano.drawParagraphText(100, 350, "A game better than the one of group 7");
+        nano.drawParagraphText(300, 350, "A game better than the one of group 7");
         nano.terminateFrame();
     }
 
