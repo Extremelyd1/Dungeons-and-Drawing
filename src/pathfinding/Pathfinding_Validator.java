@@ -32,15 +32,17 @@ public class Pathfinding_Validator {
         }
         //Make a new frame with all the components
         JFrame f = new JFrame("A*-search Validator");
-        grid = new JPanel[map.getTiles().length][map.getTiles().length];
-        f.add(new GridPane(map.getTiles().length, map.getTiles().length), BorderLayout.CENTER);
+        grid = new JPanel[map.getWidth()][map.getHeight()];
+        f.add(new GridPane(map.getWidth(), map.getHeight()), BorderLayout.CENTER);
         bt = new JButton("Run A*-search");
         bt.setEnabled(false);
         bt.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 A_star alg = new A_star();
+                long time = System.nanoTime();
                 List<Tile> path = alg.computePath(start, target, map);
+                time = System.nanoTime() - time;
                 for (Tile s : alg.getClosedTiles()) {
                     grid[s.getPosition().x][s.getPosition().y].setBackground(Color.BLUE);
                 }
@@ -52,6 +54,9 @@ public class Pathfinding_Validator {
                 }
                 grid[start.getPosition().x][start.getPosition().y].setBackground(Color.GREEN);
                 grid[target.getPosition().x][target.getPosition().y].setBackground(Color.RED);
+                System.out.println("Grid coverage: " + (alg.getClosedTiles().size()+alg.getOpenedTiles().size())
+                        /(float)(map.getHeight()*map.getWidth()));
+                System.out.println("Time to compute in nsecond: " + time);
             }
         });
         f.add(bt, BorderLayout.SOUTH);
