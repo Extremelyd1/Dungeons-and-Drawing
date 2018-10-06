@@ -1,6 +1,5 @@
 package engine.gui;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import engine.GameWindow;
 import engine.util.Utilities;
 import org.lwjgl.nanovg.NVGColor;
@@ -18,13 +17,18 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
  * Helper class that simplifies drawing with the NanoVG Library
+ * <p>
+ * It defines and initializes all fonts and support the drawing of simple geometric shapes (i.e.
+ * the square and circle) and custom shapes (either curved or not)
+ * <p>
+ * Singleton class
  */
 public class NanoVG {
 
     private long nanoVGHandler;
     private static NanoVG nanoVG;
 
-    private List<ByteBuffer> fontData;
+    private List<ByteBuffer> fontData; // To keep the buffers to be removed by the Garbage Collector
 
     private NVGColor color;
 
@@ -37,7 +41,9 @@ public class NanoVG {
     private static final float FONT_SIZE_TITLE = 48.0f;
 
 
-    /** Singleton constructor */
+    /**
+     * Singleton constructor
+     */
     public static NanoVG getInstance() {
         if (nanoVG == null) {
             nanoVG = new NanoVG();
@@ -46,7 +52,7 @@ public class NanoVG {
     }
 
     /**
-     * Initializes the NanoVG context
+     * Initializes the NanoVG context, the color object and the fonts
      */
     private NanoVG() {
         this.nanoVGHandler = nvgCreate(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
@@ -59,11 +65,13 @@ public class NanoVG {
         // Memory allocation to store the color
         color = NVGColor.create();
 
+        // Initializes fonts
         initializeFonts();
     }
 
     /**
-     * Creates the fonts
+     * Initializes the fonts by allocating off-heap memory. Fonts are loaded from .ttf files
+     * and are identified by a string
      */
     private void initializeFonts() {
 
@@ -91,7 +99,9 @@ public class NanoVG {
     }
 
     /**
-     * Initializes a frame
+     * Initializes a frame. The frame is always the width and height of the game window.
+     * Inside the window can be drawn, so we need to create the window before starting
+     * to render the 2D gui.
      */
     public void createFrame() {
         int width = GameWindow.getGameWindow().getWindowWidth();
@@ -100,7 +110,8 @@ public class NanoVG {
     }
 
     /**
-     * Terminates a frame
+     * Terminates a frame and restores the state of OpenGL (as the NanoVG
+     * library can change the state
      */
     public void terminateFrame() {
         nvgEndFrame(nanoVGHandler);
@@ -108,12 +119,13 @@ public class NanoVG {
     }
 
     /**
+     * Draws a basic rectangle
      *
-     * @param posX
-     * @param posY
-     * @param width
-     * @param height
-     * @param rgba
+     * @param posX   Upper left corner of the rectangle
+     * @param posY   Upper left corner of the rectangle
+     * @param width  Width of the rectangle
+     * @param height Height of the rectangle
+     * @param rgba   Color of the rectangle (in rgba)
      */
     public void drawRectangle(float posX, float posY, float width, float height, RGBA rgba) {
         nvgBeginPath(nanoVGHandler);
@@ -123,11 +135,24 @@ public class NanoVG {
     }
 
     /**
+     * Draws a square
      *
-     * @param posX
-     * @param posY
-     * @param radius
-     * @param rgba
+     * @param posX Upper left corner of the rectangle
+     * @param posY Upper left corner of the rectangle
+     * @param size Size of the sides
+     * @param rgba Color of the square
+     */
+    public void drawSquare(float posX, float posY, float size, RGBA rgba) {
+        drawRectangle(posX, posY, size, size, rgba);
+    }
+
+    /**
+     * Draws a circle
+     *
+     * @param posX   x coordinate of the center of the circle
+     * @param posY   y coordinate of the center circle
+     * @param radius radius of the circle
+     * @param rgba   color of the circle
      */
     public void drawCircle(float posX, float posY, float radius, RGBA rgba) {
         nvgBeginPath(nanoVGHandler);
@@ -137,10 +162,11 @@ public class NanoVG {
     }
 
     /**
+     * Draws basic text in the default paragraph style
      *
-     * @param posX
-     * @param posY
-     * @param text
+     * @param posX x coordinate of the text
+     * @param posY y coordinate of the text
+     * @param text The text content
      */
     public void drawParagraphText(float posX, float posY, String text) {
         nvgFontSize(nanoVGHandler, FONT_SIZE_PARAGRAPH);
@@ -151,58 +177,63 @@ public class NanoVG {
     }
 
     /**
+     * Draws basic text in the default title style
      *
-     * @param posX
-     * @param posY
-     * @param text
+     * @param posX x coordinate of the text
+     * @param posY y coordinate of the text
+     * @param text The text content
      */
     public void drawTitleText(float posX, float posY, String text) {
         nvgFontSize(nanoVGHandler, FONT_SIZE_TITLE);
         nvgFontFace(nanoVGHandler, VECNA);
-        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER| NVG_ALIGN_TOP);
+        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
         nvgFillColor(nanoVGHandler, rgba(null, color));
         nvgText(nanoVGHandler, posX, posY, text);
     }
 
     /**
+     * Draws basic text in the default paragraph style
      *
-     * @param posX
-     * @param posY
-     * @param text
-     * @param fontSize
-     * @param font
+     * @param posX     x coordinate of the text
+     * @param posY     y coordinate of the text
+     * @param text     The text content
+     * @param fontSize Font size in pixels
+     * @param font     Font
      */
     public void drawText(float posX, float posY, String text, float fontSize, Font font) {
         nvgFontSize(nanoVGHandler, fontSize);
         nvgFontFace(nanoVGHandler, font.toString());
-        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER| NVG_ALIGN_TOP);
+        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
         nvgFillColor(nanoVGHandler, rgba(null, color));
         nvgText(nanoVGHandler, posX, posY, text);
     }
 
     /**
+     * Draws a line
      *
-     * @param posX
-     * @param posY
-     * @param width
-     * @param rgba
+     * @param startX x coordinate of start point
+     * @param startY y coordinate of end point
+     * @param endX x coordinate of start point
+     * @param endY y coordinate of end point
+     * @param rgba color of the line
      */
-    public void drawLine(float posX, float posY, float width, RGBA rgba) {
+    public void drawLine(float startX, float startY, float endX, float endY, RGBA rgba) {
         nvgBeginPath(nanoVGHandler);
-        nvgMoveTo(nanoVGHandler, posX, posY);
-        nvgLineTo(nanoVGHandler, posX + width, posY);
+        nvgMoveTo(nanoVGHandler, startX, startY);
+        nvgLineTo(nanoVGHandler, endX, endY);
         nvgStrokeColor(nanoVGHandler, rgba(rgba, color));
         nvgStrokeWidth(nanoVGHandler, 5.0f);
         nvgStroke(nanoVGHandler);
     }
 
     /**
+     * Draws an (upwards) curve
      *
-     * @param startX
-     * @param startY
-     * @param endX
-     * @param endY
-     * @param rgba
+     * @param startX x coordinate of start point
+     * @param startY y coordinate of end point
+     * @param endX x coordinate of start point
+     * @param endY y coordinate of end point
+     * @param rgba color of the line
      */
     public void drawCurve(float startX, float startY, float endX, float endY, RGBA rgba) {
         nvgBeginPath(nanoVGHandler);
@@ -214,9 +245,11 @@ public class NanoVG {
     }
 
     /**
+     * Draws a custom shape defined by a list of points.
      *
-     * @param points
-     * @param rgba
+     * @param points List of points (x, y, and possible also control points)
+     * @param rgba Color of the shape
+     * @param filled Whether the shape is filled or stroked
      */
     public void drawCustomShape(float[] points, RGBA rgba, boolean curved, boolean filled) {
 
@@ -249,8 +282,9 @@ public class NanoVG {
     }
 
     /**
+     * Draws a custom shape defined by a list of points. The shape is curved
      *
-     * @param points
+     * @param points List of points (x, y, and possible also control points)
      */
     private void drawCustomCurve(float[] points) {
         if (points.length < 8) {
@@ -269,8 +303,9 @@ public class NanoVG {
     }
 
     /**
+     * Draws a custom shape defined by a list of points. The shape is without curves
      *
-     * @param points
+     * @param points List of points (x, y, and possible also control points)
      */
     private void drawCustomLine(float[] points) {
         nvgMoveTo(nanoVGHandler, points[0], points[1]);
@@ -279,12 +314,13 @@ public class NanoVG {
         }
     }
 
-    /** Set the color of a new drawing using RGBA channels
+    /**
+     * Set the color of a new drawing using RGBA channels
      *
-     * @param r The red channel of the color
-     * @param g The green channel of the color
-     * @param b The blue channel of the color
-     * @param a The alpha channels of the color
+     * @param r     The red channel of the color
+     * @param g     The green channel of the color
+     * @param b     The blue channel of the color
+     * @param a     The alpha channels of the color
      * @param color The color object to store the colors
      * @return The color with the new RGBA channels
      */
@@ -296,9 +332,10 @@ public class NanoVG {
         return color;
     }
 
-    /** Set the color of a new drawing using RGBA channels
+    /**
+     * Set the color of a new drawing using RGBA channels
      *
-     * @param rgba record that contains all channels
+     * @param rgba  record that contains all channels
      * @param color The color object to store the colors
      * @return The color with the new RGBA channels
      */
@@ -309,11 +346,7 @@ public class NanoVG {
             return rgba(getDefaultColor(), color);
         }
     }
-
-    /**
-     *
-     * @return
-     */
+    
     private RGBA getDefaultColor() {
         return new RGBA(255, 255, 255, 255);
     }
