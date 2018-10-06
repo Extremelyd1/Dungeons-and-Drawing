@@ -2,6 +2,7 @@ package engine.entities;
 
 import engine.GameWindow;
 import engine.input.KeyBinding;
+import engine.util.Timer;
 import game.map.Map;
 import graphics.Mesh;
 import org.joml.Vector3f;
@@ -15,9 +16,10 @@ import static org.lwjgl.glfw.GLFW.glfwGetKey;
  */
 public class Player extends LivingEntity {
 
-    private boolean checkCollision = true;
     // The range of the cylindrical collision box around the player
     float collisionSize;
+
+    private boolean checkCollision = true;
 
     public Player(Mesh mesh, Map map){
         super(mesh, map);
@@ -45,12 +47,6 @@ public class Player extends LivingEntity {
      */
     @Override
     public void update(float delta) {
-        GameWindow window = GameWindow.getGameWindow();
-
-        if (glfwGetKey(window.getWindowHandle(), GLFW_KEY_F6) == GLFW_PRESS) {
-            checkCollision = !checkCollision;
-        }
-
         // Get input
         boolean forward = KeyBinding.isForwardPressed();
         boolean backward = KeyBinding.isBackwardPressed();
@@ -129,6 +125,10 @@ public class Player extends LivingEntity {
                 , newPosition.z - collisionSize, newPosition.z + collisionSize)) {
             getPosition().add(0, 0, zChange);
         }
+    }
+
+    public void toggleCollisionDetection() {
+        checkCollision = !checkCollision;
     }
 
 }
