@@ -13,6 +13,8 @@ public class A_star implements Pathfinding{
     private PriorityQueue<Node> open;
     /* Closed list which contains all the closed Tiles */
     private Hashtable<Tile, Boolean> closed;
+    /* Sorted close queue which we use if we don't find a solution */
+    private PriorityQueue<Node> sortedClose;
 
     /**
      * Method that computes the path and returns a list of tiles, the path we have to take to reach
@@ -29,6 +31,8 @@ public class A_star implements Pathfinding{
         open = new PriorityQueue<>();
         // List containing all the 'closed' nodes
         closed = new Hashtable<>();
+        // SortedClose list which we use to get best solution if none is found
+        sortedClose = new PriorityQueue<>();
         //We add the first node to the open queue
         open.add(new Node(start, 0, Math.abs(start.getPosition().x-target.getPosition().x)
                 + Math.abs(start.getPosition().y-target.getPosition().y), null));
@@ -53,8 +57,11 @@ public class A_star implements Pathfinding{
                 }
             }
             closed.put(q.t, true); //We add q to the closed list containing all the opened tiles
+            sortedClose.add(q); //We add q to our sortedClose list
         }
         Node pt = q;
+        // If we haven't found a solution, we set the target as the closest position possible
+        if (pt.t != target) pt = sortedClose.poll();
         LinkedList<Tile> path = new LinkedList<>();
         while (pt.p != null) {
             path.addFirst(pt.t);
@@ -76,7 +83,7 @@ public class A_star implements Pathfinding{
         return closed.keySet();
     }
     /**
-     * (Tile, g(t)) pair, defining a tile and the corresponding f(t) weight function.
+     * (Tile, f(t)) pair, defining a tile and the corresponding f(t) weight function.
      */
     class Node implements Comparable<Node> {
         Tile t;
@@ -86,13 +93,20 @@ public class A_star implements Pathfinding{
         public Node(Tile t, int g, int h, Node p) {
             this.t = t;
             this.g = g; this.h = h;
-            this.f = this.g + this.h;
+            this.f = this.h;
             this.p = p;
         }
 
         @Override
         public int compareTo(Node o) {
-            if(o.f < this.f) return 1; else return -1;
+            if(o.f < this.f) {
+                return 1;
+            } else if (o.f == this.f) {
+                if (o.g < this.g) return 1;
+                else return -1;
+            } else {
+                return -1;
+            }
         }
     }
 }

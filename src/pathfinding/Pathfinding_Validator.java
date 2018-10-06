@@ -1,6 +1,7 @@
 package pathfinding;
 
 import game.map.Map;
+import game.map.loader.PathfindMapLoader;
 import game.map.loader.SimpleMapLoader;
 import game.map.tile.Tile;
 
@@ -25,7 +26,7 @@ public class Pathfinding_Validator {
         // Make a new map for our A*-search
         map = new Map();
         try {
-            map.load(new SimpleMapLoader());
+            map.load(new PathfindMapLoader());
         } catch(Exception e) {
             System.err.println("Map not loaded: " + e);
         }
@@ -65,7 +66,7 @@ public class Pathfinding_Validator {
                     }
                 }
                 try {
-                    map.load(new SimpleMapLoader());
+                    map.load(new PathfindMapLoader());
                 } catch (Exception ex) {
                     System.err.println("Failed to load map" + ex);
                 }

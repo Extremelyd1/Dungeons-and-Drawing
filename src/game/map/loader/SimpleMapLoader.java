@@ -17,7 +17,7 @@ import org.joml.Vector4f;
 public class SimpleMapLoader implements MapLoader {
     @Override
     public Tile[][] load() throws Exception {
-        /*
+
         Mesh mesh = PLYLoader.loadMesh("/models/test_1.ply");
         Material material = new Material(
             new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
@@ -27,7 +27,7 @@ public class SimpleMapLoader implements MapLoader {
             0.0f
         );
         mesh.setMaterial(material);
-        */
+
         return generateGround(null,  10);
     }
 
