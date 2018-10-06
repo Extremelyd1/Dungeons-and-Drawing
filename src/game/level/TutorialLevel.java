@@ -6,6 +6,8 @@ import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
 import engine.entities.Player;
+import engine.gui.NanoVG;
+import engine.gui.SimplePopup;
 import engine.input.KeyBinding;
 import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
@@ -30,6 +32,8 @@ public class TutorialLevel extends Level {
     private Entity[] entities;
     private SceneLight sceneLight;
 
+    SimplePopup pop;
+
     public TutorialLevel(LevelController levelController) {
         super(levelController);
     }
@@ -39,6 +43,8 @@ public class TutorialLevel extends Level {
         // Load map
         map = new Map();
         map.load(new TempTutorialMapLoader());
+
+        pop = new SimplePopup(null, 0, 0);
 
         // Setup rendering
         renderer = new Renderer();
@@ -94,7 +100,7 @@ public class TutorialLevel extends Level {
     public void update(float interval, MouseInput mouseInput) {
         camera.update();
         player.update(interval);
-        sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
+        sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));;
     }
 
     @Override
@@ -106,6 +112,8 @@ public class TutorialLevel extends Level {
                 sceneLight,
                 map
         );
+
+        pop.render();
     }
 
     @Override

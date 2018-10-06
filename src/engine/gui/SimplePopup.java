@@ -18,15 +18,6 @@ public class SimplePopup extends GUIComponentParent {
 
     public SimplePopup(Text text, int width, int height) throws Exception{
         super();
-
-        this.height = height;
-        this.width = width;
-
-        setMesh(buildMesh(width, height));
-        addChild(text);
-        text.setPosition(width / 2.0f - text.getWidth() / 2.0f,
-                height / 2.0f - text.getHeight() / 2.0f);
-
     }
 
     /**
@@ -68,6 +59,16 @@ public class SimplePopup extends GUIComponentParent {
         float x = GameWindow.getGameWindow().getWindowWidth() / 2.0f - width / 2.0f;
         float y = GameWindow.getGameWindow().getWindowHeight() / 2.0f - height / 2.0f;
         setPosition(x, y);
+    }
+
+    public void render() {
+        NanoVG nano = NanoVG.getInstance();
+        nano.createFrame();
+        nano.drawRectangle(0, 0, 200, 200, null);
+        nano.drawCircle(0, 0, 30, new RGBA(120, 0, 30));
+        nano.drawTitleText(300, 300, "Dungeons & Drawings");
+        nano.drawParagraphText(100, 350, "A game better than the one of group 7");
+        nano.terminateFrame();
     }
 
 
