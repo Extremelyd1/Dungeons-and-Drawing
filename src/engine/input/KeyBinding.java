@@ -37,11 +37,11 @@ public class KeyBinding {
     }
 
     public static boolean isNextLevelPressed() {
-        return glfwGetKey(windowHandle, GLFW_KEY_F1) == GLFW_PRESS;
+        return glfwGetKey(windowHandle, GLFW_KEY_F3) == GLFW_PRESS;
     }
 
     public static boolean isRestartLevelPressed() {
-        return glfwGetKey(windowHandle, GLFW_KEY_F1) == GLFW_PRESS;
+        return glfwGetKey(windowHandle, GLFW_KEY_F2) == GLFW_PRESS;
     }
 
     public static boolean isPreviousLevelPressed() {
