@@ -150,8 +150,25 @@ public class GameWindow {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        // For the NanoVG GUI library
+        glEnable(GL_STENCIL_TEST);
+        glfwWindowHint(GLFW_SAMPLES, 4);
+
         // Wireframe model
         //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    }
+
+    /**
+     * Restores the state of the Window such that all options and flags are
+     * set as we want them to be. Has to be done because the NanoVG lib might
+     * change things
+     */
+    public void restoreState() {
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_STENCIL_TEST);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
     }
 
     
