@@ -12,54 +12,99 @@ public class TempTutorialMapLoader implements MapLoader {
     @Override
     public Tile[][] load() throws Exception {
 
-        Mesh cube = PLYLoader.loadMesh("/models/basic/basic_brown_cube_1.ply");
-        Mesh wall = PLYLoader.loadMesh("/models/basic/basic_yellow_wall_1.ply");
+        Mesh cube = PLYLoader.loadMesh("/models/tiles/basic_brown_cube_1.ply");
+        Mesh wall = PLYLoader.loadMesh("/models/tiles/corner_wall.ply");
+        Mesh cell = PLYLoader.loadMesh("/models/tiles/prison_bars.ply");
+        Mesh arc = PLYLoader.loadMesh("/models/tiles/arc.ply");
+        Mesh crate = PLYLoader.loadMesh("/models/tiles/crate.ply");
 
         cube.setMaterial(new Material(0f));
         wall.setMaterial(new Material(0f));
+        cell.setMaterial(new Material(0f));
+        arc.setMaterial(new Material(0f));
+        crate.setMaterial(new Material(0f));
+
+        int x = 0;
 
         return new Tile[][]{
                 {
-                        new Tile(new Vector2i(0, 0), new Vector3f(0, 0, 0), wall, true),
-                        new Tile(new Vector2i(0, 1), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(0, 2), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(0, 3), new Vector3f(0, 0, 0), wall, true)
+                        new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
+                        new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x++, 4), new Vector3f(0, 0, 0), wall, true)
                 },
                 {
-                        new Tile(new Vector2i(1, 0), new Vector3f(0, 0, 0), wall, true),
-                        new Tile(new Vector2i(1, 1), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(1, 2), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(1, 3), new Vector3f(0, 0, 0), wall, true),
-                        new Tile(new Vector2i(1, 4), new Vector3f(0, 0, 0), wall, true)
+                        new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
+                        new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x++, 4), new Vector3f(0, 0, 0), wall, true)
                 },
                 {
-                        new Tile(new Vector2i(2, 0), new Vector3f(0, 0, 0), wall, true),
-                        new Tile(new Vector2i(2, 1), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(2, 2), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(2, 3), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(2, 4), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
+                        new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 2), new Vector3f(0, 90, 0), arc, false),
+                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), wall, true),
+                        new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), wall, true)
                 },
                 {
-                        new Tile(new Vector2i(3, 0), new Vector3f(0, 0, 0), wall, true),
-                        new Tile(new Vector2i(3, 1), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(3, 2), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(3, 3), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(3, 4), new Vector3f(0, 0, 0), cube, false)
+                        new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
+                        new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), cube, false),
                 },
                 {
-                        new Tile(new Vector2i(4, 0), new Vector3f(0, 0, 0), wall, true),
-                        new Tile(new Vector2i(4, 1), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(4, 2), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(4, 3), new Vector3f(0, 0, 0), wall, true),
-                        new Tile(new Vector2i(4, 4), new Vector3f(0, 0, 0), cube, false)
+                        new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
+                        new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), crate, true),
+                        new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), cube, false),
                 },
                 {
-                        new Tile(new Vector2i(5, 0), new Vector3f(0, 0, 0), wall, true),
-                        new Tile(new Vector2i(5, 1), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(5, 2), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(5, 3), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(5, 4), new Vector3f(0, 0, 0), cube, false)
-                }
+                        new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
+                        new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), cube, false),
+                },
+                {
+                        new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
+                        new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), wall, true),
+                        new Tile(new Vector2i(x++, 5), new Vector3f(0, 90, 0), cell, true)
+                },
+                {
+                        new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
+                        new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), cell, true),
+                        new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), cube, false)
+                },
+                {
+                        new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
+                        new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), cell, true),
+                        new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), cube, false)
+                },
+                {
+                        new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
+                        new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), cell, true),
+                        new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), cube, false)
+                },
         };
     }
 }
