@@ -63,12 +63,12 @@ public class MapFileLoader implements MapLoader {
 
                 Vector3f rotation = new Vector3f(0, rotationIndex * 90, 0);
 
-                Vector2i position = new Vector2i(x, y);
+                Vector2i position = new Vector2i(y, x);
 
                 Mesh mesh = AssetStore.getMesh(meshName);
 
                 Tile tile = new Tile(position, rotation, mesh, solid);
-                tileList[x][y] = tile;
+                tileList[y][x] = tile;
 
                 if (tileProperties.length == 4) {
                     // Read tag list property
