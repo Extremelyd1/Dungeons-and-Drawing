@@ -31,7 +31,7 @@ public class AssetStore {
             return null;
         }
         // Hardcoded reflectance
-        mesh.setMaterial(new Material(0.1f));
+        mesh.setMaterial(new Material(0f));
         loadedMeshes.put(meshName, mesh);
         return mesh;
     }
