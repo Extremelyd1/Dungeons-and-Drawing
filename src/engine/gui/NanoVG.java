@@ -1,5 +1,6 @@
 package engine.gui;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import engine.GameWindow;
 import engine.util.Utilities;
 import org.lwjgl.nanovg.NVGColor;
@@ -27,10 +28,10 @@ public class NanoVG {
 
     private NVGColor color;
 
-    private static final String FONT_PARAGRAPH = "SEGOE_UI";
-    private static final String FONT_PARAGRAPH_BOLD = "SEGOE_UI_BOLD";
-    private static final String FONT_PARAGRAPH_LIGHT = "SEGOE_UI_LIGHT";
-    private static final String FONT_TITLE = "VECNA";
+    private static final String SEGOE_UI = "SEGOE_UI";
+    private static final String SEGOE_UI_BOLD = "SEGOE_UI_BOLD";
+    private static final String SEGOE_UI_LIGHT = "SEGOE_UI_LIGHT";
+    private static final String VECNA = "VECNA";
 
     private static final float FONT_SIZE_PARAGRAPH = 24.0f;
     private static final float FONT_SIZE_TITLE = 48.0f;
@@ -74,10 +75,10 @@ public class NanoVG {
             fontData.add(Utilities.ioResourceToByteBuffer("/fonts/segoeuil.ttf", 150 * 1024));
             fontData.add(Utilities.ioResourceToByteBuffer("/fonts/segoeui.ttf", 150 * 1024));
 
-            int font1 = nvgCreateFontMem(nanoVGHandler, FONT_TITLE, fontData.get(0), 0);
-            int font2 = nvgCreateFontMem(nanoVGHandler, FONT_PARAGRAPH_BOLD, fontData.get(1), 0);
-            int font3 = nvgCreateFontMem(nanoVGHandler, FONT_PARAGRAPH_LIGHT, fontData.get(2), 0);
-            int font4 = nvgCreateFontMem(nanoVGHandler, FONT_PARAGRAPH, fontData.get(3), 0);
+            int font1 = nvgCreateFontMem(nanoVGHandler, VECNA, fontData.get(0), 0);
+            int font2 = nvgCreateFontMem(nanoVGHandler, SEGOE_UI_BOLD, fontData.get(1), 0);
+            int font3 = nvgCreateFontMem(nanoVGHandler, SEGOE_UI_LIGHT, fontData.get(2), 0);
+            int font4 = nvgCreateFontMem(nanoVGHandler, SEGOE_UI, fontData.get(3), 0);
 
             if (font1 == -1 || font2 == -1 || font3 == -1 || font4 == -1) {
                 throw new RuntimeException("engine.gui.NanoVG.intializeFonts() failed: " +
@@ -106,34 +107,176 @@ public class NanoVG {
         GameWindow.getGameWindow().restoreState();
     }
 
-    public void drawRectangle(int posX, int posY, int width, int height, RGBA rgba) {
+    /**
+     *
+     * @param posX
+     * @param posY
+     * @param width
+     * @param height
+     * @param rgba
+     */
+    public void drawRectangle(float posX, float posY, float width, float height, RGBA rgba) {
         nvgBeginPath(nanoVGHandler);
         nvgRect(nanoVGHandler, posX, posY, width, height);
         nvgFillColor(nanoVGHandler, rgba(rgba, color));
         nvgFill(nanoVGHandler);
     }
 
-    public void drawCircle(int posX, int posY, int radius, RGBA rgba) {
+    /**
+     *
+     * @param posX
+     * @param posY
+     * @param radius
+     * @param rgba
+     */
+    public void drawCircle(float posX, float posY, float radius, RGBA rgba) {
         nvgBeginPath(nanoVGHandler);
         nvgCircle(nanoVGHandler, posX, posY, radius);
         nvgFillColor(nanoVGHandler, rgba(rgba, color));
         nvgFill(nanoVGHandler);
     }
 
-    public void drawParagraphText(int posX, int posY, String text) {
+    /**
+     *
+     * @param posX
+     * @param posY
+     * @param text
+     */
+    public void drawParagraphText(float posX, float posY, String text) {
         nvgFontSize(nanoVGHandler, FONT_SIZE_PARAGRAPH);
-        nvgFontFace(nanoVGHandler, FONT_PARAGRAPH);
+        nvgFontFace(nanoVGHandler, SEGOE_UI);
         nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
         nvgFillColor(nanoVGHandler, rgba(null, color));
         nvgText(nanoVGHandler, posX, posY, text);
     }
 
-    public void drawTitleText(int posX, int posY, String text) {
+    /**
+     *
+     * @param posX
+     * @param posY
+     * @param text
+     */
+    public void drawTitleText(float posX, float posY, String text) {
         nvgFontSize(nanoVGHandler, FONT_SIZE_TITLE);
-        nvgFontFace(nanoVGHandler, FONT_TITLE);
+        nvgFontFace(nanoVGHandler, VECNA);
         nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER| NVG_ALIGN_TOP);
         nvgFillColor(nanoVGHandler, rgba(null, color));
         nvgText(nanoVGHandler, posX, posY, text);
+    }
+
+    /**
+     *
+     * @param posX
+     * @param posY
+     * @param text
+     * @param fontSize
+     * @param font
+     */
+    public void drawText(float posX, float posY, String text, float fontSize, Font font) {
+        nvgFontSize(nanoVGHandler, fontSize);
+        nvgFontFace(nanoVGHandler, font.toString());
+        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER| NVG_ALIGN_TOP);
+        nvgFillColor(nanoVGHandler, rgba(null, color));
+        nvgText(nanoVGHandler, posX, posY, text);
+    }
+
+    /**
+     *
+     * @param posX
+     * @param posY
+     * @param width
+     * @param rgba
+     */
+    public void drawLine(float posX, float posY, float width, RGBA rgba) {
+        nvgBeginPath(nanoVGHandler);
+        nvgMoveTo(nanoVGHandler, posX, posY);
+        nvgLineTo(nanoVGHandler, posX + width, posY);
+        nvgStrokeColor(nanoVGHandler, rgba(rgba, color));
+        nvgStrokeWidth(nanoVGHandler, 5.0f);
+        nvgStroke(nanoVGHandler);
+    }
+
+    /**
+     *
+     * @param startX
+     * @param startY
+     * @param endX
+     * @param endY
+     * @param rgba
+     */
+    public void drawCurve(float startX, float startY, float endX, float endY, RGBA rgba) {
+        nvgBeginPath(nanoVGHandler);
+        nvgMoveTo(nanoVGHandler, startX, startY);
+        nvgQuadTo(nanoVGHandler, endX, startY, endX, endY);
+        nvgStrokeColor(nanoVGHandler, rgba(rgba, color));
+        nvgStrokeWidth(nanoVGHandler, 5.0f);
+        nvgStroke(nanoVGHandler);
+    }
+
+    /**
+     *
+     * @param points
+     * @param rgba
+     */
+    public void drawCustomShape(float[] points, RGBA rgba, boolean curved, boolean filled) {
+
+        if (points.length % 2 != 0) {
+            throw new IllegalArgumentException("engine.gui.NanoVG.drawCustomShape() failed: " +
+                    "Illegal arguments. Not an even number of points");
+        }
+
+        if (points.length < 4) {
+            throw new IllegalArgumentException("engine.gui.NanoVG.drawCustomShape() failed: " +
+                    "Illegal arguments. Too few points");
+        }
+
+        nvgBeginPath(nanoVGHandler);
+
+        if (curved) {
+            drawCustomCurve(points);
+        } else {
+            drawCustomLine(points);
+        }
+
+        if (!filled) {
+            nvgStrokeColor(nanoVGHandler, rgba(rgba, color));
+            nvgStrokeWidth(nanoVGHandler, 5.0f);
+            nvgStroke(nanoVGHandler);
+        } else {
+            nvgFillColor(nanoVGHandler, rgba(rgba, color));
+            nvgFill(nanoVGHandler);
+        }
+    }
+
+    /**
+     *
+     * @param points
+     */
+    private void drawCustomCurve(float[] points) {
+        if (points.length < 8) {
+            throw new IllegalArgumentException("engine.gui.NanoVG.drawCustomShape() failed: " +
+                    "Illegal arguments. Too few points. Probably control points not defined.");
+        }
+
+        nvgMoveTo(nanoVGHandler, points[0], points[1]);
+
+        for (int i = 0; i < points.length / 6; i++) {
+            nvgBezierTo(nanoVGHandler,
+                    points[i * 6 + 2], points[i * 6 + 3], // Control point for start
+                    points[i * 6 + 4], points[i * 6 + 5], // Control point for end
+                    points[i * 6 + 6], points[i * 6 + 7]); // End point
+        }
+    }
+
+    /**
+     *
+     * @param points
+     */
+    private void drawCustomLine(float[] points) {
+        nvgMoveTo(nanoVGHandler, points[0], points[1]);
+        for (int i = 1; i < points.length / 2; i++) {
+            nvgLineTo(nanoVGHandler, points[i * 2], points[i * 2 + 1]);
+        }
     }
 
     /** Set the color of a new drawing using RGBA channels
@@ -167,6 +310,10 @@ public class NanoVG {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     private RGBA getDefaultColor() {
         return new RGBA(255, 255, 255, 255);
     }

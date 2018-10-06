@@ -65,9 +65,13 @@ public class SimplePopup extends GUIComponentParent {
         NanoVG nano = NanoVG.getInstance();
         nano.createFrame();
         nano.drawRectangle(0, 0, 200, 200, null);
+        nano.drawLine(0, 100, 200, new RGBA(120, 0, 30));
+        nano.drawCurve(0, 0, 300, 200, new RGBA(0, 60, 120));
         nano.drawCircle(0, 0, 30, new RGBA(120, 0, 30));
         nano.drawTitleText(300, 300, "Dungeons & Drawings");
         nano.drawParagraphText(300, 350, "A game better than the one of group 7");
+        nano.drawCustomShape(new float[] {50, 0, 100, 50, 50, 100, 0, 50, 50, 0}, new RGBA(0, 90, 90), false, true);
+        nano.drawCustomShape(new float[] {100, 100, 150, 100, 150, 200, 200, 200}, new RGBA(0, 255, 0), true, false);
         nano.terminateFrame();
     }
 
