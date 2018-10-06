@@ -1,6 +1,7 @@
 package game.map.loader;
 
 import engine.loader.PLYLoader;
+import game.map.Map;
 import game.map.tile.Tile;
 import graphics.Material;
 import graphics.Mesh;
@@ -10,7 +11,7 @@ import org.joml.Vector3f;
 public class TempTutorialMapLoader implements MapLoader {
 
     @Override
-    public Tile[][] load() throws Exception {
+    public Map load() throws Exception {
 
         Mesh cube = PLYLoader.loadMesh("/models/basic/basic_brown_cube_1.ply");
         Mesh wall = PLYLoader.loadMesh("/models/basic/basic_yellow_wall_1.ply");
@@ -18,7 +19,7 @@ public class TempTutorialMapLoader implements MapLoader {
         cube.setMaterial(new Material(0f));
         wall.setMaterial(new Material(0f));
 
-        return new Tile[][]{
+        Tile[][] tileList = new Tile[][]{
                 {
                         new Tile(new Vector2i(0, 0), new Vector3f(0, 0, 0), wall, true),
                         new Tile(new Vector2i(0, 1), new Vector3f(0, 0, 0), cube, false),
@@ -61,5 +62,7 @@ public class TempTutorialMapLoader implements MapLoader {
                         new Tile(new Vector2i(5, 4), new Vector3f(0, 0, 0), cube, false)
                 }
         };
+
+        return new Map(tileList);
     }
 }

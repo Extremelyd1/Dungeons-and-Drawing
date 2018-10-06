@@ -234,6 +234,9 @@ public class Renderer {
         if (map != null) {
             for (Tile[] row : map.getTiles()) {
                 for (Tile tile : row) {
+                    if (tile == null) {
+                        continue;
+                    }
                     Mesh mesh = tile.getMesh();
                     // Set model view matrix for this item
                     model = transformation.getWorldMatrix(
@@ -353,6 +356,9 @@ public class Renderer {
             if (map != null) {
                 for (Tile[] row : map.getTiles()) {
                     for (Tile tile : row) {
+                        if (tile == null) {
+                            continue;
+                        }
                         Mesh mesh = tile.getMesh();
                         // Set model view matrix for this item
                         depthShader.setUniform("modelMatrix", transformation.getWorldMatrix(
@@ -429,6 +435,9 @@ public class Renderer {
                 if (map != null) {
                     for (Tile[] row : map.getTiles()) {
                         for (Tile tile : row) {
+                            if (tile == null) {
+                                continue;
+                            }
                             Mesh mesh = tile.getMesh();
                             // Set model view matrix for this item
                             depthShaderCube.setUniform("modelMatrix", transformation.getWorldMatrix(
@@ -467,6 +476,9 @@ public class Renderer {
                 if (map != null) {
                     for (Tile[] row : map.getTiles()) {
                         for (Tile tile : row) {
+                            if (tile == null) {
+                                continue;
+                            }
                             Mesh mesh = tile.getMesh();
                             // Set model view matrix for this item
                             depthShader.setUniform("modelMatrix", transformation.getWorldMatrix(

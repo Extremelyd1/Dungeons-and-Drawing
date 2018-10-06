@@ -1,6 +1,7 @@
 package game.map.loader;
 
 import engine.loader.PLYLoader;
+import game.map.Map;
 import game.map.tile.Tile;
 import graphics.Material;
 import graphics.Mesh;
@@ -9,6 +10,8 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.HashMap;
+
 /**
  * This simple map loader is meant for testing purposes.
  * <p>
@@ -16,7 +19,7 @@ import org.joml.Vector4f;
  */
 public class SimpleMapLoader implements MapLoader {
     @Override
-    public Tile[][] load() throws Exception {
+    public Map load() throws Exception {
 
         Mesh mesh = PLYLoader.loadMesh("/models/test_1.ply");
         Material material = new Material(
@@ -28,7 +31,11 @@ public class SimpleMapLoader implements MapLoader {
         );
         mesh.setMaterial(material);
 
-        return generateGround(mesh,  10);
+        int gridSize = 10;
+
+        Tile[][] tileList = generateGround(mesh,  gridSize);
+
+        return new Map(tileList);
     }
 
     private Tile[][] generateGround(Mesh mesh, int gridSize){

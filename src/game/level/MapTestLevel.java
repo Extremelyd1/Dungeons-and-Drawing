@@ -47,8 +47,7 @@ public class MapTestLevel extends Level {
 
         //gui = new GUI("Dungeons and Drawings!");
 
-        map = new Map();
-        map.load(new SimpleMapLoader());
+        map = new SimpleMapLoader().load();
 
         //Set up ambient light of the scene
         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f, 0.2f, 0.2f));
