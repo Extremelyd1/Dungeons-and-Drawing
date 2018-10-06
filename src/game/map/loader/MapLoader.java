@@ -1,6 +1,6 @@
 package game.map.loader;
 
-import game.map.tile.Tile;
+import game.map.Map;
 
 /**
  * Interface for loading maps
@@ -8,12 +8,11 @@ import game.map.tile.Tile;
 public interface MapLoader {
 
     /**
-     * This method loads a map from a source. The array should be loaded into a
-     * 2-dimensional format, following [x][y].
+     * This method loads a map from a source.
      *
-     * @return A two dimensional tile array
+     * @return A map object that stores all tiles
      * @throws Exception when the loading goes wrong
      */
-    public Tile[][] load() throws Exception;
+    public Map load() throws Exception;
 
 }

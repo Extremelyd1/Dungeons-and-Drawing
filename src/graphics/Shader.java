@@ -179,6 +179,7 @@ public class Shader {
         createUniform(uniformName + ".intensity");
         createUniform(uniformName + ".shadowMap");
         createUniform(uniformName + ".lightSpaceMatrix");
+        createUniform(uniformName + ".shadowEnable");
     }
 
     public void createMaterialUniform(String uniformName) throws Exception {
@@ -208,7 +209,11 @@ public class Shader {
     public void setUniform(String uniformName, int value) {
         glUniform1i(uniforms.get(uniformName), value);
     }
-    
+
+    public void setUniform(String uniformName, boolean value) {
+        glUniform1i(uniforms.get(uniformName), value ? 1 : 0);
+    }
+
     public void setUniform(String uniformName, Vector3f value) {
         glUniform3f(uniforms.get(uniformName), value.x, value.y, value.z);
     }
@@ -287,6 +292,7 @@ public class Shader {
         setUniform(uniformName + ".direction", dirLight.getDirection());
         setUniform(uniformName + ".intensity", dirLight.getIntensity());
         setUniform(uniformName + ".lightSpaceMatrix", dirLight.getLightSpaceMatrix());
+        setUniform(uniformName + ".shadowEnable", dirLight.isShadowEnabled());
     }
 
     public void setUniform(String uniformName, Material material) {

@@ -1,6 +1,7 @@
 package engine.util;
 
 import engine.loader.PLYLoader;
+import graphics.Material;
 import graphics.Mesh;
 
 import java.util.HashMap;
@@ -21,7 +22,7 @@ public class AssetStore {
             return loadedMeshes.get(meshName);
         }
         // Load mesh
-        String filePath = "/models/PLY/" + meshName + ".ply";
+        String filePath = "/models/tiles/" + meshName + ".ply";
         Mesh mesh;
         try {
             mesh = PLYLoader.loadMesh(filePath);
@@ -29,6 +30,8 @@ public class AssetStore {
             e.printStackTrace();
             return null;
         }
+        // Hardcoded reflectance
+        mesh.setMaterial(new Material(0f));
         loadedMeshes.put(meshName, mesh);
         return mesh;
     }

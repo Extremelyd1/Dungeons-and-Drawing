@@ -53,6 +53,7 @@ struct DirectionalLight
     float intensity;
     mat4 lightSpaceMatrix;
     sampler2D shadowMap;
+    bool shadowEnable;
 };
 
 struct Material
@@ -75,6 +76,7 @@ uniform DirectionalLight directionalLight;
 
 uniform vec3 viewPos;
 uniform mat4 view;
+uniform bool shadowEnable;
 
 vec4 ambientC;
 vec4 diffuseC;
@@ -167,48 +169,56 @@ vec4 calcSpotLight(SpotLight light, vec3 position, vec3 normal)
     return light_colour / attenuationInv;
 }
 
-float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2 plane)
+float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2 plane, bool shadows)
 {
-    vec3 fragToLight = position - light_position;
-    float currentDepth = length(fragToLight);
+    if (shadows) {
+        vec3 fragToLight = position - light_position;
+        float currentDepth = length(fragToLight);
 
-    float shadow = 0.0f;
-    float bias = 0.004f; //0.001f
-    int samples = 20;
-    float diskRadius = 0.00028f; //Regulates the softness of shadows 0.0015 is ideal
-    for (int i = 0; i < samples; ++i){
-        float closestDepth = texture(shadowMap, fragToLight + shadowSamplingGrid[i] * diskRadius).r;
-        closestDepth *= plane.y;
-        if (currentDepth - bias < closestDepth)
-            shadow += 1.0;
+        float shadow = 0.0f;
+        float bias = 0.004f; //0.001f
+        int samples = 20;
+        float diskRadius = 0.00028f; //Regulates the softness of shadows 0.0015 is ideal
+        for (int i = 0; i < samples; ++i){
+            float closestDepth = texture(shadowMap, fragToLight + shadowSamplingGrid[i] * diskRadius).r;
+            closestDepth *= plane.y;
+            if (currentDepth - bias < closestDepth)
+                shadow += 1.0;
+        }
+        shadow /= float(samples);
+
+        return shadow;
+    } else {
+        return 1.0f;
     }
-    shadow /= float(samples);
-
-    return shadow;
 }
 
-float calcShadow2D(mat4 matrix, vec3 position, sampler2D shadowMap)
+float calcShadow2D(mat4 matrix, vec3 position, sampler2D shadowMap, bool shadows)
 {
-    vec4 coord = matrix * vec4(position, 1.0);
-    vec3 projCoords = coord.xyz / coord.w;
-    projCoords = projCoords * 0.5 + 0.5;
+    if (shadows) {
+        vec4 coord = matrix * vec4(position, 1.0);
+        vec3 projCoords = coord.xyz / coord.w;
+        projCoords = projCoords * 0.5 + 0.5;
 
-    float currentDepth = projCoords.z;
-    float bias = 0.0001f; //0.001f
+        float currentDepth = projCoords.z;
+        float bias = 0.0001f; //0.001f
 
-    float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-    for(int x = -1; x <= 1; ++x)
-    {
-        for(int y = -1; y <= 1; ++y)
+        float shadow = 0.0;
+        vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+        for(int x = -1; x <= 1; ++x)
         {
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-            shadow += currentDepth - bias < pcfDepth ? 1.0 : 0.0;
+            for(int y = -1; y <= 1; ++y)
+            {
+                float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+                shadow += currentDepth - bias < pcfDepth ? 1.0 : 0.0;
+            }
         }
-    }
-    shadow /= 9.0;
+        shadow /= 9.0;
 
-    return shadow;
+        return shadow;
+    } else {
+        return 1.0f;
+    }
 }
 
 void main()
@@ -223,9 +233,11 @@ void main()
 
     // Calculate directional light
     component = calcDirectionalLight(directionalLight, fs_in.FragPos, fs_in.Normal);
-    if (length(component) > 0) {
-        shadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.shadowMap);
+    if (length(component) > 0 && directionalLight.shadowEnable) {
+        shadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.shadowMap, shadowEnable);
         diffuseSpecularComp += shadow * component;
+    } else {
+        diffuseSpecularComp += component;
     }
 
     // Calculate Point Lights
@@ -235,7 +247,7 @@ void main()
         {
             component = calcPointLight(pointLights[i], fs_in.FragPos, fs_in.Normal);
             if (length(component) > 0) {
-                shadow = calcShadow(fs_in.FragPos, pointLights[i].position, pointLights[i].shadowMap, pointLights[i].plane);
+                shadow = calcShadow(fs_in.FragPos, pointLights[i].position, pointLights[i].shadowMap, pointLights[i].plane, shadowEnable);
                 diffuseSpecularComp += shadow * component;
             }
         }
@@ -247,7 +259,7 @@ void main()
         {
             component = calcSpotLight(spotLights[i], fs_in.FragPos, fs_in.Normal);
             if (length(component) > 0) {
-               shadow = calcShadow2D(spotLights[i].lightSpaceMatrix, fs_in.FragPos, spotLights[i].shadowMap);
+               shadow = calcShadow2D(spotLights[i].lightSpaceMatrix, fs_in.FragPos, spotLights[i].shadowMap, shadowEnable);
                diffuseSpecularComp += shadow * component;
             }
 
