@@ -5,8 +5,6 @@ import engine.entities.Entity;
 import engine.GameWindow;
 import engine.Transformation;
 import engine.gui.GUIComponent;
-import engine.gui.Layer;
-import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.lights.SpotLight;
@@ -19,7 +17,6 @@ import graphics.ShadowMap;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
-import sun.security.ssl.Debug;
 
 
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
@@ -39,7 +36,6 @@ import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 public class Renderer {
 
     private Shader sceneShader;
-    private Shader guiShader;
     private Shader depthShaderCube;
     private Shader depthShader;
 
@@ -62,7 +58,6 @@ public class Renderer {
     public void init() throws Exception {
         setupSceneShader();
         setupDepthShader();
-        setupGUIShader();
     }
 
     private void setupSceneShader() throws Exception {
@@ -94,18 +89,6 @@ public class Renderer {
         sceneShader.createUniform("shadowEnable");
 
         GameWindow.getGameWindow().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    }
-
-    private void setupGUIShader() throws Exception {
-        guiShader = new Shader();
-        guiShader.createVertexShader(Utilities.loadResource("/shaders/vertex_gui.vs"));
-        guiShader.createFragmentShader(Utilities.loadResource("/shaders/fragment_gui.fs"));
-        guiShader.link();
-
-        // Create uniforms for Ortographic-model projection matrix and base colour
-        guiShader.createUniform("projModelMatrix");
-        guiShader.createUniform("colour");
-        guiShader.createUniform("hasTexture");
     }
 
     private void setupDepthShader() throws Exception {
@@ -146,7 +129,6 @@ public class Renderer {
      */
     public void render(
             Camera camera,
-            GUI gui,
             Entity[] entities,
             SceneLight sceneLight,
             Map map
@@ -166,9 +148,6 @@ public class Renderer {
         });
 
         renderScene(camera, entities, sceneLight, map);
-        if (gui != null) {
-            renderGui(gui);
-        }
     }
 
     public void renderScene(Camera camera,
@@ -492,41 +471,9 @@ public class Renderer {
         glCullFace(GL_BACK);
     }
 
-    private void renderGui(GUI gui) {
-
-        guiShader.bind();
-
-        Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, GameWindow.getGameWindow().getWindowWidth(),
-                GameWindow.getGameWindow().getWindowHeight(), 0);
-
-        for (Layer layer : gui.getLayers()) {
-
-            for (GUIComponent element : layer.getElements()) {
-
-                // Set ortohtaphic and model matrix for this HUD item
-                Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(element, ortho);
-                guiShader.setUniform("projModelMatrix", projModelMatrix);
-
-                Mesh mesh = element.getMesh();
-
-                guiShader.setUniform("colour", mesh.getMaterial().getAmbientColour());
-                guiShader.setUniform("hasTexture", mesh.getMaterial().isTextured() ? 1 : 0);
-
-                // Render the mesh for this HUD item
-                mesh.render();
-            }
-        }
-
-        guiShader.unbind();
-    }
-
     public void terminate() {
         if (sceneShader != null) {
             sceneShader.terminate();
-        }
-
-        if (guiShader != null) {
-            guiShader.terminate();
         }
     }
 }

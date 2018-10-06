@@ -21,12 +21,14 @@ public class GUIComponent {
     private final Vector3f position; // Position of the GUI component in screen coordinates
     private float scale; // Scale of the GUI component
     private final Vector3f rotation; // Rotation (in degrees) of the GUI Component
+    private int alphaChannel;
 
     /** Constructs an empty Component with no mesh and default position, rotation, scale */
     public GUIComponent() { ;
         this.position = new Vector3f(0, 0, 0);
         this.rotation = new Vector3f(0, 0, 0);
         this.scale = 1.0f;
+        this.alphaChannel = 255;
     }
 
     /**
@@ -48,7 +50,6 @@ public class GUIComponent {
         this.position = new Vector3f(position, 0);
         this.rotation = new Vector3f(0, 0, rotation);
         this.scale = 1.0f;
-
         this.mesh = mesh;
     }
 
@@ -88,9 +89,15 @@ public class GUIComponent {
         return mesh;
     }
 
-
     public void setMesh(Mesh mesh) {
         this.mesh = mesh;
     }
 
+    public int getAlphaChannel() {
+        return alphaChannel;
+    }
+
+    public void setAlphaChannel(int alphaChannel) {
+        this.alphaChannel = Math.max(0, Math.min(255, alphaChannel));
+    }
 }

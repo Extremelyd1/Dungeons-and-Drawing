@@ -6,14 +6,11 @@ import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
 import engine.entities.Player;
-import engine.gui.NanoVG;
-import engine.gui.SimplePopup;
-import engine.input.KeyBinding;
-import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
+import game.GUI;
 import game.LevelController;
 import game.Renderer;
 import game.map.Map;
@@ -31,8 +28,7 @@ public class TutorialLevel extends Level {
     private Camera camera;
     private Entity[] entities;
     private SceneLight sceneLight;
-
-    SimplePopup pop;
+    private GUI gui;
 
     public TutorialLevel(LevelController levelController) {
         super(levelController);
@@ -43,8 +39,6 @@ public class TutorialLevel extends Level {
         // Load map
         map = new Map();
         map.load(new TempTutorialMapLoader());
-
-        pop = new SimplePopup(null, 0, 0);
 
         // Setup rendering
         renderer = new Renderer();
@@ -87,6 +81,10 @@ public class TutorialLevel extends Level {
                 0.2f,                                // intensity
                 new Vector2f(1.0f, 10.0f),             // near-far plane
                 false);
+
+        // Setup gui
+        gui = new GUI();
+        gui.initialize();
     }
 
     @Override
@@ -101,23 +99,22 @@ public class TutorialLevel extends Level {
         camera.update();
         player.update(interval);
         sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));;
+        gui.update();
     }
 
     @Override
     public void render() {
         renderer.render(
                 camera,
-                null,
                 entities,
                 sceneLight,
                 map
         );
-
-        pop.render();
+        gui.render();
     }
 
     @Override
     public void terminate() {
-
+        gui.terminate();
     }
 }

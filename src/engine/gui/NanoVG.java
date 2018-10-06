@@ -346,7 +346,7 @@ public class NanoVG {
             return rgba(getDefaultColor(), color);
         }
     }
-    
+
     private RGBA getDefaultColor() {
         return new RGBA(255, 255, 255, 255);
     }
