@@ -14,6 +14,7 @@ import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import pathfinding.Pathfinding_Validator;
 import sun.security.ssl.Debug;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -52,7 +53,6 @@ public class SandboxTestLevel implements IGameLogic {
 
     @Override
     public void init() throws Exception {
-
         gui = new GUI("Test");
 
         renderer.init();

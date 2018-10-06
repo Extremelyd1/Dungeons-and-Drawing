@@ -24,6 +24,7 @@ public class A_star implements Pathfinding{
      */
     @Override
     public List<Tile> computePath(Tile start, Tile target, Map map) {
+        System.out.println("Running A*-search");
         // Initialise our open queue and comparator
         open = new PriorityQueue<>();
         // List containing all the 'closed' nodes

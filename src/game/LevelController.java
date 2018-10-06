@@ -6,6 +6,7 @@ import game.level.Level;
 import game.level.MapTestLevel;
 import game.level.TestLevel;
 import game.level.TutorialLevel;
+import pathfinding.Pathfinding_Validator;
 
 import java.util.ArrayList;
 import java.util.Arrays;

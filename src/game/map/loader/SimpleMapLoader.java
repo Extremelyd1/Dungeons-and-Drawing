@@ -17,7 +17,7 @@ import org.joml.Vector4f;
 public class SimpleMapLoader implements MapLoader {
     @Override
     public Tile[][] load() throws Exception {
-
+        /*
         Mesh mesh = PLYLoader.loadMesh("/models/test_1.ply");
         Material material = new Material(
             new Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
@@ -27,19 +27,18 @@ public class SimpleMapLoader implements MapLoader {
             0.0f
         );
         mesh.setMaterial(material);
-
-        return generateGround(mesh,  10);
+        */
+        return generateGround(null,  10);
     }
 
     private Tile[][] generateGround(Mesh mesh, int gridSize){
         Tile[][] tiles = new Tile[gridSize][gridSize];
         Random orientation = new Random(1234);
-        int s = gridSize / 2;
 
-        for (int row = -s; row < s; row++){
-            for (int column = -s; column < s; column++) {
-                tiles[row + s][column + s] =
-                        new Tile(new Vector2i(row, column), new Vector3f(-90, 0, 90 * orientation.nextInt(3)), mesh,true);
+        for (int row = 0; row < gridSize; row++){
+            for (int column = 0; column < gridSize; column++) {
+                tiles[row][column] =
+                        new Tile(new Vector2i(row, column), new Vector3f(-90, 0, 90 * orientation.nextInt(3)), mesh,false);
             }
         }
 
