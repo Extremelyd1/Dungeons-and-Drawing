@@ -1,11 +1,7 @@
 package engine.gui;
 
-import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Base class for all GUI component we would want to add. Defines a position, mesh, scale and rotation.
@@ -15,46 +11,43 @@ import java.util.List;
  *
  * GUI components are rendered in orthogonal projection (so the Z-axis is ignored)
  */
-public class GUIComponent {
+public abstract class GUIComponent {
 
-    private Mesh mesh; // Mesh to display the texture, often a quad
-    private final Vector3f position; // Position of the GUI component in screen coordinates
+    private final Vector2f position; // Position of the GUI component in screen coordinates
     private float scale; // Scale of the GUI component
-    private final Vector3f rotation; // Rotation (in degrees) of the GUI Component
-    private int alphaChannel;
+    private float rotation; // Rotation (in degrees) of the GUI Component
+    private RGBA color;
 
     /** Constructs an empty Component with no mesh and default position, rotation, scale */
-    public GUIComponent() { ;
-        this.position = new Vector3f(0, 0, 0);
-        this.rotation = new Vector3f(0, 0, 0);
+    public GUIComponent() {
+        this.position = new Vector2f(0, 0);
+        this.rotation = 0.0f;
         this.scale = 1.0f;
-        this.alphaChannel = 255;
+        this.color = new RGBA(255, 255, 255, 255);
     }
 
     /**
-     * Constructs a component with a mesh and default position, rotation, scale
-     * @param mesh mesh of the component
+     * Constructs a component with a color
+     * @param rgba color in rgba channels
      */
-    public GUIComponent(Mesh mesh) {
+    public GUIComponent(RGBA rgba) {
         this();
-        this.mesh = mesh;
+        this.color = rgba;
     }
 
     /**
-     * Creates a GUI component with a different mesh and a custom position, rotation, scale
-     * @param mesh Mesh of the GUI Component (probably a quad)
-     * @param position Custom position (in screen coordinates) of the component
-     * @param rotation Custom rotation (in degrees, around the z-axis) of the component
+     * Constructs a fully defined component
+     * @param rgba color in rgba channels
      */
-    public GUIComponent(Mesh mesh, Vector2f position, float rotation) {
-        this.position = new Vector3f(position, 0);
-        this.rotation = new Vector3f(0, 0, rotation);
-        this.scale = 1.0f;
-        this.mesh = mesh;
+    public GUIComponent(Vector2f position, float scale, float rotation, RGBA rgba) {
+        this.position = position;
+        this.scale = scale;
+        this.rotation = rotation;
+        this.color = rgba;
     }
 
     /* Returns the position */
-    public Vector3f getPosition() {
+    public Vector2f getPosition() {
         return position;
     }
 
@@ -75,29 +68,31 @@ public class GUIComponent {
     }
 
     /* Returns the rotation */
-    public Vector3f getRotation() {
+    public float getRotation() {
         return rotation;
     }
 
     /* Sets the rotation */
     public void setRotation(float amount) {
-        this.rotation.z = amount;
-    }
-
-    /* Returns the mesh */
-    public Mesh getMesh() {
-        return mesh;
-    }
-
-    public void setMesh(Mesh mesh) {
-        this.mesh = mesh;
+        this.rotation = amount;
     }
 
     public int getAlphaChannel() {
-        return alphaChannel;
+        return color.a;
     }
 
     public void setAlphaChannel(int alphaChannel) {
-        this.alphaChannel = Math.max(0, Math.min(255, alphaChannel));
+        this.color.a = Math.max(0, Math.min(255, alphaChannel));
     }
+
+    public void setColor(RGBA rgba) {
+        this.color = rgba;
+    }
+
+    public RGBA getColor() {
+        return color;
+    }
+
+    abstract public void render();
+    abstract public void update();
 }

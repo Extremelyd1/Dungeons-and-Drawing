@@ -34,8 +34,6 @@ public class TestLevel extends Level {
     public void init() throws Exception {
         renderer.init();
 
-        gui = new GUI("ABCDEFGabcdefg!");
-
         // Load tree.ply file
         Mesh mesh = PLYLoader.loadMesh("/models/test_1.ply");
         Material material = new Material(0.1f);
@@ -89,7 +87,6 @@ public class TestLevel extends Level {
     public void render() {
         renderer.render(
                 camera,
-                gui,
                 gameEntities,
                 sceneLight,
                 null

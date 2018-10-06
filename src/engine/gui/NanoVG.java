@@ -2,6 +2,7 @@ package engine.gui;
 
 import engine.GameWindow;
 import engine.util.Utilities;
+import org.joml.Vector2f;
 import org.lwjgl.nanovg.NVGColor;
 
 import java.io.IOException;
@@ -10,9 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.nanovg.NanoVG.*;
-import static org.lwjgl.nanovg.NanoVGGL3.NVG_ANTIALIAS;
-import static org.lwjgl.nanovg.NanoVGGL3.NVG_STENCIL_STROKES;
-import static org.lwjgl.nanovg.NanoVGGL3.nvgCreate;
+import static org.lwjgl.nanovg.NanoVGGL3.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
@@ -38,7 +37,7 @@ public class NanoVG {
     private static final String VECNA = "VECNA";
 
     private static final float FONT_SIZE_PARAGRAPH = 24.0f;
-    private static final float FONT_SIZE_TITLE = 48.0f;
+    private static final float FONT_SIZE_TITLE = 96.0f;
 
 
     /**
@@ -167,12 +166,13 @@ public class NanoVG {
      * @param posX x coordinate of the text
      * @param posY y coordinate of the text
      * @param text The text content
+     * @param rgba The color of the text
      */
-    public void drawParagraphText(float posX, float posY, String text) {
+    public void drawParagraphText(float posX, float posY, String text, RGBA rgba) {
         nvgFontSize(nanoVGHandler, FONT_SIZE_PARAGRAPH);
         nvgFontFace(nanoVGHandler, SEGOE_UI);
         nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-        nvgFillColor(nanoVGHandler, rgba(null, color));
+        nvgFillColor(nanoVGHandler, rgba(null, rgba(rgba, color)));
         nvgText(nanoVGHandler, posX, posY, text);
     }
 
@@ -182,12 +182,13 @@ public class NanoVG {
      * @param posX x coordinate of the text
      * @param posY y coordinate of the text
      * @param text The text content
+     * @param rgba The color of the text
      */
-    public void drawTitleText(float posX, float posY, String text) {
+    public void drawTitleText(float posX, float posY, String text, RGBA rgba) {
         nvgFontSize(nanoVGHandler, FONT_SIZE_TITLE);
         nvgFontFace(nanoVGHandler, VECNA);
         nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-        nvgFillColor(nanoVGHandler, rgba(null, color));
+        nvgFillColor(nanoVGHandler, rgba(null, rgba(rgba, color)));
         nvgText(nanoVGHandler, posX, posY, text);
     }
 
@@ -199,12 +200,13 @@ public class NanoVG {
      * @param text     The text content
      * @param fontSize Font size in pixels
      * @param font     Font
+     * @param rgba The color of the text
      */
-    public void drawText(float posX, float posY, String text, float fontSize, Font font) {
+    public void drawText(float posX, float posY, String text, float fontSize, Font font, RGBA rgba) {
         nvgFontSize(nanoVGHandler, fontSize);
         nvgFontFace(nanoVGHandler, font.toString());
         nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-        nvgFillColor(nanoVGHandler, rgba(null, color));
+        nvgFillColor(nanoVGHandler, rgba(null, rgba(rgba, color)));
         nvgText(nanoVGHandler, posX, posY, text);
     }
 
@@ -349,5 +351,9 @@ public class NanoVG {
 
     private RGBA getDefaultColor() {
         return new RGBA(255, 255, 255, 255);
+    }
+
+    public void terminateNanoVG() {
+        nvgDelete(nanoVGHandler);
     }
 }
