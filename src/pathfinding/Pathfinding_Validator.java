@@ -54,7 +54,7 @@ public class Pathfinding_Validator {
                 }
                 grid[start.getPosition().x][start.getPosition().y].setBackground(Color.GREEN);
                 grid[target.getPosition().x][target.getPosition().y].setBackground(Color.RED);
-                System.out.println("Grid coverage: " + (alg.getClosedTiles().size()+alg.getOpenedTiles().size())
+                System.out.println("Grid coverage: " + (alg.getClosedTiles().size())
                         /(float)(map.getHeight()*map.getWidth()));
                 System.out.println("Time to compute in nsecond: " + time);
             }
