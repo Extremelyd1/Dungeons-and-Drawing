@@ -6,11 +6,16 @@ import game.map.Map;
 import graphics.Mesh;
 import org.joml.Vector3f;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F6;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.glfwGetKey;
+
 /**
  * Player class, the controllable PC of the game
  */
 public class Player extends LivingEntity {
 
+    private boolean checkCollision = true;
     // The range of the cylindrical collision box around the player
     float collisionSize;
 
@@ -41,6 +46,11 @@ public class Player extends LivingEntity {
     @Override
     public void update(float delta) {
         GameWindow window = GameWindow.getGameWindow();
+
+        if (glfwGetKey(window.getWindowHandle(), GLFW_KEY_F6) == GLFW_PRESS) {
+            checkCollision = !checkCollision;
+        }
+
         // Get input
         boolean forward = KeyBinding.isForwardPressed();
         boolean backward = KeyBinding.isBackwardPressed();
@@ -94,6 +104,11 @@ public class Player extends LivingEntity {
         }
 
         if (xChange == 0 && zChange == 0) {
+            return;
+        }
+
+        if (!checkCollision) {
+            getPosition().add(xChange, 0, zChange);
             return;
         }
 
