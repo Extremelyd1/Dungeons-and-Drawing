@@ -17,7 +17,6 @@ import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import sun.security.ssl.Debug;
 
 import java.util.Random;
 
@@ -35,30 +34,30 @@ public class MapTestLevel extends Level {
 
     public MapTestLevel(LevelController levelController) {
         super(levelController);
-
-        renderer = new Renderer();
-        camera = new FreeCamera();
-        sceneLight = new SceneLight();
     }
 
     @Override
     public void init() throws Exception {
+
+        renderer = new Renderer();
+        camera = new FreeCamera();
+        sceneLight = new SceneLight();
+
         renderer.init();
 
         //gui = new GUI("Dungeons and Drawings!");
 
-        map = new Map();
-        map.load(new SimpleMapLoader());
+        map = new SimpleMapLoader().load();
 
         //Set up ambient light of the scene
         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f, 0.2f, 0.2f));
 
         //Set up a directional light
         sceneLight.directionalLight = new DirectionalLight(
-                new Vector3f(0.0f,10.0f,0.0f),      // position
+                new Vector3f(0.0f, 10.0f, 0.0f),      // position
                 new Vector3f(0.8f, 0.8f, 0.8f),     // color
                 new Vector3f(0.0f, 1.0f, 0.4f),     // direction
-            0.8f,                                    // intensity
+                0.8f,                                    // intensity
                 new Vector2f(1.0f, 10.0f),             // near-far plane
                 2048);                             // resolution
 
@@ -78,8 +77,8 @@ public class MapTestLevel extends Level {
                 lightPosition2,
                 lightIntensity2,
                 new Vector3f(1f, -0.1f, 1f),
-                (float)Math.cos(Math.toRadians(7)),
-                (float)Math.cos(Math.toRadians(25)),
+                (float) Math.cos(Math.toRadians(7)),
+                (float) Math.cos(Math.toRadians(25)),
                 new Vector2f(1.0f, 6.5f),
                 4096);
         PointLight.Attenuation att2 = new PointLight.Attenuation(0.0f, 0.2f, 0.0f);
@@ -110,12 +109,12 @@ public class MapTestLevel extends Level {
         Entity g = new Entity(tree);
         g.setScale(0.25f);
         g.setPosition(-3.0f, 0.5f, -3.0f);
-        g.setRotation(-90,0,23);
+        g.setRotation(-90, 0, 23);
 
         // Tree 2
         Entity g2 = new Entity(tree);
         g2.setPosition(-2.0f, 0.0f, 2.0f);
-        g2.setRotation(-90,0,0);
+        g2.setRotation(-90, 0, 0);
 
         gameEntities = new Entity[]{g, g2, light1, light2};
 
@@ -132,10 +131,11 @@ public class MapTestLevel extends Level {
 
     private Random rand = new Random(1234);
     private ColorInterpolator flame = new ColorInterpolator();
+
     @Override
     public void update(float interval, MouseInput mouseInput) {
         PointLight light = sceneLight.pointLights.get(0);
-        if (flame.getStatus()){
+        if (flame.getStatus()) {
             Vector3f color =
                     new Vector3f(0.88f, 0.72f, 0.13f).add(
                             new Vector3f(0.01f, -0.05f, -0.005f).mul((rand.nextInt(2) / 1.0f)));
@@ -145,7 +145,6 @@ public class MapTestLevel extends Level {
         light.setColor(flame.getInterpolationResult());
 //        player.update(interval);
     }
-
 
 
     @Override
