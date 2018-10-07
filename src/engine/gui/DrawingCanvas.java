@@ -3,6 +3,7 @@ package engine.gui;
 import engine.GameWindow;
 import engine.MouseInput;
 import engine.util.Utilities;
+import org.joml.Vector2f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * Popup with the drawing canvas
  */
-public class DrawingPopup extends Popup {
+public class DrawingCanvas extends Popup {
 
     private float size;
     private boolean mouseDown;
@@ -18,7 +19,7 @@ public class DrawingPopup extends Popup {
     private List<List<Float>> drawing;
     private static final float BRUSH_SIZE = 5.0f;
 
-    public DrawingPopup() {
+    public DrawingCanvas() {
         super(GameWindow.getGameWindow().getWindowHeight() * 0.75f,
                 GameWindow.getGameWindow().getWindowHeight() * 0.75f,
                 "");
@@ -78,15 +79,16 @@ public class DrawingPopup extends Popup {
         super.render();
 
         NanoVG nano = NanoVG.getInstance();
-        nano.drawSquare(this.getPosition().x + 0.075f * size,
-                this.getPosition().y + 0.075f * size, size * 0.85f, null);
+        nano.drawSquare(new Vector2f(0.075f * size, 0.075f * size),
+                size * 0.85f, null);
 
         // Draw as lines
         for (int i = 0; i < drawing.size(); i++) {
             List<Float> subDrawing = drawing.get(i);
             if (subDrawing.size() >= 4) {
-                nano.drawCustomShape(Utilities.listToArray(subDrawing), 0, 0, 1.0f,
-                        new RGBA(0, 0, 0, 255), false, false);
+                nano.drawCustomShape(Utilities.listToArray(subDrawing),
+                        new Vector2f(-this.getPosition().x, -this.getPosition().y),
+                        1.0f, new RGBA(0, 0, 0, 255), false, false);
             }
         }
 

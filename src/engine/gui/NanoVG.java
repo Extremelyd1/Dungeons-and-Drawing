@@ -120,15 +120,14 @@ public class NanoVG {
     /**
      * Draws a basic rectangle
      *
-     * @param posX   Upper left corner of the rectangle
-     * @param posY   Upper left corner of the rectangle
+     * @param relativePosition relative position from gui component
      * @param width  Width of the rectangle
      * @param height Height of the rectangle
      * @param rgba   Color of the rectangle (in rgba)
      */
-    public void drawRectangle(float posX, float posY, float width, float height, RGBA rgba) {
+    public void drawRectangle(Vector2f relativePosition, float width, float height, RGBA rgba) {
         nvgBeginPath(nanoVGHandler);
-        nvgRect(nanoVGHandler, posX, posY, width, height);
+        nvgRect(nanoVGHandler, relativePosition.x, relativePosition.y, width, height);
         nvgFillColor(nanoVGHandler, rgba(rgba, color));
         nvgFill(nanoVGHandler);
     }
@@ -136,26 +135,24 @@ public class NanoVG {
     /**
      * Draws a square
      *
-     * @param posX Upper left corner of the rectangle
-     * @param posY Upper left corner of the rectangle
+     * @param relativePosition relative position from gui component
      * @param size Size of the sides
      * @param rgba Color of the square
      */
-    public void drawSquare(float posX, float posY, float size, RGBA rgba) {
-        drawRectangle(posX, posY, size, size, rgba);
+    public void drawSquare(Vector2f relativePosition, float size, RGBA rgba) {
+        drawRectangle(relativePosition, size, size, rgba);
     }
 
     /**
      * Draws a circle
      *
-     * @param posX   x coordinate of the center of the circle
-     * @param posY   y coordinate of the center circle
+     * @param relativePosition relative position from gui component
      * @param radius radius of the circle
      * @param rgba   color of the circle
      */
-    public void drawCircle(float posX, float posY, float radius, RGBA rgba) {
+    public void drawCircle(Vector2f relativePosition, float radius, RGBA rgba) {
         nvgBeginPath(nanoVGHandler);
-        nvgCircle(nanoVGHandler, posX, posY, radius);
+        nvgCircle(nanoVGHandler, relativePosition.x, relativePosition.y, radius);
         nvgFillColor(nanoVGHandler, rgba(rgba, color));
         nvgFill(nanoVGHandler);
     }
@@ -163,14 +160,13 @@ public class NanoVG {
     /**
      * Draws a circle
      *
-     * @param posX   x coordinate of the center of the circle
-     * @param posY   y coordinate of the center circle
+     * @param relativePosition relative position from gui component
      * @param radius radius of the circle
      * @param rgba   color of the circle
      */
-    public void drawDonut(float posX, float posY, float radius, RGBA rgba) {
+    public void drawDonut(Vector2f relativePosition, float radius, RGBA rgba) {
         nvgBeginPath(nanoVGHandler);
-        nvgCircle(nanoVGHandler, posX, posY, radius);
+        nvgCircle(nanoVGHandler, relativePosition.x, relativePosition.y, radius);
         nvgStrokeColor(nanoVGHandler, rgba(rgba, color));
         nvgStrokeWidth(nanoVGHandler, 2);
         nvgStroke(nanoVGHandler);
@@ -179,59 +175,60 @@ public class NanoVG {
     /**
      * Draws basic text in the default paragraph style
      *
-     * @param posX x coordinate of the text
-     * @param posY y coordinate of the text
+     * @param relativePosition relative position from gui component
      * @param text The text content
      * @param rgba The color of the text
      */
-    public void drawParagraphText(float posX, float posY, float textWidth, String text, RGBA rgba) {
+    public void drawParagraphText(Vector2f relativePosition, float textWidth, String text, RGBA rgba) {
         nvgFontSize(nanoVGHandler, FONT_SIZE_PARAGRAPH);
         nvgFontFace(nanoVGHandler, SEGOE_UI);
-        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
         nvgFillColor(nanoVGHandler, rgba(null, rgba(rgba, color)));
-        nvgTextBox(nanoVGHandler, posX, posY, textWidth, text);
+        nvgTextBox(nanoVGHandler, relativePosition.x, relativePosition.y, textWidth, text);
     }
 
     /**
      * Draws basic text in the default title style
      *
-     * @param posX x coordinate of the text
-     * @param posY y coordinate of the text
+     * @param relativePosition relative position from gui component
      * @param text The text content
      * @param rgba The color of the text
      */
-    public void drawTitleText(float posX, float posY, String text, RGBA rgba) {
-        nvgFontSize(nanoVGHandler, FONT_SIZE_TITLE);
+    public void drawTitleText(Vector2f relativePosition, String text, float fontSize, RGBA rgba) {
+        nvgFontSize(nanoVGHandler, fontSize);
         nvgFontFace(nanoVGHandler, VECNA);
-        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-        nvgFillColor(nanoVGHandler, rgba(null, rgba(rgba, color)));
-        nvgText(nanoVGHandler, posX, posY, text);
+        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+        nvgFillColor(nanoVGHandler, rgba(rgba, color));
+        nvgText(nanoVGHandler, relativePosition.x, relativePosition.y, text);
+    }
+
+    public void drawTitleText(Vector2f relativePosition, String text, RGBA rgba) {
+        drawTitleText(relativePosition, text, FONT_SIZE_TITLE, rgba);
     }
 
     /**
      * Draws basic text in the default paragraph style
      *
-     * @param posX     x coordinate of the text
-     * @param posY     y coordinate of the text
+     * @param relativePosition relative position from gui component
      * @param text     The text content
      * @param font     Font
      * @param rgba The color of the text
      */
-    public void drawText(float posX, float posY, String text, Font font, RGBA rgba) {
+    public void drawText(Vector2f relativePosition, String text, Font font, RGBA rgba) {
         nvgFontSize(nanoVGHandler, FONT_SIZE_PARAGRAPH);
         nvgFontFace(nanoVGHandler, font.toString());
-        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-        nvgFillColor(nanoVGHandler, rgba(null, rgba(rgba, color)));
-        nvgText(nanoVGHandler, posX, posY, text);
+        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+        nvgFillColor(nanoVGHandler, rgba(rgba, color));
+        nvgText(nanoVGHandler, relativePosition.x, relativePosition.y, text);
     }
 
     /**
      * Draws a line
      *
-     * @param startX x coordinate of start point
-     * @param startY y coordinate of end point
-     * @param endX x coordinate of start point
-     * @param endY y coordinate of end point
+     * @param startX x coordinate of start point, relative to GUIComponent
+     * @param startY y coordinate of end point, relative to GUIComponent
+     * @param endX x coordinate of start point, relative to GUIComponent
+     * @param endY y coordinate of end point, relative to GUIComponent
      * @param rgba color of the line
      */
     public void drawLine(float startX, float startY, float endX, float endY, RGBA rgba) {
@@ -246,10 +243,10 @@ public class NanoVG {
     /**
      * Draws an (upwards) curve
      *
-     * @param startX x coordinate of start point
-     * @param startY y coordinate of end point
-     * @param endX x coordinate of start point
-     * @param endY y coordinate of end point
+     * @param startX x coordinate of start point, relative to GUIComponent
+     * @param startY y coordinate of end point, relative to GUIComponent
+     * @param endX x coordinate of start point, relative to GUIComponent
+     * @param endY y coordinate of end point, relative to GUIComponent
      * @param rgba color of the line
      */
     public void drawCurve(float startX, float startY, float endX, float endY, RGBA rgba) {
@@ -269,7 +266,7 @@ public class NanoVG {
      * @param rgba Color of the shape
      * @param filled Whether the shape is filled or stroked
      */
-    public void drawCustomShape(float[] points, float x, float y, float scale, RGBA rgba, boolean curved, boolean filled) {
+    public void drawCustomShape(float[] points, Vector2f relativePosition, float scale, RGBA rgba, boolean curved, boolean filled) {
 
         if (points.length % 2 != 0) {
             throw new IllegalArgumentException("engine.gui.NanoVG.drawCustomShape() failed: " +
@@ -285,9 +282,9 @@ public class NanoVG {
         for (int i = 0; i < copy.length; i++) {
             copy[i] *= scale;
             if (i % 2 == 0) {
-                copy[i] += x;
+                copy[i] += relativePosition.x;
             } else {
-                copy[i] += y;
+                copy[i] += relativePosition.y;
             }
         }
 
@@ -373,6 +370,19 @@ public class NanoVG {
         } else {
             return rgba(getDefaultColor(), color);
         }
+    }
+
+    /**
+     * Transform the matrix to include transformation
+     * @param position Position
+     * @param rotation Rotation
+     * @param scale Scale
+     */
+    public void transform(Vector2f position, float rotation, float scale) {
+        nvgResetTransform(nanoVGHandler);
+        nvgTranslate(nanoVGHandler, position.x, position.y);
+        nvgRotate(nanoVGHandler, (float) Math.toDegrees(rotation));
+        nvgScale(nanoVGHandler, scale, scale);
     }
 
     private RGBA getDefaultColor() {

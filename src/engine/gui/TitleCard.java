@@ -2,6 +2,7 @@ package engine.gui;
 
 import engine.GameWindow;
 import engine.MouseInput;
+import org.joml.Vector2f;
 
 public class TitleCard extends GUIComponent {
 
@@ -20,9 +21,7 @@ public class TitleCard extends GUIComponent {
     @Override
     public void render() {
         NanoVG nano = NanoVG.getInstance();
-        nano.drawTitleText(
-                this.getPosition().x ,
-                this.getPosition().y - 48,
+        nano.drawTitleText(new Vector2f(0, -48),
                 "Dungeons & Drawings",
                 new RGBA(255, 255, 255, getAlphaChannel())
         );

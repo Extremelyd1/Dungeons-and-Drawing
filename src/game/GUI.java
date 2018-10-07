@@ -1,6 +1,5 @@
 package game;
 
-import engine.GameWindow;
 import engine.MouseInput;
 import engine.gui.*;
 
@@ -23,9 +22,8 @@ public class GUI {
 
     public void initialize() {
         nano = NanoVG.getInstance();
-        components.add(new DrawingPopup());
-        components.add(new Button(200, 50, "Click me!",
-                new RGBA(255, 0, 0), new RGBA(128, 0, 0)));
+        components.add(new DrawingCanvas());
+        components.add(new Button(200, 50, "Click me!"));
 
 //        components.add(new TitleCard());
         mouse.init();
