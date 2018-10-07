@@ -214,16 +214,15 @@ public class NanoVG {
      * @param posX     x coordinate of the text
      * @param posY     y coordinate of the text
      * @param text     The text content
-     * @param fontSize Font size in pixels
      * @param font     Font
      * @param rgba The color of the text
      */
-    public void drawText(float posX, float posY, float textWidth, String text, float fontSize, Font font, RGBA rgba) {
-        nvgFontSize(nanoVGHandler, fontSize);
+    public void drawText(float posX, float posY, String text, Font font, RGBA rgba) {
+        nvgFontSize(nanoVGHandler, FONT_SIZE_PARAGRAPH);
         nvgFontFace(nanoVGHandler, font.toString());
         nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
         nvgFillColor(nanoVGHandler, rgba(null, rgba(rgba, color)));
-        nvgTextBox(nanoVGHandler, posX, posY, textWidth, text);
+        nvgText(nanoVGHandler, posX, posY, text);
     }
 
     /**
