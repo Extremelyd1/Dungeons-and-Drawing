@@ -22,10 +22,14 @@ public class GUI {
 
     public void initialize() {
         nano = NanoVG.getInstance();
-        components.add(new DrawingCanvas());
-        components.add(new Button(200, 50, "Click me!"));
+        components.add(new Popup(800, 200, "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. "));
+        components.add(new Button(200, 50, "Crash the game!", null));
 
-//        components.add(new TitleCard());
+        TitleCard titleCard = new TitleCard();
+        titleCard.setPosition(650, 100);
+        components.add(titleCard);
+
+        components.add(new DrawingCanvas());
         mouse.init();
     }
 

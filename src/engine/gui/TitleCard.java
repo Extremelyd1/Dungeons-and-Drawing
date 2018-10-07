@@ -21,7 +21,8 @@ public class TitleCard extends GUIComponent {
     @Override
     public void render() {
         NanoVG nano = NanoVG.getInstance();
-        nano.drawTitleText(new Vector2f(0, -48),
+        nano.transform(this.getPosition(), this.getRotation(), this.getScale());
+        nano.drawTitleText(new Vector2f(0, 0),
                 "Dungeons & Drawings",
                 new RGBA(255, 255, 255, getAlphaChannel())
         );

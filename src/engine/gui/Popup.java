@@ -58,6 +58,7 @@ public class Popup extends GUIComponent {
         nano.drawCircle(new Vector2f(width - 20, height - 20), 5, POPUP_COLOR_DARK);
         nano.drawCircle(new Vector2f(20, height - 20), 5, POPUP_COLOR_DARK);
 
+        // Draw horizontal ornaments
         nano.drawCustomShape(ornament, new Vector2f(40, 15), 0.2f,
                 POPUP_COLOR_DARK, true, false);
         nano.drawCustomShape(ornament, new Vector2f(width - 76, 15), 0.2f,
@@ -67,6 +68,7 @@ public class Popup extends GUIComponent {
         nano.drawCustomShape(ornament, new Vector2f(width - 76, height - 23), 0.2f,
                 POPUP_COLOR_DARK, true, false);
 
+        // Draw vertical ornaments
         nano.drawCustomShape(ornamentVertical, new Vector2f(15, 40), 0.2f,
                 POPUP_COLOR_DARK, true, false);
         nano.drawCustomShape(ornamentVertical, new Vector2f(width - 23, 40), 0.2f,
@@ -76,7 +78,10 @@ public class Popup extends GUIComponent {
         nano.drawCustomShape(ornamentVertical, new Vector2f(width - 23, height - 76), 0.2f,
                 POPUP_COLOR_DARK, true, false);
 
-        nano.drawParagraphText(new Vector2f(width / 2.0f, height / 2.0f),
+        // Draw the text
+        nano.drawText(new Vector2f( width / 2.0f, height / 6.0f + 10), "New message",
+                Font.SEGOE_UI_BOLD, POPUP_COLOR_TEXT);
+        nano.drawParagraphText(new Vector2f(width / 2.0f - width * 0.375f, height / 3.0f + 10),
                 width * 0.75f, text, POPUP_COLOR_TEXT);
    }
 

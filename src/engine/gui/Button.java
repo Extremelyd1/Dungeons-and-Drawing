@@ -1,6 +1,7 @@
 package engine.gui;
 
 import engine.MouseInput;
+import game.action.Action;
 import org.joml.Vector2f;
 
 /** Class to render a button the the GUI */
@@ -10,25 +11,27 @@ public class Button extends GUIComponent {
     private int height;
     private String text;
     private boolean hover;
+    private final Action action;
 
     private static final RGBA BUTTON_COLOR = new RGBA(218, 191, 148);
     private static final RGBA BUTTON_COLOR_HOVER = new RGBA(156, 121, 79);
     private static final RGBA BUTTON_COLOR_TEXT = new RGBA(55, 50, 34);
 
-    public Button(String text) {
-        this(new Vector2f(0, 0), 1, 0, 200, 50, text);
+    public Button(String text, Action action) {
+        this(new Vector2f(0, 0), 1, 0, 200, 50, text, action);
     }
 
-    public Button(int width, int height, String text) {
-        this(new Vector2f(0, 0), 1, 0, width, height, text);
+    public Button(int width, int height, String text, Action action) {
+        this(new Vector2f(0, 0), 1, 0, width, height, text, action);
     }
 
-    public Button(Vector2f position, float scale, float rotation, int width, int height, String text) {
+    public Button(Vector2f position, float scale, float rotation, int width, int height, String text, Action action) {
         super(position, scale, rotation, BUTTON_COLOR);
         this.width = width;
         this.height = height;
         this.text = text;
         this.hover = false;
+        this.action = action;
     }
 
     @Override
@@ -61,5 +64,9 @@ public class Button extends GUIComponent {
         float y = (float) mouse.getCurrentPos().y;
 
         hover = (x >= xBoundLeft && x <= xBoundRight && y >= yBoundDown && y <= yBoundUp);
+
+        if (hover && mouse.isLeftButtonPressed()) {
+            action.execute();
+        }
     }
 }

@@ -183,7 +183,7 @@ public class NanoVG {
         nvgFontSize(nanoVGHandler, FONT_SIZE_PARAGRAPH);
         nvgFontFace(nanoVGHandler, SEGOE_UI);
         nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
-        nvgFillColor(nanoVGHandler, rgba(null, rgba(rgba, color)));
+        nvgFillColor(nanoVGHandler, rgba(rgba, color));
         nvgTextBox(nanoVGHandler, relativePosition.x, relativePosition.y, textWidth, text);
     }
 
