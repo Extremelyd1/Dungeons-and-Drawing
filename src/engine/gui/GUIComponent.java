@@ -1,5 +1,6 @@
 package engine.gui;
 
+import engine.MouseInput;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -94,5 +95,5 @@ public abstract class GUIComponent {
     }
 
     abstract public void render();
-    abstract public void update();
+    abstract public void update(MouseInput mouse);
 }

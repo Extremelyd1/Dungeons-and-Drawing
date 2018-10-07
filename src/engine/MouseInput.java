@@ -1,5 +1,6 @@
 package engine;
 
+import com.sun.javafx.geom.Vec2f;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 
@@ -62,6 +63,10 @@ public class MouseInput {
         }
         previousPos.x = currentPos.x;
         previousPos.y = currentPos.y;
+    }
+
+    public Vector2d getCurrentPos() {
+        return currentPos;
     }
 
     public boolean isLeftButtonPressed() {

@@ -1,9 +1,8 @@
 package game;
 
-import engine.gui.GUIComponent;
-import engine.gui.NanoVG;
-import engine.gui.Popup;
-import engine.gui.TitleCard;
+import engine.GameWindow;
+import engine.MouseInput;
+import engine.gui.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,7 @@ import java.util.List;
  */
 public class GUI {
 
+    private MouseInput mouse = new MouseInput();
     private List<GUIComponent> components;
     private NanoVG nano;
 
@@ -23,13 +23,15 @@ public class GUI {
 
     public void initialize() {
         nano = NanoVG.getInstance();
-        components.add(new Popup(900, 175));
-        components.add(new TitleCard());
+        components.add(new DrawingPopup());
+//        components.add(new TitleCard());
+        mouse.init();
     }
 
     public void update() {
+        mouse.input();
         for (GUIComponent c : components) {
-            c.update();
+            c.update(mouse);
         }
     }
 

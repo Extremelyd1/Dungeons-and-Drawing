@@ -1,6 +1,7 @@
 package engine.gui;
 
 import engine.GameWindow;
+import engine.MouseInput;
 
 public class TitleCard extends GUIComponent {
 
@@ -13,7 +14,7 @@ public class TitleCard extends GUIComponent {
     }
 
     @Override
-    public void update() {
+    public void update(MouseInput mouse) {
     }
 
     @Override

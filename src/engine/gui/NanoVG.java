@@ -161,6 +161,22 @@ public class NanoVG {
     }
 
     /**
+     * Draws a circle
+     *
+     * @param posX   x coordinate of the center of the circle
+     * @param posY   y coordinate of the center circle
+     * @param radius radius of the circle
+     * @param rgba   color of the circle
+     */
+    public void drawDonut(float posX, float posY, float radius, RGBA rgba) {
+        nvgBeginPath(nanoVGHandler);
+        nvgCircle(nanoVGHandler, posX, posY, radius);
+        nvgStrokeColor(nanoVGHandler, rgba(rgba, color));
+        nvgStrokeWidth(nanoVGHandler, 2);
+        nvgStroke(nanoVGHandler);
+    }
+
+    /**
      * Draws basic text in the default paragraph style
      *
      * @param posX x coordinate of the text
@@ -168,12 +184,12 @@ public class NanoVG {
      * @param text The text content
      * @param rgba The color of the text
      */
-    public void drawParagraphText(float posX, float posY, String text, RGBA rgba) {
+    public void drawParagraphText(float posX, float posY, float textWidth, String text, RGBA rgba) {
         nvgFontSize(nanoVGHandler, FONT_SIZE_PARAGRAPH);
         nvgFontFace(nanoVGHandler, SEGOE_UI);
         nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
         nvgFillColor(nanoVGHandler, rgba(null, rgba(rgba, color)));
-        nvgText(nanoVGHandler, posX, posY, text);
+        nvgTextBox(nanoVGHandler, posX, posY, textWidth, text);
     }
 
     /**
@@ -202,12 +218,12 @@ public class NanoVG {
      * @param font     Font
      * @param rgba The color of the text
      */
-    public void drawText(float posX, float posY, String text, float fontSize, Font font, RGBA rgba) {
+    public void drawText(float posX, float posY, float textWidth, String text, float fontSize, Font font, RGBA rgba) {
         nvgFontSize(nanoVGHandler, fontSize);
         nvgFontFace(nanoVGHandler, font.toString());
         nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
         nvgFillColor(nanoVGHandler, rgba(null, rgba(rgba, color)));
-        nvgText(nanoVGHandler, posX, posY, text);
+        nvgTextBox(nanoVGHandler, posX, posY, textWidth, text);
     }
 
     /**
@@ -243,6 +259,7 @@ public class NanoVG {
         nvgQuadTo(nanoVGHandler, endX, startY, endX, endY);
         nvgStrokeColor(nanoVGHandler, rgba(rgba, color));
         nvgStrokeWidth(nanoVGHandler, 5.0f);
+        nvgLineCap(nanoVGHandler, NVG_ROUND);
         nvgStroke(nanoVGHandler);
     }
 
@@ -253,7 +270,7 @@ public class NanoVG {
      * @param rgba Color of the shape
      * @param filled Whether the shape is filled or stroked
      */
-    public void drawCustomShape(float[] points, RGBA rgba, boolean curved, boolean filled) {
+    public void drawCustomShape(float[] points, float x, float y, float scale, RGBA rgba, boolean curved, boolean filled) {
 
         if (points.length % 2 != 0) {
             throw new IllegalArgumentException("engine.gui.NanoVG.drawCustomShape() failed: " +
@@ -265,17 +282,27 @@ public class NanoVG {
                     "Illegal arguments. Too few points");
         }
 
+        float[] copy = points.clone();
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] *= scale;
+            if (i % 2 == 0) {
+                copy[i] += x;
+            } else {
+                copy[i] += y;
+            }
+        }
+
         nvgBeginPath(nanoVGHandler);
 
         if (curved) {
-            drawCustomCurve(points);
+            drawCustomCurve(copy);
         } else {
-            drawCustomLine(points);
+            drawCustomLine(copy);
         }
 
         if (!filled) {
             nvgStrokeColor(nanoVGHandler, rgba(rgba, color));
-            nvgStrokeWidth(nanoVGHandler, 5.0f);
+            nvgStrokeWidth(nanoVGHandler, 2.0f);
             nvgStroke(nanoVGHandler);
         } else {
             nvgFillColor(nanoVGHandler, rgba(rgba, color));
