@@ -65,7 +65,7 @@ public class MapFileLoader implements MapLoader {
 
                 Vector2i position = new Vector2i(y, x);
 
-                Mesh mesh = AssetStore.getMesh(meshName);
+                Mesh mesh = AssetStore.getTileMesh(meshName);
 
                 Tile tile = new Tile(position, rotation, mesh, solid);
                 tileList[y][x] = tile;
