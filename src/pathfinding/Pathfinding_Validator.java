@@ -24,9 +24,8 @@ public class Pathfinding_Validator {
 
     public void run() {
         // Make a new map for our A*-search
-        map = new Map();
         try {
-            map.load(new PathfindMapLoader());
+            map = new PathfindMapLoader().load();
         } catch(Exception e) {
             System.err.println("Map not loaded: " + e);
         }
@@ -71,7 +70,7 @@ public class Pathfinding_Validator {
                     }
                 }
                 try {
-                    map.load(new PathfindMapLoader());
+                    map = new PathfindMapLoader().load();
                 } catch (Exception ex) {
                     System.err.println("Failed to load map" + ex);
                 }

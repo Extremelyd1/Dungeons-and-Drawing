@@ -1,5 +1,6 @@
 package game.map.loader;
 
+import game.map.Map;
 import game.map.tile.Tile;
 import org.joml.Random;
 import org.joml.Vector2i;
@@ -10,11 +11,11 @@ import org.joml.Vector3f;
  */
 public class PathfindMapLoader implements MapLoader{
     @Override
-    public Tile[][] load() throws Exception {
+    public Map load() throws Exception {
         return generateGround(10);
     }
 
-    private Tile[][] generateGround(int gridSize){
+    private Map generateGround(int gridSize){
         Tile[][] tiles = new Tile[gridSize][gridSize];
         Random orientation = new Random(1234);
 
@@ -25,6 +26,6 @@ public class PathfindMapLoader implements MapLoader{
             }
         }
 
-        return tiles;
+        return new Map(tiles);
     }
 }
