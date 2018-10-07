@@ -117,6 +117,14 @@ public class Map {
         return filteredTiles.toArray(new Tile[]{});
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+  
     /**
      * Checks whether the specified square collides with
      * any solid tiles in this map
