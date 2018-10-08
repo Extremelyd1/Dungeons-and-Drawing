@@ -21,10 +21,10 @@ public class Popup extends GUIComponent {
     private float[] ornamentVertical;
 
     public Popup(String text) {
-        this(DEFAULT_WIDTH, DEFAULT_HEIGHT, text);
+        this(DEFAULT_WIDTH, text);
     }
 
-    public Popup(float width, float height, String text) {
+    public Popup(float width, String text) {
         super();
 
         float x = GameWindow.getGameWindow().getWindowWidth() / 2.0f - width / 2.0f;
@@ -32,7 +32,7 @@ public class Popup extends GUIComponent {
         this.setPosition(x, y);
 
         this.width = width;
-        this.height = height;
+        this.height = DEFAULT_HEIGHT;
         this.text = text;
 
         ornament = new float[] {
@@ -58,11 +58,15 @@ public class Popup extends GUIComponent {
     public void render() {
         NanoVG nano = NanoVG.getInstance();
 
-        nano.transform(this.getPosition(), this.getRotation(), this.getScale());
+        nano.transform(this.getPosition());
 
-        float textHeight = nano.computeTextHeight(text, width * 0.75f);
-        float padding = 100f;
-        height = textHeight + padding;
+        float textHeight = 0;
+
+        if (text != null) {
+            textHeight = nano.computeTextHeight(text, width * 0.75f);
+            float padding = 100f;
+            height = textHeight + padding;
+        }
 
         // Base background of the popup
         nano.drawRectangle(new Vector2f(0, 0), width, height, POPUP_COLOR);
@@ -72,11 +76,6 @@ public class Popup extends GUIComponent {
         nano.drawCircle(new Vector2f(width - 20, 20), 5, POPUP_COLOR_DARK);
         nano.drawCircle(new Vector2f(width - 20, height - 20), 5, POPUP_COLOR_DARK);
         nano.drawCircle(new Vector2f(20, height - 20), 5, POPUP_COLOR_DARK);
-
-        // Draw the text
-        nano.drawParagraphText(new Vector2f(width / 2.0f - width * 0.375f,
-                height / 2.0f - textHeight), width * 0.75f, text,
-                POPUP_COLOR_TEXT);
 
         // Draw horizontal ornaments
         nano.drawCustomShape(ornament, new Vector2f(40, 15), 0.2f,
@@ -97,6 +96,12 @@ public class Popup extends GUIComponent {
                 POPUP_COLOR_DARK, true, false, 2);
         nano.drawCustomShape(ornamentVertical, new Vector2f(width - 23, height - 76), 0.2f,
                 POPUP_COLOR_DARK, true, false, 2);
+
+        if (text != null) {
+            // Draw the text
+            nano.drawParagraphText(new Vector2f(width / 2.0f - width * 0.375f, height / 2.0f - textHeight),
+                    width * 0.75f, text, POPUP_COLOR_TEXT);
+        }
    }
 
     @Override

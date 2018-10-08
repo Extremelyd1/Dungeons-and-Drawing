@@ -26,7 +26,7 @@ public class Button extends GUIComponent {
     }
 
     public Button(Vector2f position, float scale, float rotation, int width, int height, String text, Action action) {
-        super(position, scale, rotation, BUTTON_COLOR);
+        super(position, BUTTON_COLOR);
         this.width = width;
         this.height = height;
         this.text = text;
@@ -38,7 +38,7 @@ public class Button extends GUIComponent {
     public void render() {
         NanoVG nano = NanoVG.getInstance();
 
-        nano.transform(this.getPosition(), this.getRotation(), this.getScale());
+        nano.transform(this.getPosition());
 
         if (hover) {
             nano.drawRectangle(new Vector2f(0, 0), width, height, BUTTON_COLOR_HOVER);

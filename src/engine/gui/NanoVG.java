@@ -301,6 +301,7 @@ public class NanoVG {
         if (!filled) {
             nvgStrokeColor(nanoVGHandler, rgba(rgba, color));
             nvgStrokeWidth(nanoVGHandler, strokeWidth);
+            nvgLineCap(nanoVGHandler, NVG_ROUND);
             nvgStroke(nanoVGHandler);
         } else {
             nvgFillColor(nanoVGHandler, rgba(rgba, color));
@@ -377,14 +378,10 @@ public class NanoVG {
     /**
      * Transform the matrix to include transformation
      * @param position Position
-     * @param rotation Rotation
-     * @param scale Scale
      */
-    public void transform(Vector2f position, float rotation, float scale) {
+    public void transform(Vector2f position) {
         nvgResetTransform(nanoVGHandler);
         nvgTranslate(nanoVGHandler, position.x, position.y);
-        nvgRotate(nanoVGHandler, (float) Math.toDegrees(rotation));
-        nvgScale(nanoVGHandler, scale, scale);
     }
 
     /**

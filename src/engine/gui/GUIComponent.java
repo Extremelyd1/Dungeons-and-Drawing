@@ -15,15 +15,11 @@ import org.joml.Vector3f;
 public abstract class GUIComponent {
 
     private final Vector2f position; // Position of the GUI component in screen coordinates
-    private float scale; // Scale of the GUI component
-    private float rotation; // Rotation (in degrees) of the GUI Component
     private RGBA color;
 
     /** Constructs an empty Component with no mesh and default position, rotation, scale */
     public GUIComponent() {
         this.position = new Vector2f(0, 0);
-        this.rotation = 0.0f;
-        this.scale = 1.0f;
         this.color = new RGBA(255, 255, 255, 255);
     }
 
@@ -40,10 +36,8 @@ public abstract class GUIComponent {
      * Constructs a fully defined component
      * @param rgba color in rgba channels
      */
-    public GUIComponent(Vector2f position, float scale, float rotation, RGBA rgba) {
+    public GUIComponent(Vector2f position, RGBA rgba) {
         this.position = position;
-        this.scale = scale;
-        this.rotation = rotation;
         this.color = rgba;
     }
 
@@ -56,34 +50,6 @@ public abstract class GUIComponent {
     public void setPosition(float x, float y) {
         this.position.x = x;
         this.position.y = y;
-    }
-
-    /* Returns the scale */
-    public float getScale() {
-        return scale;
-    }
-
-    /* Sets the scale */
-    public void setScale(float scale) {
-        this.scale = scale;
-    }
-
-    /* Returns the rotation */
-    public float getRotation() {
-        return rotation;
-    }
-
-    /* Sets the rotation */
-    public void setRotation(float amount) {
-        this.rotation = amount;
-    }
-
-    public int getAlphaChannel() {
-        return color.a;
-    }
-
-    public void setAlphaChannel(int alphaChannel) {
-        this.color.a = Math.max(0, Math.min(255, alphaChannel));
     }
 
     public void setColor(RGBA rgba) {

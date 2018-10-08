@@ -6,7 +6,6 @@ import org.joml.Vector2f;
 
 public class TitleCard extends GUIComponent {
 
-
     public TitleCard() {
         super();
         float x = GameWindow.getGameWindow().getWindowWidth() / 2.0f;
@@ -21,10 +20,10 @@ public class TitleCard extends GUIComponent {
     @Override
     public void render() {
         NanoVG nano = NanoVG.getInstance();
-        nano.transform(this.getPosition(), this.getRotation(), this.getScale());
+        nano.transform(this.getPosition());
         nano.drawTitleText(new Vector2f(0, 0),
                 "Dungeons & Drawings",
-                new RGBA(255, 255, 255, getAlphaChannel())
+                new RGBA(255, 255, 255)
         );
     }
 }

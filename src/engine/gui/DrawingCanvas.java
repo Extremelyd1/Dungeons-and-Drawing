@@ -7,6 +7,7 @@ import org.joml.Vector2f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Popup with the drawing canvas
@@ -17,31 +18,31 @@ public class DrawingCanvas extends Popup {
     private boolean mouseDown;
     private int currentList;
     private List<List<Float>> drawing;
-    private static final float BRUSH_SIZE = 5.0f;
+    private boolean centered;
 
     public DrawingCanvas() {
         super(GameWindow.getGameWindow().getWindowHeight() * 0.75f,
-                GameWindow.getGameWindow().getWindowHeight() * 0.75f,
-                "");
+                null);
 
         this.size = GameWindow.getGameWindow().getWindowHeight() * 0.75f;
         this.drawing = new ArrayList<>();
         this.mouseDown = false;
         this.currentList = -1;
+        this.centered = true;
     }
 
     @Override
     public void update(MouseInput mouse) {
 
-        // Compute the bounds of the canvas
-        float padding = 10f;
-        float xBoundLeft = this.getPosition().x + 0.075f * size + padding;
-        float xBoundRight = this.getPosition().x + 0.925f * size - padding;
-        float yBoundDown = this.getPosition().y + 0.925f * size - padding;
-        float yBoundUp = this.getPosition().y + 0.075f * size + padding;
-
         // Listen to what is being drawn
         if (mouse.isLeftButtonPressed()) {
+
+            // Compute the bounds of the canvas
+            float padding = 10f;
+            float xBoundLeft = this.getPosition().x + 0.075f * size + padding;
+            float xBoundRight = this.getPosition().x + 0.925f * size - padding;
+            float yBoundDown = this.getPosition().y + 0.925f * size - padding;
+            float yBoundUp = this.getPosition().y + 0.075f * size + padding;
 
             // If mouse was not pressed before, add a new subdrawing
             if (!mouseDown) {
@@ -69,16 +70,22 @@ public class DrawingCanvas extends Popup {
             }
         }
 
-        this.setPosition(GameWindow.getGameWindow().getWindowWidth() / 2.0f - size / 2.0f,
-                GameWindow.getGameWindow().getWindowHeight() / 2.0f - size / 2.0f);
+        if (centered) {
+            this.setPosition(
+                    GameWindow.getGameWindow().getWindowWidth() / 2.0f - size / 2.0f,
+                    GameWindow.getGameWindow().getWindowHeight() / 2.0f - size / 2.0f);
+        }
     }
 
     @Override
     public void render() {
-        super.render();
 
         NanoVG nano = NanoVG.getInstance();
-        nano.drawSquare(new Vector2f(0.075f * size, 0.075f * size),
+        nano.transform(this.getPosition());
+
+        super.render();
+
+        nano.drawSquare(new Vector2f(0.075f * size),
                 size * 0.85f, null);
 
         // Draw as lines
@@ -87,17 +94,14 @@ public class DrawingCanvas extends Popup {
             if (subDrawing.size() >= 4) {
                 nano.drawCustomShape(Utilities.listToArray(subDrawing),
                         new Vector2f(-this.getPosition().x, -this.getPosition().y),
-                        1.0f, new RGBA(0, 0, 0, 255),
-                        false, false, size / 28f);
+                            1.0f, new RGBA(0, 0, 0, 255),
+                            false, false, size / 28f);
             }
         }
+    }
 
-        // Draw as dots
-//        for (int i = 0; i < drawing.size(); i += 2) {
-//            nano.drawCircle(drawing.get(i), drawing.get(i + 1),
-//                   BRUSH_SIZE, new RGBA(0, 0, 0, 255));
-//        }
-
+    public void setCentered(boolean centered) {
+        this.centered = centered;
     }
 
 }
