@@ -12,6 +12,7 @@ import game.LevelController;
 import game.Renderer;
 import game.map.Map;
 import game.map.loader.SimpleMapLoader;
+import game.mobs.SimpleMob;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
@@ -63,7 +64,7 @@ public class MapTestLevel extends Level {
 
         // Set up a point light
         Vector3f lightPosition1 = new Vector3f(1.0f, 3.0f, -1.0f);
-        float lightIntensity1 = 0.0f;
+        float lightIntensity1 = 0.8f;
         PointLight pointLight1 = new PointLight(new Vector3f(0.88f, 0.72f, 0.13f), lightPosition1, lightIntensity1, new Vector2f(1f, 10f));
         PointLight.Attenuation att1 = new PointLight.Attenuation(0.0f, 0.2f, 0.5f);
         pointLight1.setAttenuation(att1);
@@ -113,11 +114,18 @@ public class MapTestLevel extends Level {
 
         // Tree 2
         Entity g2 = new Entity(tree);
-        g2.setPosition(-2.0f, 0.0f, 2.0f);
+        g2.setPosition(6.0f, 0.0f, 9.0f);
         g2.setRotation(-90, 0, 0);
 
-        gameEntities = new Entity[]{g, g2, light1, light2};
+        Mesh mobMesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
+        mobMesh.setMaterial(new Material(0.1f));
+        mob = new SimpleMob(mobMesh, map);
+        mob.setScale(0.5f);
+        mob.setPosition(3.0f, 1.0f, 3.0f);
+        mob.setSpeed(1.01f);
+        mob.setTarget(g2);
 
+        gameEntities = new Entity[]{g, g2, light1, light2, mob};
         //        player = new Player(cube_mesh, map, new Vector3f(3, 1, 3), 0.5f);
     }
 
@@ -131,6 +139,7 @@ public class MapTestLevel extends Level {
 
     private Random rand = new Random(1234);
     private ColorInterpolator flame = new ColorInterpolator();
+    SimpleMob mob;
 
     @Override
     public void update(float interval, MouseInput mouseInput) {
@@ -143,6 +152,8 @@ public class MapTestLevel extends Level {
         }
         flame.updateColor(interval * 1000f);
         light.setColor(flame.getInterpolationResult());
+
+        mob.update(interval);
 //        player.update(interval);
     }
 

@@ -16,7 +16,7 @@ public class DirectionalLight {
     private Vector3f direction;
     private float intensity;
     // Shadows related
-    private ShadowMap shadowMap;
+    private ShadowMap staticShadowMap, dynamicShadowMap;
     private Matrix4f ortho;
     private Matrix4f lightSpaceMatrix;
     private Vector2f plane;
@@ -24,8 +24,10 @@ public class DirectionalLight {
 
     public DirectionalLight(Vector3f position, Vector3f color, Vector3f direction, float intensity, Vector2f plane, boolean shadowEnable) {
         try {
-            shadowMap = new ShadowMap(1024);
-            shadowMap.initShadowMap();
+            staticShadowMap = new ShadowMap(1024);
+            dynamicShadowMap = new ShadowMap(1024);
+            staticShadowMap.initShadowMap();
+            dynamicShadowMap.initShadowMap();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,9 +43,11 @@ public class DirectionalLight {
     public DirectionalLight(Vector3f position, Vector3f color, Vector3f direction, float intensity, Vector2f plane, int resolution) {
         this(position, color, direction, intensity, plane, true);
         try {
-            shadowMap.cleanup();
-            shadowMap = new ShadowMap(resolution);
-            shadowMap.initShadowMap();
+            staticShadowMap.cleanup();
+            dynamicShadowMap.cleanup();
+            staticShadowMap = new ShadowMap(resolution);
+            dynamicShadowMap = new ShadowMap(resolution);
+            dynamicShadowMap.initShadowMap();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -119,8 +123,12 @@ public class DirectionalLight {
         return lightSpaceMatrix;
     }
 
-    public ShadowMap getShadowMap() {
-        return shadowMap;
+    public ShadowMap getStaticShadowMap() {
+        return staticShadowMap;
+    }
+
+    public ShadowMap getDynamicShadowMap() {
+        return dynamicShadowMap;
     }
 
     public Vector2f getPlane() {

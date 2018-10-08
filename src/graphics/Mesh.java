@@ -55,6 +55,7 @@ public class Mesh {
     private final List<Integer> vboIdList;
     private final int vertexCount; // Amount of vertices we are rendering
     private Material material;
+    private boolean isStatic = true;
 
     /**
      * Indicates whether vertex colors have been defined
@@ -280,5 +281,13 @@ public class Mesh {
         // Delete the VAO
         glBindVertexArray(0);
         glDeleteVertexArrays(vaoId);
+    }
+
+    public boolean isStatic() {
+        return isStatic;
+    }
+
+    public void setIsStatic(boolean isStatic) {
+        this.isStatic = isStatic;
     }
 }
