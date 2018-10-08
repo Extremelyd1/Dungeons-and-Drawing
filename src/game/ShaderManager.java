@@ -171,7 +171,7 @@ public class ShaderManager {
             glActiveTexture(GL_TEXTURE1 + (i * 2) + 1);
             glBindTexture(GL_TEXTURE_CUBE_MAP, sceneLight.pointLights.get(i).getDynamicShadowMap().getDepthMap());
         }
-        for (int i = 0; i < numSpotLights * 2; i++) {
+        for (int i = 0; i < numSpotLights; i++) {
             // Static Shadows
             glActiveTexture(GL_TEXTURE1 + numPointLights * 2 + (i * 2));
             glBindTexture(GL_TEXTURE_2D, sceneLight.spotLights.get(i).getStaticShadowMap().getDepthMap());
@@ -280,5 +280,15 @@ public class ShaderManager {
     }
     public void unbindGUIShader() {
         guiShader.unbind();
+    }
+
+    //
+    // Terminate Method
+    //
+    public void terminate(){
+        if (sceneShader != null) sceneShader.terminate();
+        if (guiShader != null) guiShader.terminate();
+        if (depthShader != null) depthShader.terminate();
+        if (depthShaderCube != null) depthShaderCube.terminate();
     }
 }

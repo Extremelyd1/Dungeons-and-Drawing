@@ -6,13 +6,10 @@ import engine.GameWindow;
 import engine.Transformation;
 import engine.gui.GUIComponent;
 import engine.gui.Layer;
-import engine.lights.PointLight;
 import engine.lights.SceneLight;
-import engine.lights.SpotLight;
 import game.map.Map;
 import game.map.tile.Tile;
 import graphics.Mesh;
-import graphics.ShadowMap;
 import graphics.ShadowsManager;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -23,9 +20,6 @@ import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.*;
-import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
-import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 /**
  * Class that handles all graphic updates
@@ -34,8 +28,8 @@ import static org.lwjgl.opengl.GL30.glBindFramebuffer;
  */
 
 public class Renderer {
-    private ShaderManager shaderManager = new ShaderManager();
-    private ShadowsManager shadowsManager = new ShadowsManager();
+    private ShaderManager shaderManager;
+    private ShadowsManager shadowsManager;
     private boolean firstRender = true;
 
     private static final float FOV = (float) Math.toRadians(45.0f);
@@ -52,6 +46,8 @@ public class Renderer {
     }
 
     public void init() throws Exception {
+        shadowsManager = new ShadowsManager();
+        shaderManager = new ShaderManager();
         shaderManager.setupSceneShader();
         shaderManager.setupDepthShader();
         shaderManager.setupGUIShader();
@@ -183,13 +179,7 @@ public class Renderer {
     }
 
     public void terminate() {
-        /*if (sceneShader != null) {
-            sceneShader.terminate();
-        }
-
-        if (guiShader != null) {
-            guiShader.terminate();
-        }*/
+        shaderManager.terminate();
     }
 }
 
