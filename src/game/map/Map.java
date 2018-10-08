@@ -3,10 +3,8 @@ package game.map;
 import game.map.loader.MapLoader;
 import game.map.tile.Tile;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Map {
@@ -16,6 +14,10 @@ public class Map {
      */
     private Tile[][] tiles;
     /**
+     * Map that stores all tiles with a specific tag
+     */
+    private java.util.Map<String, List<Tile>> taggedTiles;
+    /**
      * The width of the tile map
      */
     private int width;
@@ -24,20 +26,23 @@ public class Map {
      */
     private int height;
 
-    public Tile[][] getTiles() {
-        return tiles;
+    public Map(Tile[][] tiles) {
+        this(tiles.length, tiles[0].length, tiles, new HashMap<>());
     }
 
-    /**
-     * Loads a map. It assumes that the map has at least a width and height of 1
-     *
-     * @param loader Loader
-     * @throws Exception if the loading goes wrong
-     */
-    public void load(MapLoader loader) throws Exception {
-        tiles = loader.load();
-        width = tiles.length;
-        height = tiles[0].length;
+    public Map(Tile[][] tiles, java.util.Map<String, List<Tile>> taggedTiles) {
+        this(tiles.length, tiles[0].length, tiles, taggedTiles);
+    }
+
+    public Map(int width, int height, Tile[][] tiles, java.util.Map<String, List<Tile>> taggedTiles) {
+        this.width = width;
+        this.height = height;
+        this.tiles = tiles;
+        this.taggedTiles = taggedTiles;
+    }
+
+    public Tile[][] getTiles() {
+        return tiles;
     }
 
     /**
@@ -72,6 +77,28 @@ public class Map {
         return neighbours.toArray(new Tile[]{});
     }
 
+    /**
+     * Get all tiles with the given tag
+     * @param tag to search for
+     * @return a list with all tiles that have the given tag
+     */
+    public List<Tile> getTiles(String tag) {
+        return taggedTiles.get(tag);
+    }
+
+    /**
+     * Gets the first tile with the given tag
+     * @param tag to search for
+     * @return the first tile with given tag
+     */
+    public Tile getTile(String tag) {
+        List<Tile> tiles = taggedTiles.get(tag);
+        if (tiles == null || tiles.isEmpty()) {
+            return null;
+        }
+        return tiles.get(0);
+    }
+
     public Tile[] getNeighbours(Tile tile, boolean solid) {
         List<Tile> filteredTiles = new ArrayList<>();
         Tile[] neighbours = getNeighbours(tile);
@@ -90,6 +117,14 @@ public class Map {
         return filteredTiles.toArray(new Tile[]{});
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+  
     /**
      * Checks whether the specified square collides with
      * any solid tiles in this map
@@ -110,7 +145,11 @@ public class Map {
             if (x < 0 || y < 0 || x >= tiles.length || y >= tiles[x].length) {
                 return true;
             }
-            if (getTile(x, y).isSolid()) {
+            Tile tile = getTile(x, y);
+            if (tile == null) {
+                return true;
+            }
+            if (tile.isSolid()) {
                 return true;
             }
         }

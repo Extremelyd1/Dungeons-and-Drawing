@@ -13,6 +13,7 @@ import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import pathfinding.Pathfinding_Validator;
 import sun.security.ssl.Debug;
 
 import static org.lwjgl.glfw.GLFW.*;

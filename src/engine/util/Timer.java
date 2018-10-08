@@ -40,6 +40,16 @@ public class Timer {
     }
 
     /**
+     * Peeks the amount of time that have passed since the last loop time but
+     * does not modify the last loop time value.
+     *
+     * @return Time since last loop time
+     */
+    public float peekElapsedTime() {
+        return (float) (getTime() - lastLoopTime);
+    }
+
+    /**
      * Return the last time stamp, in seconds, since the game loop was updated
      *
      * @return {@code lastLoopTime}
