@@ -36,8 +36,8 @@ public class NanoVG {
     private static final String SEGOE_UI_LIGHT = "SEGOE_UI_LIGHT";
     private static final String VECNA = "VECNA";
 
-    private static final float FONT_SIZE_PARAGRAPH = 24.0f;
-    private static final float FONT_SIZE_TITLE = 96.0f;
+    public static final float FONT_SIZE_PARAGRAPH = 24.0f;
+    public static final float FONT_SIZE_TITLE = 96.0f;
 
 
     /**
@@ -266,7 +266,9 @@ public class NanoVG {
      * @param rgba Color of the shape
      * @param filled Whether the shape is filled or stroked
      */
-    public void drawCustomShape(float[] points, Vector2f relativePosition, float scale, RGBA rgba, boolean curved, boolean filled) {
+    public void drawCustomShape(float[] points, Vector2f relativePosition,
+                                float scale, RGBA rgba, boolean curved,
+                                boolean filled, float strokeWidth) {
 
         if (points.length % 2 != 0) {
             throw new IllegalArgumentException("engine.gui.NanoVG.drawCustomShape() failed: " +
@@ -298,7 +300,7 @@ public class NanoVG {
 
         if (!filled) {
             nvgStrokeColor(nanoVGHandler, rgba(rgba, color));
-            nvgStrokeWidth(nanoVGHandler, 2.0f);
+            nvgStrokeWidth(nanoVGHandler, strokeWidth);
             nvgStroke(nanoVGHandler);
         } else {
             nvgFillColor(nanoVGHandler, rgba(rgba, color));
@@ -383,6 +385,23 @@ public class NanoVG {
         nvgTranslate(nanoVGHandler, position.x, position.y);
         nvgRotate(nanoVGHandler, (float) Math.toDegrees(rotation));
         nvgScale(nanoVGHandler, scale, scale);
+    }
+
+    /**
+     * Adds a stroke to the defined path
+     * @param strokeWidth width of the stroke
+     * @param rgba color channels of the stroke
+     */
+    public void addStroke(float strokeWidth, RGBA rgba) {
+        nvgStrokeWidth(nanoVGHandler, strokeWidth);
+        nvgStrokeColor(nanoVGHandler, rgba(rgba, color));
+        nvgStroke(nanoVGHandler);
+    }
+
+    public float computeTextHeight(String text, float width) {
+        float[] bounds = new float[4];
+        nvgTextBoxBounds(nanoVGHandler, 0, 0, width, text, bounds);
+        return bounds[3];
     }
 
     private RGBA getDefaultColor() {

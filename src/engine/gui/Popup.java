@@ -6,9 +6,12 @@ import org.joml.Vector2f;
 
 public class Popup extends GUIComponent {
 
-    private static final RGBA POPUP_COLOR = new RGBA(218, 191, 148);;
-    private static final RGBA POPUP_COLOR_DARK = new RGBA(156, 121, 79);;
-    private static final RGBA POPUP_COLOR_TEXT = new RGBA(55, 50, 34);;
+    private static final RGBA POPUP_COLOR = new RGBA(218, 191, 148);
+    private static final RGBA POPUP_COLOR_DARK = new RGBA(156, 121, 79);
+    private static final RGBA POPUP_COLOR_TEXT = new RGBA(55, 50, 34);
+
+    private static final float DEFAULT_WIDTH = 800;
+    private static final float DEFAULT_HEIGHT = 200;
 
     private final float width;
     private final float height;
@@ -16,6 +19,10 @@ public class Popup extends GUIComponent {
 
     private float[] ornament;
     private float[] ornamentVertical;
+
+    public Popup(String text) {
+        this(DEFAULT_WIDTH, DEFAULT_HEIGHT, text);
+    }
 
     public Popup(float width, float height, String text) {
         super();
@@ -50,43 +57,50 @@ public class Popup extends GUIComponent {
     @Override
     public void render() {
         NanoVG nano = NanoVG.getInstance();
+
         nano.transform(this.getPosition(), this.getRotation(), this.getScale());
+
+        // Base background of the popup
         nano.drawRectangle(new Vector2f(0, 0), width, height, POPUP_COLOR);
+        nano.addStroke(5, POPUP_COLOR_DARK);
 
         nano.drawCircle(new Vector2f(20, 20), 5, POPUP_COLOR_DARK);
         nano.drawCircle(new Vector2f(width - 20, 20), 5, POPUP_COLOR_DARK);
         nano.drawCircle(new Vector2f(width - 20, height - 20), 5, POPUP_COLOR_DARK);
         nano.drawCircle(new Vector2f(20, height - 20), 5, POPUP_COLOR_DARK);
 
+        float textHeight = nano.computeTextHeight(text, width * 0.75f);
+
+        // Draw the text
+        nano.drawParagraphText(new Vector2f(width / 2.0f - width * 0.375f,
+                height / 2.0f - textHeight), width * 0.75f, text,
+                POPUP_COLOR_TEXT);
+
         // Draw horizontal ornaments
         nano.drawCustomShape(ornament, new Vector2f(40, 15), 0.2f,
-                POPUP_COLOR_DARK, true, false);
+                POPUP_COLOR_DARK, true, false, 2);
         nano.drawCustomShape(ornament, new Vector2f(width - 76, 15), 0.2f,
-                POPUP_COLOR_DARK, true, false);
+                POPUP_COLOR_DARK, true, false, 2);
         nano.drawCustomShape(ornament, new Vector2f(40, height - 23), 0.2f,
-                POPUP_COLOR_DARK, true, false);
+                POPUP_COLOR_DARK, true, false, 2);
         nano.drawCustomShape(ornament, new Vector2f(width - 76, height - 23), 0.2f,
-                POPUP_COLOR_DARK, true, false);
+                POPUP_COLOR_DARK, true, false, 2);
 
         // Draw vertical ornaments
         nano.drawCustomShape(ornamentVertical, new Vector2f(15, 40), 0.2f,
-                POPUP_COLOR_DARK, true, false);
+                POPUP_COLOR_DARK, true, false, 2);
         nano.drawCustomShape(ornamentVertical, new Vector2f(width - 23, 40), 0.2f,
-                POPUP_COLOR_DARK, true, false);
+                POPUP_COLOR_DARK, true, false, 2);
         nano.drawCustomShape(ornamentVertical, new Vector2f(15, height - 76), 0.2f,
-                POPUP_COLOR_DARK, true, false);
+                POPUP_COLOR_DARK, true, false, 2);
         nano.drawCustomShape(ornamentVertical, new Vector2f(width - 23, height - 76), 0.2f,
-                POPUP_COLOR_DARK, true, false);
-
-        // Draw the text
-        nano.drawText(new Vector2f( width / 2.0f, height / 6.0f + 10), "New message",
-                Font.SEGOE_UI_BOLD, POPUP_COLOR_TEXT);
-        nano.drawParagraphText(new Vector2f(width / 2.0f - width * 0.375f, height / 3.0f + 10),
-                width * 0.75f, text, POPUP_COLOR_TEXT);
+                POPUP_COLOR_DARK, true, false, 2);
    }
 
     @Override
     public void update(MouseInput mouse) {
-
+        float x = GameWindow.getGameWindow().getWindowWidth() / 2.0f - width / 2.0f;
+        float y = GameWindow.getGameWindow().getWindowHeight() / 2.0f - height / 2.0f;
+        this.setPosition(x, y);
     }
 }

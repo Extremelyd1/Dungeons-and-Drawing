@@ -34,10 +34,11 @@ public class DrawingCanvas extends Popup {
     public void update(MouseInput mouse) {
 
         // Compute the bounds of the canvas
-        float xBoundLeft = this.getPosition().x + 0.075f * size;
-        float xBoundRight = this.getPosition().x + 0.925f * size;
-        float yBoundDown = this.getPosition().y + 0.925f * size;
-        float yBoundUp = this.getPosition().y + 0.075f * size;
+        float padding = 10f;
+        float xBoundLeft = this.getPosition().x + 0.075f * size + padding;
+        float xBoundRight = this.getPosition().x + 0.925f * size - padding;
+        float yBoundDown = this.getPosition().y + 0.925f * size - padding;
+        float yBoundUp = this.getPosition().y + 0.075f * size + padding;
 
         // Listen to what is being drawn
         if (mouse.isLeftButtonPressed()) {
@@ -68,8 +69,6 @@ public class DrawingCanvas extends Popup {
             }
         }
 
-        // center the window
-        this.size = GameWindow.getGameWindow().getWindowHeight() * 0.75f;
         this.setPosition(GameWindow.getGameWindow().getWindowWidth() / 2.0f - size / 2.0f,
                 GameWindow.getGameWindow().getWindowHeight() / 2.0f - size / 2.0f);
     }
@@ -88,7 +87,8 @@ public class DrawingCanvas extends Popup {
             if (subDrawing.size() >= 4) {
                 nano.drawCustomShape(Utilities.listToArray(subDrawing),
                         new Vector2f(-this.getPosition().x, -this.getPosition().y),
-                        1.0f, new RGBA(0, 0, 0, 255), false, false);
+                        1.0f, new RGBA(0, 0, 0, 255),
+                        false, false, size / 28f);
             }
         }
 
