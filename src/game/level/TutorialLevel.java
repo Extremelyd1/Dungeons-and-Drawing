@@ -6,6 +6,7 @@ import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
 import engine.entities.Player;
+import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
@@ -49,6 +50,7 @@ public class TutorialLevel extends Level {
         player = new Player(playerMesh, map);
         player.setPosition(new Vector3f(0, 0.5f, 2));
         player.setSpeed(5);
+        player.setScale(new Vector3f(1, 2, 1));
 
         entities = new Entity[]{player};
 
@@ -58,23 +60,30 @@ public class TutorialLevel extends Level {
                 new Vector3f(75f, -10f, 0f),
                 new Vector3f(3, 11, 3)
         );
+//        camera = new FreeCamera();
 
         // Setup lights
         sceneLight = new SceneLight();
         sceneLight.pointLights.add(new PointLight(
-                new Vector3f(1f, 1f, 1f),
-                new Vector3f(6f, 2.5f, 4f),
-                0.5f,
+                new Vector3f(0.203f, 0.388f, 0.552f),
+                new Vector3f(1f, 6f, 3f),
+                0.4f,
                 new Vector2f(1f, 100f)
         ));
         sceneLight.pointLights.add(new PointLight(
-                new Vector3f(0.2f, 0.6f, 0.7f),
-                new Vector3f(2f, 3.5f, 2f),
-                0.2f,
+                new Vector3f(1f, 1f, 1f),
+                new Vector3f(7f, 2f, 6f),
+                0.3f,
                 new Vector2f(1f, 100f)
         ));
+//        sceneLight.pointLights.add(new PointLight(
+//                new Vector3f(0.2f, 0.6f, 0.7f),
+//                new Vector3f(2f, 3.5f, 3f),
+//                0.2f,
+//                new Vector2f(1f, 100f)
+//        ));
         sceneLight.directionalLight = new DirectionalLight(
-                new Vector3f(0.0f,7.0f,0.0f),       // position
+                new Vector3f(0.0f, 7.0f, 0.0f),       // position
                 new Vector3f(0.8f, 0.8f, 0.8f),     // color
                 new Vector3f(0.0f, 1.0f, 0.4f),     // direction
                 0.2f,                                // intensity
@@ -84,6 +93,7 @@ public class TutorialLevel extends Level {
         // Setup gui
         gui = new GUI();
         gui.initialize();
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f));
     }
 
     @Override
