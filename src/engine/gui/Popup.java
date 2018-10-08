@@ -14,7 +14,7 @@ public class Popup extends GUIComponent {
     private static final float DEFAULT_HEIGHT = 200;
 
     private final float width;
-    private final float height;
+    private float height;
     private String text;
 
     private float[] ornament;
@@ -60,6 +60,10 @@ public class Popup extends GUIComponent {
 
         nano.transform(this.getPosition(), this.getRotation(), this.getScale());
 
+        float textHeight = nano.computeTextHeight(text, width * 0.75f);
+        float padding = 100f;
+        height = textHeight + padding;
+
         // Base background of the popup
         nano.drawRectangle(new Vector2f(0, 0), width, height, POPUP_COLOR);
         nano.addStroke(5, POPUP_COLOR_DARK);
@@ -68,8 +72,6 @@ public class Popup extends GUIComponent {
         nano.drawCircle(new Vector2f(width - 20, 20), 5, POPUP_COLOR_DARK);
         nano.drawCircle(new Vector2f(width - 20, height - 20), 5, POPUP_COLOR_DARK);
         nano.drawCircle(new Vector2f(20, height - 20), 5, POPUP_COLOR_DARK);
-
-        float textHeight = nano.computeTextHeight(text, width * 0.75f);
 
         // Draw the text
         nano.drawParagraphText(new Vector2f(width / 2.0f - width * 0.375f,
