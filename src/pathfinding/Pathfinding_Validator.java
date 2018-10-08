@@ -43,16 +43,33 @@ public class Pathfinding_Validator {
                 long time = System.nanoTime();
                 List<Tile> path = alg.computePath(start, target, map);
                 time = System.nanoTime() - time;
-                for (Tile s : alg.getClosedTiles()) {
-                    grid[s.getPosition().x][s.getPosition().y].setBackground(Color.BLUE);
-                }
                 for (Tile s : alg.getOpenedTiles()) {
                     grid[s.getPosition().x][s.getPosition().y].setBackground(Color.CYAN);
+                }
+                for (Tile s : alg.getClosedTiles()) {
+                    grid[s.getPosition().x][s.getPosition().y].setBackground(Color.BLUE);
                 }
                 for (Tile p : path) {
                     grid[p.getPosition().x][p.getPosition().y].setBackground(Color.GRAY);
                 }
-                //@TODO: Draw parent-child relationship with arrows (drawCell.drawArrow)
+                for (A_star.Node n : alg.getNodes()) {
+                    if (n.p == null) {
+
+                    } else if (n.t.getPosition().x == n.p.t.getPosition().x) {
+                        if (n.t.getPosition().y<n.p.t.getPosition().y) {
+                            grid[n.t.getPosition().x][n.t.getPosition().y].drawArrow(270);
+                        } else {
+                            grid[n.t.getPosition().x][n.t.getPosition().y].drawArrow(90);
+                        }
+                    } else {
+                        if (n.t.getPosition().x < n.p.t.getPosition().x) {
+                            grid[n.t.getPosition().x][n.t.getPosition().y].drawArrow(0);
+                        } else {
+                            grid[n.t.getPosition().x][n.t.getPosition().y].drawArrow(180);
+                        }
+                    }
+                }
+
 
                 grid[start.getPosition().x][start.getPosition().y].setBackground(Color.GREEN);
                 grid[target.getPosition().x][target.getPosition().y].setBackground(Color.RED);
@@ -148,7 +165,7 @@ public class Pathfinding_Validator {
             Graphics2D g2d = (Graphics2D)g;
             AffineTransform old = g2d.getTransform();
             AffineTransform at = new AffineTransform();
-            at.setToRotation(Math.toRadians(0), width/2, height/2);
+            at.setToRotation(Math.toRadians(degrees), width/2, height/2);
             g2d.setTransform(at);
                 if (draw) g2d.fillPolygon(new int[]{(width/2)-10, width/2, (width/2)+10}, new int[]{height/2,
                         (height/2)+10, height/2}, 3);
