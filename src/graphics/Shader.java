@@ -149,7 +149,8 @@ public class Shader {
         createUniform(uniformName + ".att.constant");
         createUniform(uniformName + ".att.linear");
         createUniform(uniformName + ".att.exponent");
-        createUniform(uniformName + ".shadowMap");
+        createUniform(uniformName + ".staticShadowMap");
+        createUniform(uniformName + ".dynamicShadowMap");
         createUniform(uniformName + ".plane");
     }
 
@@ -166,7 +167,8 @@ public class Shader {
         createUniform(uniformName + ".att.constant");
         createUniform(uniformName + ".att.linear");
         createUniform(uniformName + ".att.exponent");
-        createUniform(uniformName + ".shadowMap");
+        createUniform(uniformName + ".staticShadowMap");
+        createUniform(uniformName + ".dynamicShadowMap");
         createUniform(uniformName + ".conedir");
         createUniform(uniformName + ".cutoff");
         createUniform(uniformName + ".outerCutoff");
@@ -177,7 +179,8 @@ public class Shader {
         createUniform(uniformName + ".colour");
         createUniform(uniformName + ".direction");
         createUniform(uniformName + ".intensity");
-        createUniform(uniformName + ".shadowMap");
+        createUniform(uniformName + ".staticShadowMap");
+        createUniform(uniformName + ".dynamicShadowMap");
         createUniform(uniformName + ".lightSpaceMatrix");
         createUniform(uniformName + ".shadowEnable");
     }

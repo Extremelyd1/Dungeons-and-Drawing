@@ -46,6 +46,7 @@ public class TutorialLevel extends Level {
         // Setup player
         Mesh playerMesh = PLYLoader.loadMesh("/models/basic/basic_cylinder_two_colors_1.ply");
         playerMesh.setMaterial(new Material(0.5f));
+        playerMesh.setIsStatic(false);
         player = new Player(playerMesh, map);
         player.setPosition(new Vector3f(0, 0.5f, 2));
         player.setSpeed(5);
