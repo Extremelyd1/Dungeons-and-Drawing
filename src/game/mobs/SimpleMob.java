@@ -8,6 +8,7 @@ import game.map.tile.Tile;
 import graphics.Mesh;
 import org.joml.Vector3f;
 import pathfinding.A_star;
+import sun.security.ssl.Debug;
 
 import java.util.List;
 
@@ -38,52 +39,73 @@ public class SimpleMob extends LivingEntity {
         target = entity;
     }
 
+    boolean closeProximity = false;
     @Override
     public void update(float delta) {
         super.update(delta);
         // Calculate current mob tile and entity tile
-        currentTile = super.getMap().getTile(Math.round(currentTile.getPosition().x), Math.round(currentTile.getPosition().y));
+        currentTile = super.getMap().getTile(Math.round(getPosition().x), Math.round(getPosition().z));
         if (target != null) {
-            Tile targetCurrentTile = super.getMap().getTile(Math.round(target.getPosition().x), Math.round(target.getPosition().y));
+            Tile targetCurrentTile = super.getMap().getTile(Math.round(target.getPosition().x), Math.round(target.getPosition().z));
             // Recalculate Path only if the target tile has changed
             if (targetCurrentTile != targetTile) {
                 targetTile = targetCurrentTile;
                 if (targetTile != null) {
                     path = findPathToTile(currentTile, targetTile);
-                    pathProgress = 0;
+                    pathProgress = 1;
+                    closeProximity = false;
                 }
             }
 
             // Calculate direction Vector
-            Vector3f direction;
+            Vector3f direction = new Vector3f(0, 0, 0);
 
             if (currentTile.getPosition() == path.get(pathProgress).getPosition()) {
-                if (pathProgress < path.size() - 3) {
+                if (pathProgress < path.size() - 1) {
                     pathProgress++;
-                    direction = getDirectionVector(path.get(pathProgress), currentTile);
+                    closeProximity = false;
                 } else {
-                    direction = getDirectionVector(target.getPosition(), this.getPosition());
+                    closeProximity = true;
                 }
+            }
+
+            if (closeProximity) {
+                direction = getDirectionVector(
+                        new Vector3f(this.getPosition().z, 0, -this.getPosition().x),
+                        new Vector3f(target.getPosition().z, 0, -target.getPosition().x));
             } else {
-                direction = getDirectionVector(path.get(pathProgress), currentTile);
+                direction = getDirectionVector(path.get(pathProgress), currentTile).mul(-1);
             }
 
             // Update Rotation
-            setRotation(0, (float)Math.atan2(direction.z, direction.x), 0);
+            setRotation(0, (float)Math.toDegrees(-Math.atan2(direction.z, direction.x)), 0);
             // Update Position
-            setPosition(position.add(direction.mul(delta / getSpeed())));
+            Debug.println("Mob", direction.toString() + ", progress: " +
+                    pathProgress + ", pos: " + position.toString() + ", size: " +
+                    path.size() + ", cur(" + currentTile.getPosition().x + "," +
+                    currentTile.getPosition().y + "), tar(" + path.get(pathProgress).getPosition().x +
+                    "," + path.get(pathProgress).getPosition().y + "), (" +
+                    path.get(path.size() - 1).getPosition().x + "," + path.get(path.size() - 1).getPosition().y + "), tarPos:" +
+                    target.getPosition().toString());
+            setPosition(new Vector3f(position).add(direction.mul(delta / getSpeed())));
         }
+    }
+
+
+
+    private boolean isTargetInLineOfSight() {
+        return true;
     }
 
     private Vector3f getDirectionVector(Tile start, Tile end) {
         return new Vector3f(
-                path.get(pathProgress).getPosition().x,
+                end.getPosition().x,
                 0,
-                path.get(pathProgress).getPosition().y).
+                end.getPosition().y).
                 sub(new Vector3f(
-                        currentTile.getPosition().x,
+                        start.getPosition().x,
                         0,
-                        currentTile.getPosition().y))
+                        start.getPosition().y))
                 .normalize();
     }
 
