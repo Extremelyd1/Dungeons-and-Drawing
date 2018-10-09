@@ -60,7 +60,19 @@ public class AnimatedTilesLevel extends Level {
 
         Mesh crateMesh = AssetStore.getTileMesh("crate");
         crateMesh.setMaterial(new Material(0f));
+        Mesh prisonBarMesh = AssetStore.getTileMesh("prison_bars");
+        prisonBarMesh.setMaterial(new Material(0f));
         map.getTiles("door").forEach((t) ->
+                entityList.add(new DoorEntity(
+                        prisonBarMesh,
+                        new Vector3f(t.getPosition().x, 0, t.getPosition().y),
+                        new Vector3f(0),
+                        0.5f,
+                        t,
+                        entityList.size() == 1
+                ))
+        );
+        map.getTiles("spawn").forEach((t) ->
                 entityList.add(new IndicatorEntity(
                         crateMesh,
                         new Vector3f(t.getPosition().x, 2f, t.getPosition().y),
