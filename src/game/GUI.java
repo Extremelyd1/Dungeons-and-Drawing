@@ -24,8 +24,6 @@ public class GUI {
     public void initialize() {
         nano = NanoVG.getInstance();
         mouse.init();
-
-        components.add(new DrawingCanvas());
     }
 
     public void update() {
