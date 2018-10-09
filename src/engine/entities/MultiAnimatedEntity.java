@@ -13,8 +13,8 @@ public abstract class MultiAnimatedEntity extends Entity {
 
     protected Animator[] animators;
 
-    public MultiAnimatedEntity(Mesh mesh, Vector3f position, Vector3f rotation, Animator[] animators) {
-        super(mesh, position, rotation);
+    public MultiAnimatedEntity(Mesh mesh, Vector3f position, Vector3f rotation, float scale, Animator[] animators) {
+        super(mesh, position, rotation, scale);
         this.animators = animators;
     }
 

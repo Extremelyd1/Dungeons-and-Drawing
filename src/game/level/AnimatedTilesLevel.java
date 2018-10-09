@@ -6,11 +6,13 @@ import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.DoorEntity;
 import engine.entities.Entity;
+import engine.entities.IndicatorEntity;
 import engine.entities.Player;
 import engine.lights.AmbientLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
+import engine.util.AssetStore;
 import game.LevelController;
 import game.Renderer;
 import game.map.Map;
@@ -56,21 +58,15 @@ public class AnimatedTilesLevel extends Level {
         ArrayList<Entity> entityList = new ArrayList<>();
         entityList.add(player);
 
-        Mesh prisonMesh = PLYLoader.loadMesh("/models/tiles/prison_bars.ply");
-        prisonMesh.setMaterial(new Material(0f));
+        Mesh crateMesh = AssetStore.getTileMesh("crate");
+        crateMesh.setMaterial(new Material(0f));
         map.getTiles("door").forEach((t) ->
-                entityList.add(new DoorEntity(
-                        prisonMesh,
-                        new Vector3f(t.getPosition().x, 0f, t.getPosition().y),
+                entityList.add(new IndicatorEntity(
+                        crateMesh,
+                        new Vector3f(t.getPosition().x, 2f, t.getPosition().y),
                         new Vector3f(0),
-                        0.5f,
-                        t,
-                        t.hasTag("inverted")
+                        0.25f
                 ))
-        );
-
-        map.getTiles("door").forEach((t) ->
-                t.setSolid(true)
         );
 
         entities = new Entity[entityList.size()];

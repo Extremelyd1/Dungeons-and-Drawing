@@ -2,6 +2,8 @@ package engine.util;
 
 import engine.animation.Animation;
 import engine.animation.Animator;
+import engine.animation.LinearAnimator;
+import engine.animation.TrigonometricAnimator;
 import engine.animation.keyframe.KeyFrame;
 import engine.loader.PLYLoader;
 import graphics.Material;
@@ -125,11 +127,11 @@ public class AssetStore {
         Animation animation = getAnimation(name);
 
         if (name.equals("door")) {
-            return new Animator(animation, false, false);
+            return new LinearAnimator(animation, false, false);
         } else if (name.equals("indicatorRotation")) {
-            return new Animator(animation, true, true);
+            return new LinearAnimator(animation, true, true);
         } else if (name.equals("indicatorMovement")) {
-            return new Animator(animation, true, true);
+            return new TrigonometricAnimator(animation, true, true);
         }
 
         return null;
@@ -162,14 +164,12 @@ public class AssetStore {
             animation = new Animation(5f, keyFrames);
             loadedAnimations.put(name, animation);
         } else if (name.equals("indicatorMovement")) {
-            KeyFrame[] keyFrames = new KeyFrame[5];
-            keyFrames[0] = new KeyFrame(0f, 0f);
-            keyFrames[1] = new KeyFrame(0.5f, 0f);
-            keyFrames[2] = new KeyFrame(1.5f, 1f);
-            keyFrames[3] = new KeyFrame(2f, 1f);
-            keyFrames[4] = new KeyFrame(3f, 0f);
+            KeyFrame[] keyFrames = new KeyFrame[3];
+            keyFrames[0] = new KeyFrame(0f, 1f);
+            keyFrames[1] = new KeyFrame(1f, 2f);
+            keyFrames[2] = new KeyFrame(2f, 1f);
 
-            animation = new Animation(3f, keyFrames);
+            animation = new Animation(2f, keyFrames);
             loadedAnimations.put(name, animation);
         }
 

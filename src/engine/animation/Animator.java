@@ -2,14 +2,14 @@ package engine.animation;
 
 import engine.animation.keyframe.KeyFrame;
 
-public class Animator {
+public abstract class Animator {
 
-    private final Animation animation;
+    protected final Animation animation;
 
-    private final boolean loop;
+    protected final boolean loop;
 
-    private boolean running;
-    private float animationTime;
+    protected boolean running;
+    protected float animationTime;
 
     public Animator(Animation animation) {
         this(animation, true);
@@ -62,30 +62,14 @@ public class Animator {
      * time of the animation, and then applies that pose to all the model's
      * joints by setting the joint transforms.
      */
-    public float update(float delta) {
-        if (!running) {
-            return animation.getKeyFrames()[animation.getKeyFrames().length - 1].getValue();
-        }
-        increaseAnimationTime(delta);
-        return calculateCurrentValue();
-    }
+    public abstract float update(float delta);
 
     /**
      * Increases the current animation time which allows the animation to
      * progress. If the current animation has reached the end then the timer is
      * reset, causing the animation to loop.
      */
-    private void increaseAnimationTime(float delta) {
-        animationTime += delta;
-        if (animationTime > animation.getLength()) {
-            if (loop) {
-                this.animationTime %= animation.getLength();
-            } else {
-                this.animationTime = animation.getLength();
-                running = false;
-            }
-        }
-    }
+    protected abstract void increaseAnimationTime(float delta);
 
     /**
      * This method returns the current value of the animation.
@@ -102,11 +86,7 @@ public class Animator {
      *
      * @return The current value of the animation.
      */
-    private float calculateCurrentValue() {
-        KeyFrame[] frames = getPreviousAndNextFrames();
-        float progression = calculateProgression(frames[0], frames[1]);
-        return interpolate(frames[0], frames[1], progression);
-    }
+    protected abstract float calculateCurrentValue();
 
     /**
      * Finds the previous keyframe in the animation and the next keyframe in the
@@ -119,7 +99,7 @@ public class Animator {
      * @return The previous and next keyframes, in an array which therefore will
      * always have a length of 2.
      */
-    private KeyFrame[] getPreviousAndNextFrames() {
+    protected KeyFrame[] getPreviousAndNextFrames() {
         KeyFrame previousFrame = animation.getKeyFrames()[0];
         KeyFrame nextFrame = animation.getKeyFrames()[0];
         for (int i = 1; i < animation.getKeyFrames().length; i++) {
@@ -141,11 +121,7 @@ public class Animator {
      * @return A number between 0 and 1 indicating how far between the two
      * keyframes the current animation time is.
      */
-    private float calculateProgression(KeyFrame previousFrame, KeyFrame nextFrame) {
-        float totalTime = nextFrame.getTimeStamp() - previousFrame.getTimeStamp();
-        float currentTime = animationTime - previousFrame.getTimeStamp();
-        return currentTime / totalTime;
-    }
+    protected abstract float calculateProgression(KeyFrame previousFrame, KeyFrame nextFrame);
 
     /**
      * Calculates the interpolation value between these keyframe with given
@@ -157,10 +133,6 @@ public class Animator {
      *                      previous and next keyframes the current animation time is.
      * @return The float value representing the interpolated value between the keyframes
      */
-    private float interpolate(KeyFrame previousFrame, KeyFrame nextFrame, float progression) {
-        float difference = nextFrame.getValue() - previousFrame.getValue();
-
-        return progression * difference + previousFrame.getValue();
-    }
+    protected abstract float interpolate(KeyFrame previousFrame, KeyFrame nextFrame, float progression);
 
 }
