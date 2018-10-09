@@ -2,13 +2,12 @@ package game.mobs;
 
 import engine.entities.Entity;
 import engine.entities.LivingEntity;
-import engine.util.ColorInterpolator;
+import engine.util.Spline;
 import game.map.Map;
 import game.map.tile.Tile;
 import graphics.Mesh;
 import org.joml.Vector3f;
 import pathfinding.A_star;
-import sun.security.ssl.Debug;
 
 import java.util.List;
 
@@ -39,59 +38,92 @@ public class SimpleMob extends LivingEntity {
         target = entity;
     }
 
-    boolean closeProximity = false;
+    private Spline pathSmoother = new Spline();
     @Override
     public void update(float delta) {
         super.update(delta);
-        // Calculate current mob tile and entity tile
+        // Variables
+        Vector3f direction;
+        Vector3f finalPos;
+        // Get Mob Tile
         currentTile = super.getMap().getTile(Math.round(getPosition().x), Math.round(getPosition().z));
+        // Check if there is a target set
         if (target != null) {
+            // Get the current Target entity tile
             Tile targetCurrentTile = super.getMap().getTile(Math.round(target.getPosition().x), Math.round(target.getPosition().z));
-            // Recalculate Path only if the target tile has changed
+            // Compare with the stored Target entity tile
             if (targetCurrentTile != targetTile) {
+                // Recalculate Path
                 targetTile = targetCurrentTile;
-                if (targetTile != null) {
-                    path = findPathToTile(currentTile, targetTile);
-                    pathProgress = 1;
-                    closeProximity = false;
-                }
-            }
-
-            // Calculate direction Vector
-            Vector3f direction = new Vector3f(0, 0, 0);
-
-            if (currentTile.getPosition() == path.get(pathProgress).getPosition()) {
-                if (pathProgress < path.size() - 1) {
-                    pathProgress++;
-                    closeProximity = false;
+                if (path != null && path.size() > 1) {
+                    path = findPathToTile(path.get(1), targetCurrentTile);
                 } else {
-                    closeProximity = true;
+                    path = findPathToTile(currentTile, targetCurrentTile);
+                }
+                pathProgress = 1;
+                if ( pathProgress < path.size() - 1) {
+                    setupPathSmootherMode2(
+                            getPosition(),
+                            new Vector3f(path.get(pathProgress - 1).getPosition().x, getPosition().y, path.get(pathProgress - 1).getPosition().y),
+                            new Vector3f(path.get(pathProgress    ).getPosition().x, getPosition().y, path.get(pathProgress    ).getPosition().y));
                 }
             }
+            // Calculate Movement using Path Smoothing
+            float remaining = pathSmoother.update(delta * getSpeed());
 
-            if (closeProximity) {
-                direction = getDirectionVector(
-                        new Vector3f(this.getPosition().z, 0, -this.getPosition().x),
-                        new Vector3f(target.getPosition().z, 0, -target.getPosition().x));
-            } else {
-                direction = getDirectionVector(path.get(pathProgress), currentTile).mul(-1);
+            while (remaining != 0 && pathProgress < path.size() - 1) {
+                setupPathSmootherMode1(
+                        new Vector3f(path.get(pathProgress - 1).getPosition().x, getPosition().y,path.get(pathProgress - 1).getPosition().y),
+                        new Vector3f(path.get(pathProgress    ).getPosition().x, getPosition().y,path.get(pathProgress    ).getPosition().y),
+                        new Vector3f(path.get(pathProgress + 1).getPosition().x, getPosition().y,path.get(pathProgress + 1).getPosition().y));
+                pathProgress += 1;
+                remaining = pathSmoother.update(remaining);
+            }
+            finalPos = pathSmoother.getResult();
+            direction = new Vector3f(position).sub(finalPos).normalize();
+            // Calculate Movement in the direction of the target
+            if (pathProgress >= path.size() - 1) {
+                direction = new Vector3f(target.getPosition()).sub(position).normalize();
+                if (remaining != 0) {
+                    finalPos = new Vector3f(direction).mul(remaining).add(position);
+                } else {
+                    finalPos = new Vector3f(direction).mul(delta * getSpeed()).add(position);
+                }
+                direction = new Vector3f(position).sub(finalPos).normalize();
             }
 
-            // Update Rotation
-            setRotation(0, (float)Math.toDegrees(-Math.atan2(direction.z, direction.x)), 0);
-            // Update Position
-            Debug.println("Mob", direction.toString() + ", progress: " +
-                    pathProgress + ", pos: " + position.toString() + ", size: " +
-                    path.size() + ", cur(" + currentTile.getPosition().x + "," +
-                    currentTile.getPosition().y + "), tar(" + path.get(pathProgress).getPosition().x +
-                    "," + path.get(pathProgress).getPosition().y + "), (" +
-                    path.get(path.size() - 1).getPosition().x + "," + path.get(path.size() - 1).getPosition().y + "), tarPos:" +
-                    target.getPosition().toString());
-            setPosition(new Vector3f(position).add(direction.mul(delta / getSpeed())));
+            if (direction.length() != 0) {
+                setRotation(0, (float) Math.toDegrees(-Math.atan2(direction.z, direction.x)), 0);
+                setPosition(finalPos);
+            }
         }
     }
+    private void setupPathSmootherMode2(Vector3f currentPos, Vector3f currentTilePos, Vector3f succesiveTilePos){
+        Vector3f entrancePoint, midPoint, leavingPoint;
 
+        entrancePoint = new Vector3f(currentPos);
+        leavingPoint = new Vector3f(succesiveTilePos).sub(currentTilePos);
+        leavingPoint.mul(0.5f);
+        leavingPoint = new Vector3f(currentTilePos).add(leavingPoint);
+        midPoint = new Vector3f(leavingPoint).sub(entrancePoint);
+        midPoint.mul(0.5f);
+        midPoint = new Vector3f(entrancePoint).add(midPoint);
 
+        pathSmoother.setup(entrancePoint, midPoint, leavingPoint);
+    }
+
+    private void setupPathSmootherMode1(Vector3f precedingTilePos, Vector3f currentTilePos, Vector3f succesiveTilePos){
+        Vector3f entrancePoint, leavingPoint;
+
+        entrancePoint = new Vector3f(currentTilePos).sub(precedingTilePos).normalize();
+        entrancePoint.mul(0.5f);
+        entrancePoint = new Vector3f(currentTilePos).sub(entrancePoint);
+        leavingPoint = new Vector3f(succesiveTilePos).sub(currentTilePos).normalize();
+        leavingPoint.mul(0.5f);
+        leavingPoint = new Vector3f(currentTilePos).add(leavingPoint);
+
+        pathSmoother.setup(entrancePoint, currentTilePos, leavingPoint);
+    }
 
     private boolean isTargetInLineOfSight() {
         return true;

@@ -15,6 +15,7 @@ import game.LevelController;
 import game.Renderer;
 import game.map.Map;
 import game.map.loader.TempTutorialMapLoader;
+import game.mobs.SimpleMob;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
@@ -24,6 +25,7 @@ public class TutorialLevel extends Level {
 
     private Map map;
     private Player player;
+    private SimpleMob mob;
     private Renderer renderer;
     private Camera camera;
     private Entity[] entities;
@@ -51,7 +53,17 @@ public class TutorialLevel extends Level {
         player.setSpeed(5);
         player.setScale(new Vector3f(1, 2, 1));
 
-        entities = new Entity[]{player};
+        // Setup mob
+        Mesh mobMesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
+        mobMesh.setMaterial(new Material(0.1f));
+        mobMesh.setIsStatic(false);
+        mob = new SimpleMob(mobMesh, map);
+        mob.setScale(0.25f);
+        mob.setPosition(3.0f, 1.0f, 3.0f);
+        mob.setSpeed(2.5f);
+        mob.setTarget(player);
+
+        entities = new Entity[]{player, mob};
 
         // Setup camera
         camera = new FollowCamera(
@@ -102,6 +114,7 @@ public class TutorialLevel extends Level {
     public void update(float interval, MouseInput mouseInput) {
         camera.update();
         player.update(interval);
+        mob.update(interval);
         sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
     }
 

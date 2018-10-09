@@ -109,7 +109,7 @@ public class Renderer {
                             Entity[] entities,
                             SceneLight sceneLight,
                             Map map) {
-        // Compute neccessary matrices
+        // Compute necessary matrices
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(
                 FOV,
                 GameWindow.getGameWindow().getWindowWidth(),
@@ -182,4 +182,3 @@ public class Renderer {
         shaderManager.terminate();
     }
 }
-
