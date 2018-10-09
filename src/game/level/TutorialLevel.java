@@ -14,11 +14,13 @@ import engine.loader.PLYLoader;
 import game.LevelController;
 import game.Renderer;
 import game.map.Map;
+import game.map.loader.MapFileLoader;
 import game.map.loader.TempTutorialMapLoader;
 import game.mobs.SimpleMob;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 public class TutorialLevel extends Level {
@@ -38,7 +40,7 @@ public class TutorialLevel extends Level {
     @Override
     public void init() throws Exception {
         // Load map
-        map = new TempTutorialMapLoader().load();
+        map = new MapFileLoader("/level2.lvl").load();
 
         // Setup rendering
         renderer = new Renderer();
@@ -49,9 +51,11 @@ public class TutorialLevel extends Level {
         playerMesh.setMaterial(new Material(0.5f));
         playerMesh.setIsStatic(false);
         player = new Player(playerMesh, map);
-        player.setPosition(new Vector3f(0, 0.5f, 2));
         player.setSpeed(5);
         player.setScale(new Vector3f(1, 2, 1));
+
+        Vector2i spawn = map.getTile("spawn").getPosition();
+        player.setPosition(spawn.x, 0.5f, spawn.y);
 
         // Setup mob
         Mesh mobMesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
@@ -59,7 +63,7 @@ public class TutorialLevel extends Level {
         mobMesh.setIsStatic(false);
         mob = new SimpleMob(mobMesh, map);
         mob.setScale(0.25f);
-        mob.setPosition(3.0f, 1.0f, 3.0f);
+        mob.setPosition(spawn.x, 0.5f, spawn.y - 1);
         mob.setSpeed(2.5f);
         mob.setTarget(player);
 
@@ -75,24 +79,16 @@ public class TutorialLevel extends Level {
 
         // Setup lights
         sceneLight = new SceneLight();
-        sceneLight.pointLights.add(new PointLight(
-                new Vector3f(0.203f, 0.388f, 0.552f),
-                new Vector3f(1f, 6f, 3f),
-                0.4f,
-                new Vector2f(1f, 100f)
-        ));
-        sceneLight.pointLights.add(new PointLight(
-                new Vector3f(1f, 1f, 1f),
-                new Vector3f(7f, 2f, 6f),
-                0.3f,
-                new Vector2f(1f, 100f)
-        ));
-//        sceneLight.pointLights.add(new PointLight(
-//                new Vector3f(0.2f, 0.6f, 0.7f),
-//                new Vector3f(2f, 3.5f, 3f),
-//                0.2f,
-//                new Vector2f(1f, 100f)
-//        ));
+
+        map.getTiles("light").forEach(
+                t -> sceneLight.pointLights.add(new PointLight(
+                                new Vector3f(1f, 1f, 1f),
+                                new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
+                                0.4f,
+                                new Vector2f(1f, 100f)
+                        )
+                )
+        );
         sceneLight.directionalLight = new DirectionalLight(
                 new Vector3f(0.0f, 7.0f, 0.0f),       // position
                 new Vector3f(0.8f, 0.8f, 0.8f),     // color

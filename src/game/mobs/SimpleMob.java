@@ -21,6 +21,8 @@ public class SimpleMob extends LivingEntity {
     private List<Tile> path;
     private int pathProgress = 0;
     private Entity target;
+    private Spline pathSmoother = new Spline();
+    private boolean isInLineOfSight = false;
 
     public SimpleMob(Mesh mesh, Map map) {
         super(mesh, map);
@@ -52,6 +54,7 @@ public class SimpleMob extends LivingEntity {
     public boolean isInLineOfSight(Vector2f start, Vector2f end, float radius, float precision){
         Vector2f pos = new Vector2f(start);
         Vector2f dir = new Vector2f(end).sub(start).normalize();
+        float length = (new Vector2f(end).sub(start)).length();
         Vector2f perpDir = new Vector2f(dir.y, -dir.x);
         Vector2f spot1, spot2;
         float t = 0;
@@ -59,6 +62,8 @@ public class SimpleMob extends LivingEntity {
         while (t < 1.0f) {
             spot1 = new Vector2f(pos).add(new Vector2f(perpDir).mul(radius));
             spot2 = new Vector2f(pos).add(new Vector2f(perpDir).mul(-radius));
+            Debug.println("Spot1" , spot1.toString());
+            Debug.println("Spot2" , spot2.toString());
 
             if (isWithinMap(pos.x, pos.y) && getMap().getTile(Math.round(pos.x), Math.round(pos.y)).isSolid()) {
                 return false;
@@ -71,7 +76,7 @@ public class SimpleMob extends LivingEntity {
             pos = new Vector2f(start).mul(1.0f - t);
             pos.add(new Vector2f(end).mul(t));
 
-            t += precision;
+            t += precision / length;
         }
 
         return true;
@@ -82,11 +87,9 @@ public class SimpleMob extends LivingEntity {
         if (0 <= xr && xr < getMap().getWidth() && 0 <= yr && yr < getMap().getHeight()) {
             return true;
         }
+
         return false;
     }
-
-    private Spline pathSmoother = new Spline();
-    private boolean isInLineOfSight = false;
 
     @Override
     public void update(float delta) {
@@ -97,7 +100,7 @@ public class SimpleMob extends LivingEntity {
             Vector2f tarPos = new Vector2f(target.getPosition().x, target.getPosition().z);
             Vector3f direction;
             // Check if mob can see the target
-            if (isInLineOfSight(pos, tarPos, 0.35f, 0.01f)) {
+            if (isInLineOfSight(pos, tarPos, 0.35f, delta * getSpeed())) {
                 direction = new Vector3f(target.getPosition()).sub(position).normalize();
                 setRotation(0, (float) Math.toDegrees(-Math.atan2(direction.z, direction.x)), 0);
                 setPosition(new Vector3f(direction).mul(delta * getSpeed()).add(position));

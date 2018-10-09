@@ -8,6 +8,7 @@ import engine.lights.SpotLight;
 import game.ShaderManager;
 import game.map.Map;
 import game.map.tile.Tile;
+import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -32,6 +33,7 @@ public class ShadowsManager {
     // Handle internally
     //
     private void renderShadows(Transformation transformation, SceneLight sceneLight, ShaderManager shaderManager, Map map, Entity[] entities, boolean isDynamic) {
+        FrustumIntersection frustumIntersection = new FrustumIntersection();
         Matrix4f model;
         int numLights;
         ShadowMap shadowMap;
@@ -47,6 +49,7 @@ public class ShadowsManager {
             glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
             glClear(GL_DEPTH_BUFFER_BIT);
 
+            frustumIntersection.set(sceneLight.directionalLight.getLightSpaceMatrix());
             shaderManager.bindDepthMapShader();
             shaderManager.initializeDepthShader(sceneLight.directionalLight.getLightSpaceMatrix());
             if (map != null) {
@@ -56,28 +59,32 @@ public class ShadowsManager {
                             continue;
                         }
                         // Calculate the Model matrix in World coordinates
-                        Mesh mesh = tile.getMesh();
-                        if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
-                            model = transformation.getWorldMatrix(
-                                    new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
-                                    tile.getRotation(),
-                                    0.5f);
-                            // Set model view matrix for this item
-                            shaderManager.updateDepthShader(model);
-                            // Render the mesh
-                            mesh.render();
+                        if (frustumIntersection.testSphere(new Vector3f(tile.getPosition().x, 0, tile.getPosition().y), 1.0f)) {
+                            Mesh mesh = tile.getMesh();
+                            if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                                model = transformation.getWorldMatrix(
+                                        new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
+                                        tile.getRotation(),
+                                        0.5f);
+                                // Set model view matrix for this item
+                                shaderManager.updateDepthShader(model);
+                                // Render the mesh
+                                mesh.render();
+                            }
                         }
                     }
                 }
             }
             for (Entity entity : entities) {
                 // Calculate the Model matrix in World coordinates
-                Mesh mesh = entity.getMesh();
-                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
-                    model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
-                    shaderManager.updateDepthShader(model);
-                    // Render the mesh
-                    mesh.render();
+                if (frustumIntersection.testSphere(new Vector3f(entity.getPosition()), 0.5f)) {
+                    Mesh mesh = entity.getMesh();
+                    if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                        model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
+                        shaderManager.updateDepthShader(model);
+                        // Render the mesh
+                        mesh.render();
+                    }
                 }
             }
             //Unbind FBO and shader
@@ -149,6 +156,7 @@ public class ShadowsManager {
                 glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
                 glClear(GL_DEPTH_BUFFER_BIT);
 
+                frustumIntersection.set(spotLight.getLightSpaceMatrix());
                 shaderManager.bindDepthMapShader();
                 shaderManager.initializeDepthShader(spotLight.getLightSpaceMatrix());
                 if (map != null) {
@@ -158,29 +166,33 @@ public class ShadowsManager {
                                 continue;
                             }
                             // Calculate the Model matrix in World coordinates
-                            Mesh mesh = tile.getMesh();
-                            if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
-                                model = transformation.getWorldMatrix(
-                                        new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
-                                        tile.getRotation(),
-                                        0.5f);
-                                // Set model view matrix for this item
-                                shaderManager.updateDepthShader(model);
-                                // Render the mesh
-                                mesh.render();
+                            if (frustumIntersection.testSphere(new Vector3f(tile.getPosition().x, 0, tile.getPosition().y), 1.0f)) {
+                                Mesh mesh = tile.getMesh();
+                                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                                    model = transformation.getWorldMatrix(
+                                            new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
+                                            tile.getRotation(),
+                                            0.5f);
+                                    // Set model view matrix for this item
+                                    shaderManager.updateDepthShader(model);
+                                    // Render the mesh
+                                    mesh.render();
+                                }
                             }
                         }
                     }
                 }
                 for (Entity entity : entities) {
                     // Calculate the Model matrix in World coordinates
-                    Mesh mesh = entity.getMesh();
-                    if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
-                        model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
-                        // Set model view matrix for this item
-                        shaderManager.updateDepthShader(model);
-                        // Render the mesh
-                        mesh.render();
+                    if (frustumIntersection.testSphere(new Vector3f(entity.getPosition()), 0.5f)) {
+                        Mesh mesh = entity.getMesh();
+                        if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                            model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
+                            // Set model view matrix for this item
+                            shaderManager.updateDepthShader(model);
+                            // Render the mesh
+                            mesh.render();
+                        }
                     }
                 }
                 //Unbind FBO and shader

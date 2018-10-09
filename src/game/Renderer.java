@@ -11,9 +11,11 @@ import game.map.Map;
 import game.map.tile.Tile;
 import graphics.Mesh;
 import graphics.ShadowsManager;
+import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
+import sun.security.ssl.Debug;
 
 
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
@@ -28,6 +30,7 @@ import static org.lwjgl.opengl.GL11.*;
  */
 
 public class Renderer {
+    private FrustumIntersection frustumIntersection;
     private ShaderManager shaderManager;
     private ShadowsManager shadowsManager;
     private boolean firstRender = true;
@@ -47,6 +50,7 @@ public class Renderer {
 
     public void init() throws Exception {
         shadowsManager = new ShadowsManager();
+        frustumIntersection = new FrustumIntersection();
         shaderManager = new ShaderManager();
         shaderManager.setupSceneShader();
         shaderManager.setupDepthShader();
@@ -120,6 +124,7 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
         Matrix4f projectionAndView = new Matrix4f(projectionMatrix);
         projectionAndView.mul(viewMatrix);
+        frustumIntersection.set(projectionAndView);
         Matrix4f model;
 
         // Update ViewPort
@@ -136,26 +141,30 @@ public class Renderer {
                         continue;
                     }
                     // Calculate the Model matrix in World coordinates
-                    Mesh mesh = tile.getMesh();
-                    model = transformation.getWorldMatrix(
-                            new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
-                            tile.getRotation(),
-                            0.5f);
-                    shaderManager.updateSceneShader(model, projectionAndView, mesh.getMaterial());
-                    shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
-                    // Render the mesh
-                    mesh.render();
+                    if (frustumIntersection.testSphere(new Vector3f(tile.getPosition().x, 0, tile.getPosition().y), 1.0f)) {
+                        Mesh mesh = tile.getMesh();
+                        model = transformation.getWorldMatrix(
+                                new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
+                                tile.getRotation(),
+                                0.5f);
+                        shaderManager.updateSceneShader(model, projectionAndView, mesh.getMaterial());
+                        shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
+                        // Render the mesh
+                        mesh.render();
+                    }
                 }
             }
         }
         // Render Entities
         for (Entity entity : entities) {
-            Mesh mesh = entity.getMesh();
-            model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
-            shaderManager.updateSceneShader(model, projectionAndView, mesh.getMaterial());
-            shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
-            // Render the mesh
-            mesh.render();
+            if (frustumIntersection.testSphere(new Vector3f(entity.getPosition()), 0.5f)) {
+                Mesh mesh = entity.getMesh();
+                model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
+                shaderManager.updateSceneShader(model, projectionAndView, mesh.getMaterial());
+                shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
+                // Render the mesh
+                mesh.render();
+            }
         }
         shaderManager.unbindSceneShader();
     }
