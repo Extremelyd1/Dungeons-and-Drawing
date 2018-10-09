@@ -302,6 +302,7 @@ public class NanoVG {
             nvgStrokeColor(nanoVGHandler, rgba(rgba, color));
             nvgStrokeWidth(nanoVGHandler, strokeWidth);
             nvgLineCap(nanoVGHandler, NVG_ROUND);
+            nvgLineJoin(nanoVGHandler, NVG_ROUND);
             nvgStroke(nanoVGHandler);
         } else {
             nvgFillColor(nanoVGHandler, rgba(rgba, color));
