@@ -401,6 +401,12 @@ public class NanoVG {
         return bounds[3];
     }
 
+    public float computeTextWidth(String text) {
+        float[] bounds = new float[4];
+        nvgTextBounds(nanoVGHandler, 0, 0, text, bounds);
+        return bounds[2];
+    }
+
     private RGBA getDefaultColor() {
         return new RGBA(255, 255, 255, 255);
     }

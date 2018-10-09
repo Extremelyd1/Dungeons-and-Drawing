@@ -1,65 +1,91 @@
 package engine.gui;
 
+import engine.GameWindow;
 import engine.MouseInput;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.lwjgl.system.CallbackI;
 
 /**
- * Base class for all GUI component we would want to add. Defines a position, mesh, scale and rotation.
- *
- * As GUI graphics are 2D, the position and rotation is limited to the z-axis and to x and y coordinates.
- * Meshes are for now limited to Quads that are textured.
- *
- * GUI components are rendered in orthogonal projection (so the Z-axis is ignored)
+ * Base class for all GUI component we would want to add.
  */
 public abstract class GUIComponent {
 
     private final Vector2f position; // Position of the GUI component in screen coordinates
-    private RGBA color;
+    private float componentHeight;
+    private float componentWidth;
+    private boolean isCentered;
 
-    /** Constructs an empty Component with no mesh and default position, rotation, scale */
+    /** Constructs an empty Component with the default position */
     public GUIComponent() {
-        this.position = new Vector2f(0, 0);
-        this.color = new RGBA(255, 255, 255, 255);
+        this(new Vector2f(0,0));
     }
 
-    /**
-     * Constructs a component with a color
-     * @param rgba color in rgba channels
-     */
-    public GUIComponent(RGBA rgba) {
-        this();
-        this.color = rgba;
-    }
-
-    /**
-     * Constructs a fully defined component
-     * @param rgba color in rgba channels
-     */
-    public GUIComponent(Vector2f position, RGBA rgba) {
+    /** Constructs a component with a specified position */
+    public GUIComponent(Vector2f position) {
         this.position = position;
-        this.color = rgba;
     }
 
-    /* Returns the position */
+    /**
+     * Centers an object. Assumes the origin of said object is located at the upper-left
+     * corner of the component, which is the default for rectangles, but not for circles,
+     * custom shapes and text for example.
+     */
+    private void center() {
+        GameWindow window = GameWindow.getGameWindow();
+        float x = window.getWindowWidth() / 2.0f - getComponentWidth() / 2.0f;
+        float y = window.getWindowHeight() / 2.0f - getComponentHeight() / 2.0f;
+        this.setPosition(x, y);
+    }
+
+    /**
+     *  Centers the object in the middle of the screen. Assumes the origin is in
+     *  the upper-left corner of the guicomponent
+     */
+    public void update(MouseInput mouse) {
+        if (isCentered()) {
+            center();
+        }
+    }
+
+    /**
+     * Renders all components to the screen
+     */
+    abstract public void render();
+
+
+    // ====== GETTERS AND SETTERS ====== //
+
     public Vector2f getPosition() {
         return position;
     }
 
-    /* Sets the position */
     public void setPosition(float x, float y) {
         this.position.x = x;
         this.position.y = y;
     }
 
-    public void setColor(RGBA rgba) {
-        this.color = rgba;
+    public float getComponentHeight() {
+        return componentHeight;
     }
 
-    public RGBA getColor() {
-        return color;
+    public void setComponentHeight(float componentHeight) {
+        this.componentHeight = componentHeight;
     }
 
-    abstract public void render();
-    abstract public void update(MouseInput mouse);
+    public float getComponentWidth() {
+        return componentWidth;
+    }
+
+    public void setComponentWidth(float componentWidth) {
+        this.componentWidth = componentWidth;
+    }
+
+    public boolean isCentered() {
+        return isCentered;
+    }
+
+    public void setCentered(boolean centered) {
+        isCentered = centered;
+    }
 }

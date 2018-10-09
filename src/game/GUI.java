@@ -28,6 +28,7 @@ public class GUI {
 
     public void update() {
         mouse.input();
+
         for (GUIComponent c : components) {
             c.update(mouse);
         }
