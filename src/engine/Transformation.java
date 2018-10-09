@@ -179,19 +179,6 @@ public class Transformation {
         return new Matrix4f(perspective).mul(lookAt);
     }
 
-    public Matrix4f getOrtoProjModelMatrix(GUIComponent guiComponent, Matrix4f orthoMatrix) {
-        Vector3f rotation = guiComponent.getRotation();
-        Matrix4f modelMatrix = new Matrix4f();
-        modelMatrix.identity().translate(guiComponent.getPosition()).
-                rotateX((float) Math.toRadians(-rotation.x)).
-                rotateY((float) Math.toRadians(-rotation.y)).
-                rotateZ((float) Math.toRadians(-rotation.z)).
-                scale(guiComponent.getScale());
-        Matrix4f orthoMatrixCurr = new Matrix4f(orthoMatrix);
-        orthoMatrixCurr.mul(modelMatrix);
-        return orthoMatrixCurr;
-    }
-
     public Matrix4f getModelViewMatrix(Tile tile, Matrix4f viewMatrix) {
         Vector3f rotation = tile.getRotation();
         modelViewMatrix.identity().translate(new Vector3f(tile.getPosition().x, 0, tile.getPosition().y)).

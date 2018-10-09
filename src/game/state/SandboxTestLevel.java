@@ -7,7 +7,6 @@ import engine.entities.Entity;
 import engine.lights.*;
 import engine.loader.OBJLoader;
 import engine.loader.PLYLoader;
-import game.GUI;
 import game.Renderer;
 import graphics.Material;
 import graphics.Mesh;
@@ -37,8 +36,6 @@ public class SandboxTestLevel implements IGameLogic {
     private final Renderer renderer;
     private Entity[] gameEntities;
 
-    private GUI gui;
-
     private SceneLight sceneLight;
     private float lightAngle;
 
@@ -53,7 +50,6 @@ public class SandboxTestLevel implements IGameLogic {
 
     @Override
     public void init() throws Exception {
-        gui = new GUI("Test");
 
         renderer.init();
 
@@ -252,7 +248,6 @@ public class SandboxTestLevel implements IGameLogic {
     public void render() {
         renderer.render(
                 camera,
-                null,
                 gameEntities,
                 sceneLight,
                 null
