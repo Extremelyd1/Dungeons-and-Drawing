@@ -6,8 +6,12 @@ import engine.util.Spline;
 import game.map.Map;
 import game.map.tile.Tile;
 import graphics.Mesh;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
+import org.joml.Vector3d;
 import org.joml.Vector3f;
 import pathfinding.A_star;
+import sun.security.ssl.Debug;
 
 import java.util.List;
 
@@ -38,7 +42,57 @@ public class SimpleMob extends LivingEntity {
         target = entity;
     }
 
+    /**
+     * Xiaolin Wu line algorithm
+     *
+     * @param start
+     * @param end
+     * @return
+     */
+    public boolean isInLineOfSight(Tile start, Tile end){
+        int mid;
+        Vector2i s = new Vector2i(start.getPosition()), e = new Vector2i(end.getPosition());
+        boolean steep = Math.abs(e.y - s.y) > Math.abs(e.x - s.x);
+        if (steep) {
+            s.x = start.getPosition().y;
+            s.y = start.getPosition().x;
+            e.x = end.getPosition().y;
+            e.y = end.getPosition().x;
+        }
+        if (s.x > e.x) {
+            mid = s.x;
+            s.x = e.x;
+            e.x = mid;
+            mid = s.y;
+            s.y = e.y;
+            e.y = mid;
+        }
+
+        float dx = e.x - s.x;
+        float dy = e.y - s.y;
+        float gradient = dy / dx;
+        float y = s.y + gradient;
+
+        for (int x = s.x + 1; x <= e.x - 1; x++) {
+            if (0 <= x && x < getMap().getWidth() && 0 <= (int)y && (int)y < getMap().getHeight()) {
+                if (getMap().getTile(x, (int) y).isSolid()) {
+                    return false;
+                }
+            }
+            if (0 <= x && x < getMap().getWidth() && 0 <= (int)y + 1 && (int)y + 1 < getMap().getHeight()) {
+                if (getMap().getTile(x, (int) y + 1).isSolid()) {
+                    return false;
+                }
+            }
+            y += gradient;
+        }
+
+        return true;
+    }
+
     private Spline pathSmoother = new Spline();
+    private boolean isInLineOfSight = false;
+
     @Override
     public void update(float delta) {
         super.update(delta);
@@ -55,13 +109,9 @@ public class SimpleMob extends LivingEntity {
             if (targetCurrentTile != targetTile) {
                 // Recalculate Path
                 targetTile = targetCurrentTile;
-                if (path != null && path.size() > 1) {
-                    path = findPathToTile(path.get(1), targetCurrentTile);
-                } else {
-                    path = findPathToTile(currentTile, targetCurrentTile);
-                }
+                path = findPathToTile(currentTile, targetCurrentTile);
                 pathProgress = 1;
-                if ( pathProgress < path.size() - 1) {
+                if (pathProgress < path.size() - 1) {
                     setupPathSmootherMode2(
                             getPosition(),
                             new Vector3f(path.get(pathProgress - 1).getPosition().x, getPosition().y, path.get(pathProgress - 1).getPosition().y),
@@ -70,7 +120,6 @@ public class SimpleMob extends LivingEntity {
             }
             // Calculate Movement using Path Smoothing
             float remaining = pathSmoother.update(delta * getSpeed());
-
             while (remaining != 0 && pathProgress < path.size() - 1) {
                 setupPathSmootherMode1(
                         new Vector3f(path.get(pathProgress - 1).getPosition().x, getPosition().y,path.get(pathProgress - 1).getPosition().y),
@@ -81,15 +130,19 @@ public class SimpleMob extends LivingEntity {
             }
             finalPos = pathSmoother.getResult();
             direction = new Vector3f(position).sub(finalPos).normalize();
+
             // Calculate Movement in the direction of the target
-            if (pathProgress >= path.size() - 1) {
-                direction = new Vector3f(target.getPosition()).sub(position).normalize();
+            if (isInLineOfSight(currentTile, targetTile)) {
+                Vector3f nextFrameDirection = new Vector3f(target.getPosition()).sub(position).normalize();
+                Vector3f nextFramePos;
                 if (remaining != 0) {
-                    finalPos = new Vector3f(direction).mul(remaining).add(position);
+                    nextFramePos = new Vector3f(nextFrameDirection ).mul(remaining).add(position);
                 } else {
-                    finalPos = new Vector3f(direction).mul(delta * getSpeed()).add(position);
+                    nextFramePos = new Vector3f(nextFrameDirection ).mul(delta * getSpeed()).add(position);
                 }
-                direction = new Vector3f(position).sub(finalPos).normalize();
+                // Ensure that there are no collisions
+                finalPos = nextFramePos;
+                direction = nextFrameDirection;
             }
 
             if (direction.length() != 0) {
