@@ -63,7 +63,7 @@ public class TutorialLevel extends Level {
         mobMesh.setIsStatic(false);
         mob = new SimpleMob(mobMesh, map);
         mob.setScale(0.25f);
-        mob.setPosition(spawn.x, 0.5f, spawn.y - 1);
+        mob.setPosition(spawn.x + 2, 0.5f, spawn.y - 1);
         mob.setSpeed(2.5f);
         mob.setTarget(player);
 
