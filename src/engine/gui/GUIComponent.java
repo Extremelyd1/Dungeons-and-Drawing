@@ -1,96 +1,91 @@
 package engine.gui;
 
-import graphics.Mesh;
+import engine.GameWindow;
+import engine.MouseInput;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.lwjgl.system.CallbackI;
 
 /**
- * Base class for all GUI component we would want to add. Defines a position, mesh, scale and rotation.
- *
- * As GUI graphics are 2D, the position and rotation is limited to the z-axis and to x and y coordinates.
- * Meshes are for now limited to Quads that are textured.
- *
- * GUI components are rendered in orthogonal projection (so the Z-axis is ignored)
+ * Base class for all GUI component we would want to add.
  */
-public class GUIComponent {
+public abstract class GUIComponent {
 
-    private Mesh mesh; // Mesh to display the texture, often a quad
-    private final Vector3f position; // Position of the GUI component in screen coordinates
-    private float scale; // Scale of the GUI component
-    private final Vector3f rotation; // Rotation (in degrees) of the GUI Component
+    private final Vector2f position; // Position of the GUI component in screen coordinates
+    private float componentHeight;
+    private float componentWidth;
+    private boolean isCentered;
 
-    /** Constructs an empty Component with no mesh and default position, rotation, scale */
-    public GUIComponent() { ;
-        this.position = new Vector3f(0, 0, 0);
-        this.rotation = new Vector3f(0, 0, 0);
-        this.scale = 1.0f;
+    /** Constructs an empty Component with the default position */
+    public GUIComponent() {
+        this(new Vector2f(0,0));
+    }
+
+    /** Constructs a component with a specified position */
+    public GUIComponent(Vector2f position) {
+        this.position = position;
     }
 
     /**
-     * Constructs a component with a mesh and default position, rotation, scale
-     * @param mesh mesh of the component
+     * Centers an object. Assumes the origin of said object is located at the upper-left
+     * corner of the component, which is the default for rectangles, but not for circles,
+     * custom shapes and text for example.
      */
-    public GUIComponent(Mesh mesh) {
-        this();
-        this.mesh = mesh;
+    private void center() {
+        GameWindow window = GameWindow.getGameWindow();
+        float x = window.getWindowWidth() / 2.0f - getComponentWidth() / 2.0f;
+        float y = window.getWindowHeight() / 2.0f - getComponentHeight() / 2.0f;
+        this.setPosition(x, y);
     }
 
     /**
-     * Creates a GUI component with a different mesh and a custom position, rotation, scale
-     * @param mesh Mesh of the GUI Component (probably a quad)
-     * @param position Custom position (in screen coordinates) of the component
-     * @param rotation Custom rotation (in degrees, around the z-axis) of the component
+     *  Centers the object in the middle of the screen. Assumes the origin is in
+     *  the upper-left corner of the guicomponent
      */
-    public GUIComponent(Mesh mesh, Vector2f position, float rotation) {
-        this.position = new Vector3f(position, 0);
-        this.rotation = new Vector3f(0, 0, rotation);
-        this.scale = 1.0f;
-
-        this.mesh = mesh;
+    public void update(MouseInput mouse) {
+        if (isCentered()) {
+            center();
+        }
     }
 
-    /* Returns the position */
-    public Vector3f getPosition() {
+    /**
+     * Renders all components to the screen
+     */
+    abstract public void render();
+
+
+    // ====== GETTERS AND SETTERS ====== //
+
+    public Vector2f getPosition() {
         return position;
     }
 
-    /* Sets the position */
     public void setPosition(float x, float y) {
         this.position.x = x;
         this.position.y = y;
     }
 
-    /* Returns the scale */
-    public float getScale() {
-        return scale;
+    public float getComponentHeight() {
+        return componentHeight;
     }
 
-    /* Sets the scale */
-    public void setScale(float scale) {
-        this.scale = scale;
+    public void setComponentHeight(float componentHeight) {
+        this.componentHeight = componentHeight;
     }
 
-    /* Returns the rotation */
-    public Vector3f getRotation() {
-        return rotation;
+    public float getComponentWidth() {
+        return componentWidth;
     }
 
-    /* Sets the rotation */
-    public void setRotation(float amount) {
-        this.rotation.z = amount;
+    public void setComponentWidth(float componentWidth) {
+        this.componentWidth = componentWidth;
     }
 
-    /* Returns the mesh */
-    public Mesh getMesh() {
-        return mesh;
+    public boolean isCentered() {
+        return isCentered;
     }
 
-
-    public void setMesh(Mesh mesh) {
-        this.mesh = mesh;
+    public void setCentered(boolean centered) {
+        isCentered = centered;
     }
-
 }

@@ -4,8 +4,6 @@ import engine.camera.Camera;
 import engine.entities.Entity;
 import engine.GameWindow;
 import engine.Transformation;
-import engine.gui.GUIComponent;
-import engine.gui.Layer;
 import engine.lights.SceneLight;
 import game.map.Map;
 import game.map.tile.Tile;
@@ -50,7 +48,7 @@ public class Renderer {
         shaderManager = new ShaderManager();
         shaderManager.setupSceneShader();
         shaderManager.setupDepthShader();
-        shaderManager.setupGUIShader();
+
         // Permanently Enable Back Face Culling
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
@@ -60,7 +58,7 @@ public class Renderer {
      * Reset the screen to the clear color
      */
     public void clear() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 
     /**
@@ -73,7 +71,6 @@ public class Renderer {
 
     public void render(
             Camera camera,
-            GUI gui,
             Entity[] entities,
             SceneLight sceneLight,
             Map map
@@ -100,9 +97,6 @@ public class Renderer {
             shadowsManager.renderDynamicShadows(transformation, sceneLight, shaderManager, map, entities);
         }
         renderScene(camera, entities, sceneLight, map);
-        if (gui != null) {
-            renderGui(gui);
-        }
     }
 
     public void renderScene(Camera camera,
@@ -159,25 +153,7 @@ public class Renderer {
         }
         shaderManager.unbindSceneShader();
     }
-
-    private void renderGui(GUI gui) {
-        Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, GameWindow.getGameWindow().getWindowWidth(),
-                GameWindow.getGameWindow().getWindowHeight(), 0);
-
-        shaderManager.bindGUIShader();
-        for (Layer layer : gui.getLayers()) {
-            for (GUIComponent element : layer.getElements()) {
-                Mesh mesh = element.getMesh();
-                // Set ortohtaphic and model matrix for this HUD item
-                Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(element, ortho);
-                shaderManager.updateGUIShader(projModelMatrix, mesh.getMaterial().getAmbientColour(), mesh.getMaterial().isTextured() ? 1 : 0);
-                // Render the mesh for this HUD item
-                mesh.render();
-            }
-        }
-        shaderManager.unbindGUIShader();
-    }
-
+  
     public void terminate() {
         shaderManager.terminate();
     }
