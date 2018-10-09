@@ -60,7 +60,7 @@ public class TutorialLevel extends Level {
         mob = new SimpleMob(mobMesh, map);
         mob.setScale(0.25f);
         mob.setPosition(3.0f, 1.0f, 3.0f);
-        mob.setSpeed(0.5f);
+        mob.setSpeed(2.5f);
         mob.setTarget(player);
 
         entities = new Entity[]{player, mob};

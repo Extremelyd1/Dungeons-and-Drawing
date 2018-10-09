@@ -43,51 +43,46 @@ public class SimpleMob extends LivingEntity {
     }
 
     /**
-     * Xiaolin Wu line algorithm
+     * Custom line of sight algorithm
      *
      * @param start
      * @param end
      * @return
      */
-    public boolean isInLineOfSight(Tile start, Tile end){
-        int mid;
-        Vector2i s = new Vector2i(start.getPosition()), e = new Vector2i(end.getPosition());
-        boolean steep = Math.abs(e.y - s.y) > Math.abs(e.x - s.x);
-        if (steep) {
-            s.x = start.getPosition().y;
-            s.y = start.getPosition().x;
-            e.x = end.getPosition().y;
-            e.y = end.getPosition().x;
-        }
-        if (s.x > e.x) {
-            mid = s.x;
-            s.x = e.x;
-            e.x = mid;
-            mid = s.y;
-            s.y = e.y;
-            e.y = mid;
-        }
+    public boolean isInLineOfSight(Vector2f start, Vector2f end, float radius, float precision){
+        Vector2f pos = new Vector2f(start);
+        Vector2f dir = new Vector2f(end).sub(start).normalize();
+        Vector2f perpDir = new Vector2f(dir.y, -dir.x);
+        Vector2f spot1, spot2;
+        float t = 0;
 
-        float dx = e.x - s.x;
-        float dy = e.y - s.y;
-        float gradient = dy / dx;
-        float y = s.y + gradient;
+        while (t < 1.0f) {
+            spot1 = new Vector2f(pos).add(new Vector2f(perpDir).mul(radius));
+            spot2 = new Vector2f(pos).add(new Vector2f(perpDir).mul(-radius));
 
-        for (int x = s.x + 1; x <= e.x - 1; x++) {
-            if (0 <= x && x < getMap().getWidth() && 0 <= (int)y && (int)y < getMap().getHeight()) {
-                if (getMap().getTile(x, (int) y).isSolid()) {
-                    return false;
-                }
+            if (isWithinMap(pos.x, pos.y) && getMap().getTile(Math.round(pos.x), Math.round(pos.y)).isSolid()) {
+                return false;
+            } else if (isWithinMap(spot2.x, spot2.y) && getMap().getTile(Math.round(spot2.x), Math.round(spot2.y)).isSolid()) {
+                return false;
+            } else if (isWithinMap(spot1.x, spot1.y) && getMap().getTile(Math.round(spot1.x), Math.round(spot1.y)).isSolid()) {
+                return false;
             }
-            if (0 <= x && x < getMap().getWidth() && 0 <= (int)y + 1 && (int)y + 1 < getMap().getHeight()) {
-                if (getMap().getTile(x, (int) y + 1).isSolid()) {
-                    return false;
-                }
-            }
-            y += gradient;
+
+            pos = new Vector2f(start).mul(1.0f - t);
+            pos.add(new Vector2f(end).mul(t));
+
+            t += precision;
         }
 
         return true;
+    }
+
+    private boolean isWithinMap(float x, float y){
+        int xr = Math.round(x), yr = Math.round(y);
+        if (0 <= xr && xr < getMap().getWidth() && 0 <= yr && yr < getMap().getHeight()) {
+            return true;
+        }
+        return false;
     }
 
     private Spline pathSmoother = new Spline();
@@ -96,61 +91,48 @@ public class SimpleMob extends LivingEntity {
     @Override
     public void update(float delta) {
         super.update(delta);
-        // Variables
-        Vector3f direction;
-        Vector3f finalPos;
-        // Get Mob Tile
-        currentTile = super.getMap().getTile(Math.round(getPosition().x), Math.round(getPosition().z));
-        // Check if there is a target set
         if (target != null) {
-            // Get the current Target entity tile
-            Tile targetCurrentTile = super.getMap().getTile(Math.round(target.getPosition().x), Math.round(target.getPosition().z));
-            // Compare with the stored Target entity tile
-            if (targetCurrentTile != targetTile) {
-                // Recalculate Path
-                targetTile = targetCurrentTile;
-                path = findPathToTile(currentTile, targetCurrentTile);
-                pathProgress = 1;
-                if (pathProgress < path.size() - 1) {
+            // Variables
+            Vector2f pos = new Vector2f(position.x, position.z);
+            Vector2f tarPos = new Vector2f(target.getPosition().x, target.getPosition().z);
+            Vector3f direction;
+            // Check if mob can see the target
+            if (isInLineOfSight(pos, tarPos, 0.35f, 0.01f)) {
+                direction = new Vector3f(target.getPosition()).sub(position).normalize();
+                setRotation(0, (float) Math.toDegrees(-Math.atan2(direction.z, direction.x)), 0);
+                setPosition(new Vector3f(direction).mul(delta * getSpeed()).add(position));
+                isInLineOfSight = true;
+            } else {
+                currentTile = super.getMap().getTile(Math.round(pos.x), Math.round(pos.y));
+                Tile newTargetCurrentTile = super.getMap().getTile(Math.round(tarPos.x), Math.round(tarPos.y));
+                if (newTargetCurrentTile != targetTile || isInLineOfSight) {
+                    targetTile = newTargetCurrentTile;
+                    path = findPathToTile(currentTile, targetTile);
+                    pathProgress = 1;
                     setupPathSmootherMode2(
                             getPosition(),
                             new Vector3f(path.get(pathProgress - 1).getPosition().x, getPosition().y, path.get(pathProgress - 1).getPosition().y),
                             new Vector3f(path.get(pathProgress    ).getPosition().x, getPosition().y, path.get(pathProgress    ).getPosition().y));
                 }
-            }
-            // Calculate Movement using Path Smoothing
-            float remaining = pathSmoother.update(delta * getSpeed());
-            while (remaining != 0 && pathProgress < path.size() - 1) {
-                setupPathSmootherMode1(
-                        new Vector3f(path.get(pathProgress - 1).getPosition().x, getPosition().y,path.get(pathProgress - 1).getPosition().y),
-                        new Vector3f(path.get(pathProgress    ).getPosition().x, getPosition().y,path.get(pathProgress    ).getPosition().y),
-                        new Vector3f(path.get(pathProgress + 1).getPosition().x, getPosition().y,path.get(pathProgress + 1).getPosition().y));
-                pathProgress += 1;
-                remaining = pathSmoother.update(remaining);
-            }
-            finalPos = pathSmoother.getResult();
-            direction = new Vector3f(position).sub(finalPos).normalize();
-
-            // Calculate Movement in the direction of the target
-            if (isInLineOfSight(currentTile, targetTile)) {
-                Vector3f nextFrameDirection = new Vector3f(target.getPosition()).sub(position).normalize();
-                Vector3f nextFramePos;
-                if (remaining != 0) {
-                    nextFramePos = new Vector3f(nextFrameDirection ).mul(remaining).add(position);
-                } else {
-                    nextFramePos = new Vector3f(nextFrameDirection ).mul(delta * getSpeed()).add(position);
+                float remaining = pathSmoother.update(delta * getSpeed());
+                while (remaining != 0 && pathProgress < path.size() - 1) {
+                    setupPathSmootherMode1(
+                            new Vector3f(path.get(pathProgress - 1).getPosition().x, getPosition().y, path.get(pathProgress - 1).getPosition().y),
+                            new Vector3f(path.get(pathProgress).getPosition().x, getPosition().y, path.get(pathProgress).getPosition().y),
+                            new Vector3f(path.get(pathProgress + 1).getPosition().x, getPosition().y, path.get(pathProgress + 1).getPosition().y));
+                    pathProgress += 1;
+                    remaining = pathSmoother.update(remaining);
                 }
-                // Ensure that there are no collisions
-                finalPos = nextFramePos;
-                direction = nextFrameDirection;
-            }
+                isInLineOfSight = false;
 
-            if (direction.length() != 0) {
+                Vector3f finalPos = pathSmoother.getResult();
+                direction = new Vector3f(finalPos).sub(position).normalize();
                 setRotation(0, (float) Math.toDegrees(-Math.atan2(direction.z, direction.x)), 0);
                 setPosition(finalPos);
             }
         }
     }
+
     private void setupPathSmootherMode2(Vector3f currentPos, Vector3f currentTilePos, Vector3f succesiveTilePos){
         Vector3f entrancePoint, midPoint, leavingPoint;
 
@@ -164,7 +146,6 @@ public class SimpleMob extends LivingEntity {
 
         pathSmoother.setup(entrancePoint, midPoint, leavingPoint);
     }
-
     private void setupPathSmootherMode1(Vector3f precedingTilePos, Vector3f currentTilePos, Vector3f succesiveTilePos){
         Vector3f entrancePoint, leavingPoint;
 
@@ -176,34 +157,6 @@ public class SimpleMob extends LivingEntity {
         leavingPoint = new Vector3f(currentTilePos).add(leavingPoint);
 
         pathSmoother.setup(entrancePoint, currentTilePos, leavingPoint);
-    }
-
-    private boolean isTargetInLineOfSight() {
-        return true;
-    }
-
-    private Vector3f getDirectionVector(Tile start, Tile end) {
-        return new Vector3f(
-                end.getPosition().x,
-                0,
-                end.getPosition().y).
-                sub(new Vector3f(
-                        start.getPosition().x,
-                        0,
-                        start.getPosition().y))
-                .normalize();
-    }
-
-    private Vector3f getDirectionVector(Vector3f start, Vector3f end) {
-        return new Vector3f(
-                end.x,
-                0,
-                end.z)
-                .sub(new Vector3f(
-                        start.x,
-                        0,
-                        start.z))
-                .normalize();
     }
 
     private List<Tile> findPathToTile(Tile start, Tile target) {
