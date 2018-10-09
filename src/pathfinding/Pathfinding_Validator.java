@@ -19,6 +19,7 @@ public class Pathfinding_Validator {
     int count;
     Tile start; Tile target;
     JButton bt; drawCell[][] grid;
+    GridPane p;
     public static void main(String[] args) {
         new Pathfinding_Validator().run();
     }
@@ -33,7 +34,8 @@ public class Pathfinding_Validator {
         //Make a new frame with all the components
         JFrame f = new JFrame("A*-search Validator");
         grid = new drawCell[map.getWidth()][map.getHeight()];
-        f.add(new GridPane(map.getWidth(), map.getHeight()), BorderLayout.CENTER);
+        p = new GridPane(map.getWidth(), map.getHeight());
+        f.add(p, BorderLayout.CENTER);
         bt = new JButton("Run A*-search");
         bt.setEnabled(false);
         bt.addActionListener(new ActionListener() {
@@ -87,6 +89,7 @@ public class Pathfinding_Validator {
                 for (int i = 0; i < grid.length; i++) {
                     for (int j = 0; j < grid.length; j++) {
                         grid[i][j].setBackground(Color.WHITE);
+                        grid[i][j].clear();
                         count = 0;
                     }
                 }
@@ -155,6 +158,10 @@ public class Pathfinding_Validator {
         public void drawArrow(double degrees) {
             this.degrees = degrees;
             draw = true;
+        }
+        public void clear() {
+            draw = false;
+            repaint();
         }
 
         @Override
