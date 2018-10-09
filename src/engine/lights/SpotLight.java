@@ -17,7 +17,7 @@ public class SpotLight {
     private Vector3f position;
     private float intensity;
     private PointLight.Attenuation attenuation;
-    private ShadowMap shadowMap;    // Different Type of shadow map
+    private ShadowMap staticShadowMap, dynamicShadowMap;    // Different Type of shadow map
     private Vector2f plane;
     // SpotLight specific paramters
     private Vector3f coneDirection;
@@ -26,8 +26,10 @@ public class SpotLight {
 
     public SpotLight(Vector3f color, Vector3f position, float intensity, Vector3f coneDirection, float cutOffAngle, float outerCutOffAngle, Vector2f plane) {
         try {
-            shadowMap = new ShadowMap(1024);
-            shadowMap.initShadowMap();
+            staticShadowMap = new ShadowMap(1024);
+            dynamicShadowMap = new ShadowMap(1024);
+            staticShadowMap.initShadowMap();
+            dynamicShadowMap.initShadowMap();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,9 +48,12 @@ public class SpotLight {
     public SpotLight(Vector3f color, Vector3f position, float intensity, Vector3f coneDirection, float cutOffAngle, float outerCutOffAngle, Vector2f plane, int resolution) {
         this(color, position, intensity, coneDirection, cutOffAngle, outerCutOffAngle, plane);
         try {
-            shadowMap.cleanup();
-            shadowMap = new ShadowMap(resolution);
-            shadowMap.initShadowMap();
+            staticShadowMap.cleanup();
+            dynamicShadowMap.cleanup();
+            staticShadowMap = new ShadowMap(resolution);
+            dynamicShadowMap = new ShadowMap(resolution);
+            staticShadowMap.initShadowMap();
+            dynamicShadowMap.initShadowMap();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -93,8 +98,12 @@ public class SpotLight {
         this.attenuation = attenuation;
     }
 
-    public ShadowMap getShadowMap() {
-        return shadowMap;
+    public ShadowMap getStaticShadowMap() {
+        return staticShadowMap;
+    }
+
+    public ShadowMap getDynamicShadowMap() {
+        return dynamicShadowMap;
     }
 
     public Vector3f getConeDirection() {

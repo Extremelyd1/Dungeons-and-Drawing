@@ -14,13 +14,15 @@ public class PointLight {
     private Vector3f position;
     private float intensity;
     private Attenuation attenuation;
-    private ShadowMap shadowMap;
+    private ShadowMap staticShadowMap, dynamicShadowMap;
     private Vector2f plane;
     
     public PointLight(Vector3f color, Vector3f position, float intensity, Vector2f plane) {
         try {
-            shadowMap = new ShadowMap(1024);
-            shadowMap.initShadowCubeMap();
+            staticShadowMap = new ShadowMap(1024);
+            dynamicShadowMap = new ShadowMap(1024);
+            staticShadowMap.initShadowCubeMap();
+            dynamicShadowMap.initShadowCubeMap();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -57,8 +59,12 @@ public class PointLight {
         return intensity;
     }
 
-    public ShadowMap getShadowMap() {
-        return shadowMap;
+    public ShadowMap getStaticShadowMap() {
+        return staticShadowMap;
+    }
+
+    public ShadowMap getDynamicShadowMap() {
+        return dynamicShadowMap;
     }
 
     public void setIntensity(float intensity) {

@@ -26,8 +26,9 @@ struct PointLight
     float intensity;
     Attenuation att;
     vec2 plane;
-    //Shadow map
-    samplerCube shadowMap;
+    //Shadow maps
+    samplerCube staticShadowMap;
+    samplerCube dynamicShadowMap;
 };
 
 struct SpotLight
@@ -36,14 +37,15 @@ struct SpotLight
     vec3 position;
     float intensity;
     Attenuation att;
-    //Shadow map
-    sampler2D shadowMap;
     // Spotlight specific parameters
     vec3 conedir;
     float cutoff;
     float outerCutoff;
     //Matrix
     mat4 lightSpaceMatrix;
+    //Shadow maps
+    sampler2D staticShadowMap;
+    sampler2D dynamicShadowMap;
 };
 
 struct DirectionalLight
@@ -52,8 +54,10 @@ struct DirectionalLight
     vec3 direction;
     float intensity;
     mat4 lightSpaceMatrix;
-    sampler2D shadowMap;
+    // Shadow Maps
     bool shadowEnable;
+    sampler2D staticShadowMap;
+    sampler2D dynamicShadowMap;
 };
 
 struct Material
@@ -228,14 +232,17 @@ void main()
 
     // Variables
     vec4 diffuseSpecularComp = vec4(0,0,0,0);
-    float shadow = 0;
+    float staticShadow = 0, dynamicShadow = 0;
     vec4 component = vec4(0,0,0,0);
 
     // Calculate directional light
     component = calcDirectionalLight(directionalLight, fs_in.FragPos, fs_in.Normal);
     if (length(component) > 0 && directionalLight.shadowEnable) {
-        shadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.shadowMap, shadowEnable);
-        diffuseSpecularComp += shadow * component;
+        staticShadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.staticShadowMap, shadowEnable);
+        if (staticShadow != 0) {
+            dynamicShadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.dynamicShadowMap, shadowEnable);
+        }
+        diffuseSpecularComp += component * staticShadow * dynamicShadow;
     } else {
         diffuseSpecularComp += component;
     }
@@ -247,8 +254,11 @@ void main()
         {
             component = calcPointLight(pointLights[i], fs_in.FragPos, fs_in.Normal);
             if (length(component) > 0) {
-                shadow = calcShadow(fs_in.FragPos, pointLights[i].position, pointLights[i].shadowMap, pointLights[i].plane, shadowEnable);
-                diffuseSpecularComp += shadow * component;
+                staticShadow = calcShadow(fs_in.FragPos, pointLights[i].position, pointLights[i].staticShadowMap, pointLights[i].plane, shadowEnable);
+                if (staticShadow != 0) {
+                    dynamicShadow = calcShadow(fs_in.FragPos, pointLights[i].position, pointLights[i].dynamicShadowMap, pointLights[i].plane, shadowEnable);
+                }
+                diffuseSpecularComp += component * staticShadow * dynamicShadow;
             }
         }
     }
@@ -259,10 +269,12 @@ void main()
         {
             component = calcSpotLight(spotLights[i], fs_in.FragPos, fs_in.Normal);
             if (length(component) > 0) {
-               shadow = calcShadow2D(spotLights[i].lightSpaceMatrix, fs_in.FragPos, spotLights[i].shadowMap, shadowEnable);
-               diffuseSpecularComp += shadow * component;
+                staticShadow = calcShadow2D(spotLights[i].lightSpaceMatrix, fs_in.FragPos, spotLights[i].staticShadowMap, shadowEnable);
+                if (staticShadow != 0) {
+                    dynamicShadow = calcShadow2D(spotLights[i].lightSpaceMatrix, fs_in.FragPos, spotLights[i].dynamicShadowMap, shadowEnable);
+                }
+                diffuseSpecularComp += component * staticShadow * dynamicShadow;
             }
-
         }
     }
 
