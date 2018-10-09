@@ -1,5 +1,8 @@
 package engine.util;
 
+import engine.animation.Animation;
+import engine.animation.Animator;
+import engine.animation.keyframe.KeyFrame;
 import engine.loader.PLYLoader;
 import graphics.Material;
 import graphics.Mesh;
@@ -10,7 +13,7 @@ import java.util.Map;
 /**
  * Asset store.
  * <p>
- * Utility class for loading and saving models.
+ * Utility class for loading and saving assets.
  */
 public class AssetStore {
 
@@ -23,6 +26,11 @@ public class AssetStore {
      * Map of all loaded meshes
      */
     private static Map<String, Mesh> loadedMeshes = new HashMap<>();
+
+    /**
+     * Map of all loaded animations
+     */
+    private static Map<String, Animation> loadedAnimations = new HashMap<>();
 
     /**
      * Load a mesh from a folder
@@ -106,4 +114,66 @@ public class AssetStore {
 
         return mesh;
     }
+
+    /**
+     * Load a (hardcoded) animation by name
+     *
+     * @param name The name of the animation to load
+     * @return The loaded/cached animation
+     */
+    public static Animator getAnimator(String name) {
+        Animation animation = getAnimation(name);
+
+        if (name.equals("door")) {
+            return new Animator(animation, false, false);
+        } else if (name.equals("indicatorRotation")) {
+            return new Animator(animation, true, true);
+        } else if (name.equals("indicatorMovement")) {
+            return new Animator(animation, true, true);
+        }
+
+        return null;
+    }
+
+    /**
+     * Load an animation by name
+     * @param name the name of the animation to load
+     * @return the loaded/cached animation
+     */
+    public static Animation getAnimation(String name) {
+        if (loadedAnimations.containsKey(name)) {
+            return loadedAnimations.get(name);
+        }
+
+        Animation animation = null;
+
+        if (name.equals("door")) {
+            KeyFrame[] keyFrames = new KeyFrame[2];
+            keyFrames[0] = new KeyFrame(0f, 0f);
+            keyFrames[1] = new KeyFrame(3f, 90f);
+
+            animation = new Animation(3f, keyFrames);
+            loadedAnimations.put(name, animation);
+        } else if (name.equals("indicatorRotation")) {
+            KeyFrame[] keyFrames = new KeyFrame[2];
+            keyFrames[0] = new KeyFrame(0f, 0f);
+            keyFrames[1] = new KeyFrame(5f, 360f);
+
+            animation = new Animation(5f, keyFrames);
+            loadedAnimations.put(name, animation);
+        } else if (name.equals("indicatorMovement")) {
+            KeyFrame[] keyFrames = new KeyFrame[5];
+            keyFrames[0] = new KeyFrame(0f, 0f);
+            keyFrames[1] = new KeyFrame(0.5f, 0f);
+            keyFrames[2] = new KeyFrame(1.5f, 1f);
+            keyFrames[3] = new KeyFrame(2f, 1f);
+            keyFrames[4] = new KeyFrame(3f, 0f);
+
+            animation = new Animation(3f, keyFrames);
+            loadedAnimations.put(name, animation);
+        }
+
+        return animation;
+    }
+
 }

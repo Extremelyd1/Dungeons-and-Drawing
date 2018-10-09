@@ -1,14 +1,12 @@
 package game.level;
 
 import engine.MouseInput;
-import engine.animation.Animation;
-import engine.animation.SimpleAnimationLoader;
 import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
+import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.Player;
-import engine.entities.RotatingEntity;
 import engine.lights.AmbientLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
@@ -60,14 +58,19 @@ public class AnimatedTilesLevel extends Level {
 
         Mesh prisonMesh = PLYLoader.loadMesh("/models/tiles/prison_bars.ply");
         prisonMesh.setMaterial(new Material(0f));
-        Animation doorAnimation = new SimpleAnimationLoader().load();
         map.getTiles("door").forEach((t) ->
-                entityList.add(new RotatingEntity(
+                entityList.add(new DoorEntity(
                         prisonMesh,
-                        new Vector3f(t.getPosition().x, 0, t.getPosition().y),
+                        new Vector3f(t.getPosition().x, 0f, t.getPosition().y),
                         new Vector3f(0),
-                        doorAnimation,
-                        0.5f))
+                        0.5f,
+                        t,
+                        t.hasTag("inverted")
+                ))
+        );
+
+        map.getTiles("door").forEach((t) ->
+                t.setSolid(true)
         );
 
         entities = new Entity[entityList.size()];
@@ -114,7 +117,8 @@ public class AnimatedTilesLevel extends Level {
         int yTile = Math.round(player.getPosition().z);
 
         if (map.getTiles("trigger").contains(map.getTile(xTile, yTile))) {
-            ((RotatingEntity)entities[1]).getAnimation().start();
+            ((DoorEntity) entities[1]).open();
+            ((DoorEntity) entities[2]).open();
         }
     }
 

@@ -1,40 +1,25 @@
 package engine.entities;
 
 import engine.animation.Animation;
+import engine.animation.Animator;
 import graphics.Mesh;
 import org.joml.Vector3f;
 
-public class AnimatedEntity extends Entity {
+/**
+ * An entity that has a single animation
+ */
+public abstract class AnimatedEntity extends Entity {
 
-    Animation animation;
+    protected Animator animator;
 
-    public AnimatedEntity(Mesh mesh, Animation animation) {
-        super(mesh);
-        this.animation = animation;
-    }
-
-    public AnimatedEntity(Mesh mesh, Vector3f position, Animation animation) {
-        super(mesh, position);
-        this.animation = animation;
-    }
-
-    public AnimatedEntity(Mesh mesh, Vector3f position, float scale, Animation animation) {
-        super(mesh, position, scale);
-        this.animation = animation;
-    }
-
-    public AnimatedEntity(Mesh mesh, Vector3f position, Vector3f rotation, Animation animation) {
+    public AnimatedEntity(Mesh mesh, Vector3f position, Vector3f rotation, Animator animator) {
         super(mesh, position, rotation);
-        this.animation = animation;
+        this.animator = animator;
     }
 
-    public AnimatedEntity(Mesh mesh, Vector3f position, Vector3f rotation, Animation animation, float scale) {
+    public AnimatedEntity(Mesh mesh, Vector3f position, Vector3f rotation, float scale, Animator animator) {
         super(mesh, position, rotation, scale);
-        this.animation = animation;
-    }
-
-    public Animation getAnimation() {
-        return animation;
+        this.animator = animator;
     }
 
 }
