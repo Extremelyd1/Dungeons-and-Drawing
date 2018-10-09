@@ -4,8 +4,6 @@ import engine.camera.Camera;
 import engine.entities.Entity;
 import engine.GameWindow;
 import engine.Transformation;
-import engine.gui.GUIComponent;
-import engine.gui.Layer;
 import engine.lights.SceneLight;
 import game.map.Map;
 import game.map.tile.Tile;
