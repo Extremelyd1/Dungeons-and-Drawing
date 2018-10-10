@@ -6,14 +6,13 @@ import engine.util.Utilities;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Popup with the drawing canvas. The drawing canvas is centered by default. The drawing
+ * Popup with the drawing canvas. The drawing canvas is not centered by default. The drawing
  * made by the user is stored as a List of lists of floats. Each sublist of floats stores
  * a subpart of the drawing. Each point of a drawing is defined by two floats (the x and y)
  * which are stored next to each other in the sublist
@@ -36,7 +35,6 @@ public class DrawingCanvas extends Popup {
 
         // Canvas is by default centered and has a default size
         super(GameWindow.getGameWindow().getWindowHeight() * 0.75f);
-        this.setCentered(true);
 
         // Stores the canvas size
         this.canvasSize = GameWindow.getGameWindow().getWindowHeight() * 0.75f;
