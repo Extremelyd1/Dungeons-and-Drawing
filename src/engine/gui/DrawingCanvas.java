@@ -55,6 +55,12 @@ public class DrawingCanvas extends Popup {
         gImage = (Graphics2D) image.getGraphics();
         gImage.setColor(Color.BLACK);
         gImage.fillRect(0, 0, size, size);
+
+        gImage.setColor(Color.WHITE);
+        gImage.setStroke(new BasicStroke(canvasSize / 28, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+        gImage.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
     }
 
     @Override
@@ -144,8 +150,6 @@ public class DrawingCanvas extends Popup {
     private void addSubdrawingToImage(int index) {
         List<Float> subDrawing = drawing.get(index);
         if (subDrawing.size() >= 4) {
-            gImage.setColor(Color.WHITE);
-            gImage.setStroke(new BasicStroke(canvasSize / 28f));
             Vector2i from = null;
             for (int i = 0; i < subDrawing.size(); i += 2) {
                 Vector2i p = new Vector2i(Math.round(subDrawing.get(i)), Math.round(subDrawing.get(i + 1)));
