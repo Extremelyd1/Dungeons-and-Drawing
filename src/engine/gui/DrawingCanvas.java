@@ -4,7 +4,11 @@ import engine.GameWindow;
 import engine.MouseInput;
 import engine.util.Utilities;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +24,10 @@ public class DrawingCanvas extends Popup {
     private boolean mouseDown;
     private int currentList;
     private List<List<Float>> drawing;
+
+    private Graphics g;
+    private BufferedImage image;
+    private Graphics2D gImage;
 
     /**
      * Constructs the drawing canvas
@@ -39,6 +47,20 @@ public class DrawingCanvas extends Popup {
         this.drawing = new ArrayList<>();
         this.currentList = -1;
         this.mouseDown = false;
+
+        int size = Math.round(this.canvasSize);
+
+        image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+        g = image.getGraphics();
+        gImage = (Graphics2D) image.getGraphics();
+        gImage.setColor(Color.BLACK);
+        gImage.fillRect(0, 0, size, size);
+
+        gImage.setColor(Color.WHITE);
+        gImage.setStroke(new BasicStroke(canvasSize / 28, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+        gImage.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
     }
 
     @Override
@@ -60,6 +82,11 @@ public class DrawingCanvas extends Popup {
                 List<Float> subDrawing = new ArrayList<>();
                 drawing.add(subDrawing);
                 currentList++;
+
+                // Add last subdrawing to buffered image
+                if (drawing.size() > 1) {
+                    addSubdrawingToImage(drawing.size() - 2);
+                }
             }
 
             // Get the x and y coordinate of the mouse
@@ -83,6 +110,15 @@ public class DrawingCanvas extends Popup {
 
         // Center the canvas
         super.update(mouse);
+
+        // For testing, uncomment
+//        if (mouse.isRightButtonPressed()) {
+//            try {
+//                ImageIO.write(getImage(), "png", new java.io.File("temp.png"));
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     @Override
@@ -109,6 +145,30 @@ public class DrawingCanvas extends Popup {
                             false, false, canvasSize / 28f);
             }
         }
+    }
+
+    private void addSubdrawingToImage(int index) {
+        List<Float> subDrawing = drawing.get(index);
+        if (subDrawing.size() >= 4) {
+            Vector2i from = null;
+            for (int i = 0; i < subDrawing.size(); i += 2) {
+                Vector2i p = new Vector2i(Math.round(subDrawing.get(i)), Math.round(subDrawing.get(i + 1)));
+                if (from != null) {
+                    gImage.drawLine(from.x, from.y, p.x, p.y);
+                }
+                from = p;
+            }
+        }
+    }
+
+    /**
+     * Gets the image drawn in BufferedImage format to feed to the network
+     * @return the image drawn in BufferedImage format
+     */
+    public BufferedImage getImage() {
+        addSubdrawingToImage(drawing.size() - 1);
+        g.drawImage(image, 0, 0, null);
+        return image;
     }
 
 }
