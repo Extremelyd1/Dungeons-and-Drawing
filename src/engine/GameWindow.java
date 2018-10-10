@@ -29,6 +29,7 @@ public class GameWindow {
     // Defaults
     private final String DEFAULT_WINDOW_TITLE = "Dungeons And Drawings";
     private final boolean FULL_SCREEN = false;
+    private final int VSYNC = 1;
     private final int DEFAULT_WINDOW_WIDTH = 1280;
     private final int DEFAULT_WINDOW_HEIGHT = 720;
     
@@ -138,7 +139,7 @@ public class GameWindow {
         
         // Enable v-sync (matches render frequency to the frequency of your
         // graphics card. For example: 60Hz = 60fps)
-        glfwSwapInterval(1);
+        glfwSwapInterval(VSYNC);
 
         // Make the window visible
         glfwShowWindow(windowHandle);
@@ -182,7 +183,7 @@ public class GameWindow {
             glfwSetWindowMonitor(windowHandle, glfwGetPrimaryMonitor(), 0, 0,
                                     windowHeight, windowWidth, GLFW_CONNECTED);
             //We enable vsync (since we changed monitor)
-            glfwSwapInterval(1);
+            glfwSwapInterval(VSYNC);
         } else {
             //Set window size to default
             windowWidth = DEFAULT_WINDOW_WIDTH;
@@ -198,7 +199,7 @@ public class GameWindow {
                     (vidmode.height() - windowHeight) / 2
             );
             //Again enable vsync
-            glfwSwapInterval(1);
+            glfwSwapInterval(VSYNC);
         }
     }
 

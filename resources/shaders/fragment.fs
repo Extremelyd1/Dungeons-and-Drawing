@@ -2,6 +2,7 @@
 
 const int MAX_POINT_LIGHTS = 10;
 const int MAX_SPOT_LIGHTS = 10;
+const bool shadowEnable = true;
 
 out vec4 fragColor;
 
@@ -80,7 +81,6 @@ uniform DirectionalLight directionalLight;
 
 uniform vec3 viewPos;
 uniform mat4 view;
-uniform bool shadowEnable;
 
 vec4 ambientC;
 vec4 diffuseC;
@@ -163,82 +163,100 @@ vec4 calcSpotLight(SpotLight light, vec3 position, vec3 normal)
     return light_colour / attenuationInv;
 }
 
-float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2 plane, bool shadows)
+float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2 plane)
 {
-    if (shadows) {
-        vec3 fragToLight = position - light_position;
-        float closestDepth = texture(shadowMap, fragToLight).r;
-        closestDepth *= plane.y;
-        float currentDepth = length(fragToLight);
-        float bias = 0.0001;
-        float shadow = currentDepth -  bias > closestDepth ? 0.0 : 1.0;
+    vec3 fragToLight = position - light_position;
+    float closestDepth = texture(shadowMap, fragToLight).r;
+    closestDepth *= plane.y;
+    float currentDepth = length(fragToLight);
+    float bias = 0.0005;
+    float shadow = currentDepth -  bias > closestDepth ? 0.0 : 1.0;
 
-        return shadow;
-    } else {
-        return 1.0f;
-    }
+    return shadow;
 }
 
-float calcShadow2D(mat4 matrix, vec3 position, sampler2D shadowMap, bool shadows)
+float calcShadow2D(mat4 matrix, vec3 position, sampler2D shadowMap)
 {
-    if (shadows) {
-        vec4 coord = matrix * vec4(position, 1.0);
-        vec3 projCoords = coord.xyz / coord.w;
-        projCoords = projCoords * 0.5 + 0.5;
+    vec4 coord = matrix * vec4(position, 1.0);
+    vec3 projCoords = coord.xyz / coord.w;
+    projCoords = projCoords * 0.5 + 0.5;
 
-        float currentDepth = projCoords.z;
-        float bias = 0.0001f; //0.001f
+    float currentDepth = projCoords.z;
+    float bias = 0.0001f; //0.001f
 
-        float shadow = 0.0;
-        vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-        for(int x = -1; x <= 1; ++x)
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
         {
-            for(int y = -1; y <= 1; ++y)
-            {
-                float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-                shadow += currentDepth - bias < pcfDepth ? 1.0 : 0.0;
-            }
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias < pcfDepth ? 1.0 : 0.0;
         }
-        shadow /= 9.0;
-
-        return shadow;
-    } else {
-        return 1.0f;
     }
+    shadow /= 9.0;
+
+    return shadow;
 }
 
 vec4 calcPointLightComponents(PointLight light){
-    vec4 component = vec4(0,0,0,0);
-    if (light.intensity > 0 )
-    {
+    if (shadowEnable) {
         float staticShadow = 1, dynamicShadow = 1;
-        component = calcPointLight(light, fs_in.FragPos, fs_in.Normal);
-        if (length(component) > 0) {
-            staticShadow = calcShadow(fs_in.FragPos, light.position, light.staticShadowMap, light.plane, shadowEnable);
+        vec4 component = vec4(0,0,0,0);
+        if (light.intensity > 0 )
+        {
+            staticShadow = calcShadow(fs_in.FragPos, light.position, light.staticShadowMap, light.plane);
             if (staticShadow == 1) {
-                dynamicShadow = calcShadow(fs_in.FragPos, light.position, light.dynamicShadowMap, light.plane, shadowEnable);
+                dynamicShadow = calcShadow(fs_in.FragPos, light.position, light.dynamicShadowMap, light.plane);
+                if (dynamicShadow == 1) {
+                    component = calcPointLight(light, fs_in.FragPos, fs_in.Normal);
+                }
             }
-            component *= staticShadow * dynamicShadow;
         }
+        return component * staticShadow * dynamicShadow;
+    } else {
+        return calcPointLight(light, fs_in.FragPos, fs_in.Normal);
     }
-    return component;
 }
 
 vec4 calcSpotLightComponents(SpotLight light){
-    vec4 component = vec4(0,0,0,0);
-    if (light.intensity > 0 )
-    {
+    if (shadowEnable) {
         float staticShadow = 1, dynamicShadow = 1;
-        component = calcSpotLight(light, fs_in.FragPos, fs_in.Normal);
-        if (length(component) > 0) {
-            staticShadow = calcShadow2D(light.lightSpaceMatrix, fs_in.FragPos, light.staticShadowMap, shadowEnable);
+        vec4 component = vec4(0,0,0,0);
+        if (light.intensity > 0 )
+        {
+            staticShadow = calcShadow2D(light.lightSpaceMatrix, fs_in.FragPos, light.staticShadowMap);
             if (staticShadow == 1) {
-                dynamicShadow = calcShadow2D(light.lightSpaceMatrix, fs_in.FragPos, light.dynamicShadowMap, shadowEnable);
+                dynamicShadow = calcShadow2D(light.lightSpaceMatrix, fs_in.FragPos, light.dynamicShadowMap);
+                if (dynamicShadow == 1) {
+                    component = calcSpotLight(light, fs_in.FragPos, fs_in.Normal);
+                }
             }
-            component *= staticShadow * dynamicShadow;
         }
+        return component * staticShadow * dynamicShadow;
+    } else {
+        return calcSpotLight(light, fs_in.FragPos, fs_in.Normal);
     }
-    return component;
+}
+
+vec4 calcDirectionalLightComponents(DirectionalLight light) {
+    if (shadowEnable && light.shadowEnable) {
+        float staticShadow = 1, dynamicShadow = 1;
+        vec4 component = vec4(0,0,0,0);
+        if (light.intensity > 0 )
+        {
+            staticShadow = calcShadow2D(light.lightSpaceMatrix, fs_in.FragPos, light.staticShadowMap);
+            if (staticShadow == 1) {
+                dynamicShadow = calcShadow2D(light.lightSpaceMatrix, fs_in.FragPos, light.dynamicShadowMap);
+                if (dynamicShadow == 1) {
+                    component = calcDirectionalLight(light, fs_in.FragPos, fs_in.Normal);
+                }
+            }
+        }
+        return component * staticShadow * dynamicShadow;
+    } else {
+        return calcDirectionalLight(light, fs_in.FragPos, fs_in.Normal);
+    }
 }
 
 void main()
@@ -248,22 +266,9 @@ void main()
 
     // Variables
     vec4 diffuseSpecularComp = vec4(0,0,0,0);
-    float staticShadow = 0, dynamicShadow = 0;
-    vec4 component = vec4(0,0,0,0);
 
     // Calculate directional light
-    if (directionalLight.intensity > 0) {
-        component = calcDirectionalLight(directionalLight, fs_in.FragPos, fs_in.Normal);
-        if (length(component) > 0 && directionalLight.shadowEnable) {
-            staticShadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.staticShadowMap, shadowEnable);
-            if (staticShadow != 0) {
-                dynamicShadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.dynamicShadowMap, shadowEnable);
-            }
-            diffuseSpecularComp += component * staticShadow * dynamicShadow;
-        } else {
-            diffuseSpecularComp += component;
-        }
-    }
+    diffuseSpecularComp += calcDirectionalLightComponents(directionalLight);
 
     // Calculate Point Lights
     diffuseSpecularComp += calcPointLightComponents(pointLights[0]);
