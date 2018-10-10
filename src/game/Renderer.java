@@ -103,6 +103,7 @@ public class Renderer {
             }
             shadowsManager.renderDynamicShadows(transformation, sceneLight, shaderManager, map, entities);
         }
+
         renderScene(camera, entities, sceneLight, map);
         if (gui != null) {
             renderGui(gui);
@@ -131,6 +132,8 @@ public class Renderer {
         GameWindow window = GameWindow.getGameWindow();
         glViewport(0, 0, window.getWindowWidth(), window.getWindowHeight());
 
+        int renderedCounter = 0;
+        int cullingCounter = 0;
         shaderManager.bindSceneShader();
         shaderManager.initializeSceneShader(camera.getPosition(), shadowEnable, sceneLight, specularPower);
         // Render Map Layout
@@ -140,8 +143,10 @@ public class Renderer {
                     if (tile == null) {
                         continue;
                     }
+                    Vector3f tilePos = new Vector3f(tile.getPosition().x, 0, tile.getPosition().y);
+                    int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(0.0f,2.5f, 0.0f));
                     // Calculate the Model matrix in World coordinates
-                    if (frustumIntersection.testSphere(new Vector3f(tile.getPosition().x, 0, tile.getPosition().y), 1.0f)) {
+                    if (frustrum == -2 || frustrum == -1) {
                         Mesh mesh = tile.getMesh();
                         model = transformation.getWorldMatrix(
                                 new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
@@ -151,9 +156,13 @@ public class Renderer {
                         shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
                         // Render the mesh
                         mesh.render();
+                        renderedCounter++;
+                    } else {
+                        cullingCounter++;
                     }
                 }
             }
+            Debug.println("Frustrum Culling1", "Culled: " + cullingCounter + ", Rendered: " + renderedCounter);
         }
         // Render Entities
         for (Entity entity : entities) {

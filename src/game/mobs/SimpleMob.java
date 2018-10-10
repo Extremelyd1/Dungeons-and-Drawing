@@ -62,8 +62,6 @@ public class SimpleMob extends LivingEntity {
         while (t < 1.0f) {
             spot1 = new Vector2f(pos).add(new Vector2f(perpDir).mul(radius));
             spot2 = new Vector2f(pos).add(new Vector2f(perpDir).mul(-radius));
-            Debug.println("Spot1" , spot1.toString());
-            Debug.println("Spot2" , spot2.toString());
 
             if (isWithinMap(pos.x, pos.y) && getMap().getTile(Math.round(pos.x), Math.round(pos.y)).isSolid()) {
                 return false;

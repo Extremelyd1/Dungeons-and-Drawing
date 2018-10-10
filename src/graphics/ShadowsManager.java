@@ -11,6 +11,7 @@ import game.map.tile.Tile;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import sun.security.ssl.Debug;
 
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
@@ -58,8 +59,10 @@ public class ShadowsManager {
                         if (tile == null) {
                             continue;
                         }
+                        Vector3f tilePos = new Vector3f(tile.getPosition().x, 0, tile.getPosition().y);
+                        int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(0.0f,2.5f, 0.0f));
                         // Calculate the Model matrix in World coordinates
-                        if (frustumIntersection.testSphere(new Vector3f(tile.getPosition().x, 0, tile.getPosition().y), 1.0f)) {
+                        if (frustrum == -2 || frustrum == -1) {
                             Mesh mesh = tile.getMesh();
                             if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
                                 model = transformation.getWorldMatrix(
@@ -165,8 +168,10 @@ public class ShadowsManager {
                             if (tile == null) {
                                 continue;
                             }
+                            Vector3f tilePos = new Vector3f(tile.getPosition().x, 0, tile.getPosition().y);
+                            int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(0.0f,2.5f, 0.0f));
                             // Calculate the Model matrix in World coordinates
-                            if (frustumIntersection.testSphere(new Vector3f(tile.getPosition().x, 0, tile.getPosition().y), 1.0f)) {
+                            if (frustrum == -2 || frustrum == -1) {
                                 Mesh mesh = tile.getMesh();
                                 if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
                                     model = transformation.getWorldMatrix(

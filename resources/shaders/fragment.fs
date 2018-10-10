@@ -1,4 +1,4 @@
-#version 400
+#version 460
 
 const int MAX_POINT_LIGHTS = 15;
 const int MAX_SPOT_LIGHTS = 15;
@@ -177,19 +177,15 @@ float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2
 {
     if (shadows) {
         vec3 fragToLight = position - light_position;
+        // use the light to fragment vector to sample from the depth map
+        float closestDepth = texture(shadowMap, fragToLight).r;
+        // it is currently in linear range between [0,1]. Re-transform back to original value
+        closestDepth *= plane.y;
+        // now get current linear depth as the length between the fragment and light position
         float currentDepth = length(fragToLight);
-
-        float shadow = 0.0f;
-        float bias = 0.004f; //0.001f
-        int samples = 20;
-        float diskRadius = 0.00028f; //Regulates the softness of shadows 0.0015 is ideal
-        for (int i = 0; i < samples; ++i){
-            float closestDepth = texture(shadowMap, fragToLight + shadowSamplingGrid[i] * diskRadius).r;
-            closestDepth *= plane.y;
-            if (currentDepth - bias < closestDepth)
-                shadow += 1.0;
-        }
-        shadow /= float(samples);
+        // now test for shadows
+        float bias = 0.005;
+        float shadow = currentDepth -  bias > closestDepth ? 0.0 : 1.0;
 
         return shadow;
     } else {
@@ -236,15 +232,17 @@ void main()
     vec4 component = vec4(0,0,0,0);
 
     // Calculate directional light
-    component = calcDirectionalLight(directionalLight, fs_in.FragPos, fs_in.Normal);
-    if (length(component) > 0 && directionalLight.shadowEnable) {
-        staticShadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.staticShadowMap, shadowEnable);
-        if (staticShadow != 0) {
-            dynamicShadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.dynamicShadowMap, shadowEnable);
+    if (directionalLight.intensity > 0) {
+        component = calcDirectionalLight(directionalLight, fs_in.FragPos, fs_in.Normal);
+        if (length(component) > 0 && directionalLight.shadowEnable) {
+            staticShadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.staticShadowMap, shadowEnable);
+            if (staticShadow != 0) {
+                dynamicShadow = calcShadow2D(directionalLight.lightSpaceMatrix, fs_in.FragPos, directionalLight.dynamicShadowMap, shadowEnable);
+            }
+            diffuseSpecularComp += component * staticShadow * dynamicShadow;
+        } else {
+            diffuseSpecularComp += component;
         }
-        diffuseSpecularComp += component * staticShadow * dynamicShadow;
-    } else {
-        diffuseSpecularComp += component;
     }
 
     // Calculate Point Lights
