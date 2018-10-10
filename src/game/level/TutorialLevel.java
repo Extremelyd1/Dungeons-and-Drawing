@@ -37,7 +37,7 @@ public class TutorialLevel extends Level {
     @Override
     public void init() throws Exception {
         // Load map
-        map = new MapFileLoader("/level2.lvl").load();
+        map = new MapFileLoader("/level3.lvl").load();
 
         // Setup rendering
         renderer = new Renderer();
@@ -50,9 +50,10 @@ public class TutorialLevel extends Level {
         player = new Player(playerMesh, map);
         player.setSpeed(5);
         player.setScale(new Vector3f(1, 2, 1));
+        player.setPosition(2, 0.5f, 3);
 
-        Vector2i spawn = map.getTile("spawn").getPosition();
-        player.setPosition(spawn.x, 0.5f, spawn.y);
+//        Vector2i spawn = map.getTile("spawn").getPosition();
+//        player.setPosition(spawn.x, 0.5f, spawn.y);
 
         entities = new Entity[]{player};
 
