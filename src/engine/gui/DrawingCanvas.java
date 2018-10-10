@@ -3,13 +3,14 @@ package engine.gui;
 import engine.GameWindow;
 import engine.MouseInput;
 import engine.util.Utilities;
+import game.NeuralNetwork;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -53,10 +54,10 @@ public class DrawingCanvas extends Popup {
         image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
         g = image.getGraphics();
         gImage = (Graphics2D) image.getGraphics();
-        gImage.setColor(Color.BLACK);
+        gImage.setColor(Color.WHITE);
         gImage.fillRect(0, 0, size, size);
 
-        gImage.setColor(Color.WHITE);
+        gImage.setColor(Color.BLACK);
         gImage.setStroke(new BasicStroke(canvasSize / 28, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
         gImage.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -111,13 +112,10 @@ public class DrawingCanvas extends Popup {
         // Center the canvas
         super.update(mouse);
 
-        // For testing, uncomment
+        // For testing uncomment
 //        if (mouse.isRightButtonPressed()) {
-//            try {
-//                ImageIO.write(getImage(), "png", new java.io.File("temp.png"));
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+//            System.out.println(NeuralNetwork.getBestGuess(getImage()));
+//            System.out.println(NeuralNetwork.getBestGuess(getImage(), "key", "hat", "cactus")));
 //        }
     }
 
