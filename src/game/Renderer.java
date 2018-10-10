@@ -132,8 +132,6 @@ public class Renderer {
         GameWindow window = GameWindow.getGameWindow();
         glViewport(0, 0, window.getWindowWidth(), window.getWindowHeight());
 
-        int renderedCounter = 0;
-        int cullingCounter = 0;
         shaderManager.bindSceneShader();
         shaderManager.initializeSceneShader(camera.getPosition(), shadowEnable, sceneLight, specularPower);
         // Render Map Layout
@@ -156,13 +154,9 @@ public class Renderer {
                         shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
                         // Render the mesh
                         mesh.render();
-                        renderedCounter++;
-                    } else {
-                        cullingCounter++;
                     }
                 }
             }
-            Debug.println("Frustrum Culling1", "Culled: " + cullingCounter + ", Rendered: " + renderedCounter);
         }
         // Render Entities
         for (Entity entity : entities) {

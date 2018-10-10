@@ -58,4 +58,9 @@ public class Spline {
     public Vector3f getResult() {
         return result;
     }
+
+    public boolean isDone(){
+        if (t == 1) return true;
+        else return false;
+    }
 }

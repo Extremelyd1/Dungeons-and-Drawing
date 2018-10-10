@@ -86,16 +86,6 @@ vec4 ambientC;
 vec4 diffuseC;
 vec4 speculrC;
 
-// Sampling Array for shadowMaps
-vec3 shadowSamplingGrid[20] = vec3[]
-(
-   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1),
-   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
-   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
-   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
-   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
-);
-
 void setupColours(Material material, vec2 textCoord)
 {
     if (material.hasTexture == 1)
@@ -177,13 +167,9 @@ float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2
 {
     if (shadows) {
         vec3 fragToLight = position - light_position;
-        // use the light to fragment vector to sample from the depth map
         float closestDepth = texture(shadowMap, fragToLight).r;
-        // it is currently in linear range between [0,1]. Re-transform back to original value
         closestDepth *= plane.y;
-        // now get current linear depth as the length between the fragment and light position
         float currentDepth = length(fragToLight);
-        // now test for shadows
         float bias = 0.005;
         float shadow = currentDepth -  bias > closestDepth ? 0.0 : 1.0;
 
