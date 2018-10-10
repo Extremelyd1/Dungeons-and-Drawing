@@ -41,6 +41,8 @@ public class DrawingCanvas extends Popup {
         setComponentHeight(this.canvasSize);
         setComponentWidth(this.canvasSize);
 
+        setCentered(false);
+
         // Used for drawing on the canvas
         this.drawing = new ArrayList<>();
         this.currentList = -1;

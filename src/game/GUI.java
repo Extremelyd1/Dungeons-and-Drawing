@@ -2,7 +2,8 @@ package game;
 
 import engine.MouseInput;
 import engine.gui.*;
-import org.joml.Vector2f;
+import game.puzzle.Puzzle;
+import game.puzzle.TestPuzzle;
 
 import java.util.ArrayList;
 import java.util.List;
