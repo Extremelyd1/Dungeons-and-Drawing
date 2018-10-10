@@ -4,6 +4,7 @@ import engine.GameWindow;
 import engine.MouseInput;
 import engine.util.Timer;
 import game.action.Action;
+import game.puzzle.Puzzle;
 import org.joml.Vector2f;
 
 public class DrawingList extends Popup {
@@ -17,28 +18,28 @@ public class DrawingList extends Popup {
     private String timeLeftString;
     private Timer timer;
     private Action action;
-    private float lineHeight;
+    private Puzzle puzzle;
 
-    public DrawingList(String[] options, Action action, float time) {
+    public DrawingList(Puzzle puzzle) {
         super(GameWindow.getGameWindow().getWindowHeight() * 0.25f);
 
         setComponentHeight(GameWindow.getGameWindow().getWindowHeight() * 0.75f);
         setComponentWidth(GameWindow.getGameWindow().getWindowHeight() * 0.25f);
+
+        this.options = puzzle.getOptions();
+        this.puzzle = puzzle;
 
         this.isRunning = false;
         this.timer = new Timer();
         resetCountdown();
 
         setCentered(false);
-
-        this.options = options;
-        this.action = action;
-        this.timeLeft = time;
     }
 
     public void resetCountdown() {
         timer.init();
         isRunning = true;
+        timeLeft = puzzle.getTime();
     }
     
     @Override
@@ -67,7 +68,7 @@ public class DrawingList extends Popup {
             timeLeft = Math.max(0, timeLeft - timer.getElapsedTime());
 
             if (timeLeft == 0) {
-                action.execute();
+                puzzle.evaluate().execute();
                 isRunning = false;
             }
 
