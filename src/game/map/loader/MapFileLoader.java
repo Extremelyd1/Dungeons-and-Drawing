@@ -82,6 +82,7 @@ public class MapFileLoader implements MapLoader {
                             taggedTiles.put(tag, tilesWithTag);
                         }
                         tilesWithTag.add(tile);
+                        tile.addTag(tag);
                     }
                 }
             }
