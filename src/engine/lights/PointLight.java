@@ -19,8 +19,8 @@ public class PointLight {
     
     public PointLight(Vector3f color, Vector3f position, float intensity, Vector2f plane) {
         try {
-            staticShadowMap = new ShadowMap(1024);
-            dynamicShadowMap = new ShadowMap(1024);
+            staticShadowMap = new ShadowMap(4096);
+            dynamicShadowMap = new ShadowMap(2048);
             staticShadowMap.initShadowCubeMap();
             dynamicShadowMap.initShadowCubeMap();
         } catch (Exception e) {

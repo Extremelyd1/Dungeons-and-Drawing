@@ -1,14 +1,9 @@
 package game;
 
-import engine.GameWindow;
+import engine.MouseInput;
 import engine.gui.GUIComponent;
-import engine.gui.Layer;
-import engine.gui.SimplePopup;
-import engine.gui.Text;
-import graphics.FontTexture;
-import org.joml.Vector3f;
+import engine.gui.NanoVG;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,52 +13,77 @@ import java.util.List;
  */
 public class GUI {
 
-    private static final Font FONT = new Font("Arial", Font.PLAIN, 36);
+    private MouseInput mouse = new MouseInput();
+    /**
+     * The current component this GUI handles
+     * Can only be one component
+     */
+    private GUIComponent component;
+    private NanoVG nano;
 
-    private static final String CHARSET = "ISO-8859-1";
-
-    private final Text text;
-
-    private List<Layer> layers;
-
-    public GUI(String initText) throws Exception {
-
-        layers = new ArrayList<>();
-
-        Layer layer1 = Layer.getLayer(0);
-        Layer layer2 = Layer.getLayer(1);
-
-        FontTexture fontTexture = new FontTexture(FONT, CHARSET);
-
-        text = new Text(initText, fontTexture, new Vector3f(0.25f, 0.2f, 0.2f));
-        SimplePopup pop = new SimplePopup(text, 500, 150);
-        pop.center();
-
-        layer1.add(pop);
-        layer2.add(text);
-
-        layers.add(layer1);
-        layers.add(layer2);
+    public GUI() {
 
     }
 
-    public void setText(String text) {
-        this.text.setText(text);
+    /**
+     * Gets the GUIComponent
+     *
+     * @return Current component
+     */
+    public GUIComponent getComponent() {
+        return component;
     }
 
-    public void updateSize() {
-        this.text.setPosition(10f, GameWindow.getGameWindow().getWindowHeight() - 50f);
+    /**
+     * Gets whether the GUI has a component that is being rendered
+     *
+     * @return whether the GUI has a component
+     */
+    public boolean hasComponent() {
+        return component != null;
     }
 
+    /**
+     * Changed the current GUIComponent
+     *
+     * @param component the component to change to
+     */
+    public void setComponent(GUIComponent component) {
+        this.component = component;
+    }
+
+    /**
+     * Initialises nano vg
+     */
+    public void initialize() {
+        nano = NanoVG.getInstance();
+        mouse.init();
+    }
+
+    /**
+     * Updates the gui
+     */
+    public void update() {
+        mouse.input();
+
+        component.update(mouse);
+    }
+
+    /**
+     * Renders all components
+     */
+    public void render() {
+        nano.createFrame();
+
+        component.render();
+
+        nano.terminateFrame();
+    }
+
+    /**
+     * Free resources
+     */
     public void terminate() {
-        for (Layer layer : layers) {
-            for (GUIComponent c : layer.getElements()) {
-                c.getMesh().terminate();
-            }
-        }
-    }
-
-    public List<Layer> getLayers() {
-        return layers;
+        nano.terminateNanoVG();
     }
 }

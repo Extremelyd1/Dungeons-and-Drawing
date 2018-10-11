@@ -15,6 +15,7 @@ public class A_star implements Pathfinding{
     private Hashtable<Tile, Boolean> closed;
     /* Sorted close queue which we use if we don't find a solution */
     private PriorityQueue<Node> sortedClose;
+    List<Node> closedNodes;
 
     /**
      * Method that computes the path and returns a list of tiles, the path we have to take to reach
@@ -26,10 +27,10 @@ public class A_star implements Pathfinding{
      */
     @Override
     public List<Tile> computePath(Tile start, Tile target, Map map) {
-        System.out.println("Running A*-search");
         // Initialise our open queue and comparator
         open = new PriorityQueue<>();
         // List containing all the 'closed' nodes
+        closedNodes = new LinkedList<>();
         closed = new Hashtable<>();
         // SortedClose list which we use to get best solution if none is found
         sortedClose = new PriorityQueue<>();
@@ -46,8 +47,10 @@ public class A_star implements Pathfinding{
                 // If the tile is walkable, add the tile to the open list
                 if (n==target) {
                     closed.put(q.t, true);
+                    closedNodes.add(q);
                     closed.put(n, true);
                     q = new Node(n, q.g+1, 0, q);
+                    closedNodes.add(q);
                     break outerloop;
                 }
                 if (!n.isSolid() && !closed.containsKey(n)) {
@@ -58,6 +61,7 @@ public class A_star implements Pathfinding{
             }
             closed.put(q.t, true); //We add q to the closed list containing all the opened tiles
             sortedClose.add(q); //We add q to our sortedClose list
+            closedNodes.add(q);
         }
         Node pt = q;
         // If we haven't found a solution, we set the target as the closest position possible
@@ -71,11 +75,17 @@ public class A_star implements Pathfinding{
         return path;
     }
 
-    public LinkedList<Tile> getOpenedTiles() {
+    public List<Tile> getOpenedTiles() {
         LinkedList<Tile> a = new LinkedList<>();
         for (Node x : open) {
             a.add(x.t);
         }
+        return a;
+    }
+
+    public Collection<Node> getNodes() {
+        Collection<Node> a = open;
+        a.addAll(closedNodes);
         return a;
     }
 

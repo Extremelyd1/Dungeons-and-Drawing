@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL14.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL32.*;
 
@@ -25,11 +26,11 @@ public class ShadowMap {
         glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
         glBindTexture(GL_TEXTURE_CUBE_MAP, depthMap);
         for (int i = 0; i < 6; i++) {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT32F,
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
                     resolution, resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, (ByteBuffer)null);
         }
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
