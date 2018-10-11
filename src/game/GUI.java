@@ -1,9 +1,8 @@
 package game;
 
 import engine.MouseInput;
-import engine.gui.*;
-import game.puzzle.Puzzle;
-import game.puzzle.TestPuzzle;
+import engine.gui.GUIComponent;
+import engine.gui.NanoVG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,38 +14,76 @@ import java.util.List;
 public class GUI {
 
     private MouseInput mouse = new MouseInput();
-    private List<GUIComponent> components;
+    /**
+     * The current component this GUI handles
+     * Can only be one component
+     */
+    private GUIComponent component;
     private NanoVG nano;
 
     public GUI() {
-        components = new ArrayList<>();
+
     }
 
+    /**
+     * Gets the GUIComponent
+     *
+     * @return Current component
+     */
+    public GUIComponent getComponent() {
+        return component;
+    }
+
+    /**
+     * Gets whether the GUI has a component that is being rendered
+     *
+     * @return whether the GUI has a component
+     */
+    public boolean hasComponent() {
+        return component != null;
+    }
+
+    /**
+     * Changed the current GUIComponent
+     *
+     * @param component the component to change to
+     */
+    public void setComponent(GUIComponent component) {
+        this.component = component;
+    }
+
+    /**
+     * Initialises nano vg
+     */
     public void initialize() {
         nano = NanoVG.getInstance();
         mouse.init();
     }
 
+    /**
+     * Updates the gui
+     */
     public void update() {
         mouse.input();
 
-        for (GUIComponent c : components) {
-            c.update(mouse);
-        }
+        component.update(mouse);
     }
 
+    /**
+     * Renders all components
+     */
     public void render() {
         nano.createFrame();
 
-        for (GUIComponent c : components) {
-            c.render();
-        }
+        component.render();
 
         nano.terminateFrame();
     }
 
+    /**
+     * Free resources
+     */
     public void terminate() {
         nano.terminateNanoVG();
     }
-
 }
