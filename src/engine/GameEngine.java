@@ -1,6 +1,7 @@
 package engine;
 
 import engine.util.Timer;
+import game.NeuralNetwork;
 import org.lwjgl.*;
 
 /** 
@@ -88,7 +89,7 @@ public class GameEngine implements Runnable {
             System.out.println("Debugging enabled: LWJGL " + 
                     Version.getVersion() + "!");
         }
-
+        NeuralNetwork.loadModel();
         timer.init();
         mouseInput.init();
         gameLogic.init();
