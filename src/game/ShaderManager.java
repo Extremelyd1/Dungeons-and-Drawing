@@ -23,7 +23,6 @@ public class ShaderManager {
     private static final int MAX_SPOT_LIGHTS = 10;
 
     private Shader sceneShader;
-    private Shader guiShader;
     private Shader depthShaderCube;
     private Shader depthShader;
 
@@ -59,22 +58,6 @@ public class ShaderManager {
         sceneShader.createUniform("projectionViewModel");
 
         GameWindow.getGameWindow().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    }
-
-    /**
-     * Initialize the shader for the GUI
-     * @throws Exception
-     */
-    public void setupGUIShader() throws Exception {
-        guiShader = new Shader();
-        guiShader.createVertexShader(Utilities.loadResource("/shaders/vertex_gui.vs"));
-        guiShader.createFragmentShader(Utilities.loadResource("/shaders/fragment_gui.fs"));
-        guiShader.link();
-
-        // Create uniforms for Ortographic-model projection matrix and base colour
-        guiShader.createUniform("projModelMatrix");
-        guiShader.createUniform("colour");
-        guiShader.createUniform("hasTexture");
     }
 
     /**
@@ -266,26 +249,10 @@ public class ShaderManager {
     }
 
     //
-    // GUI Shader management Functions
-    //
-    public void bindGUIShader() {
-        guiShader.bind();
-    }
-    public void updateGUIShader(Matrix4f projModelMatrix, Vector4f color, int hasTexture){
-        guiShader.setUniform("projModelMatrix", projModelMatrix);
-        guiShader.setUniform("colour", color);
-        guiShader.setUniform("hasTexture", hasTexture);
-    }
-    public void unbindGUIShader() {
-        guiShader.unbind();
-    }
-
-    //
     // Terminate Method
     //
     public void terminate(){
         if (sceneShader != null) sceneShader.terminate();
-        if (guiShader != null) guiShader.terminate();
         if (depthShader != null) depthShader.terminate();
         if (depthShaderCube != null) depthShaderCube.terminate();
     }

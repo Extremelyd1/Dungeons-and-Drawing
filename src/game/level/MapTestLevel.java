@@ -162,7 +162,6 @@ public class MapTestLevel extends Level {
     public void render() {
         renderer.render(
                 camera,
-                gui,
                 gameEntities,
                 sceneLight,
                 map

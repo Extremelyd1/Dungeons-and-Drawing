@@ -1,5 +1,6 @@
 package engine;
 
+import engine.util.IOUtil;
 import org.lwjgl.glfw.*;
 import org.lwjgl.system.*;
 
@@ -11,6 +12,8 @@ import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.*;
+import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.stb.STBImage.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 /**
@@ -86,10 +89,12 @@ public class GameWindow {
 
         // Create the window
         if (fullScreen) {
+            /* We get the current screen resolution */
+            windowWidth = glfwGetVideoMode(glfwGetPrimaryMonitor()).width();
+            windowHeight = glfwGetVideoMode(glfwGetPrimaryMonitor()).height();
             windowHandle = glfwCreateWindow(
-                    /* We get the current screen resolution */
-                    glfwGetVideoMode(glfwGetPrimaryMonitor()).width(),
-                    glfwGetVideoMode(glfwGetPrimaryMonitor()).height(),
+                    windowWidth,
+                    windowHeight,
                     DEFAULT_WINDOW_TITLE,
                     glfwGetPrimaryMonitor(), NULL);
         } else {
@@ -141,6 +146,8 @@ public class GameWindow {
         // graphics card. For example: 60Hz = 60fps)
         glfwSwapInterval(VSYNC);
 
+        loadIcon();
+
         // Make the window visible
         glfwShowWindow(windowHandle);
         
@@ -151,8 +158,63 @@ public class GameWindow {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        // For the NanoVG GUI library
+        glEnable(GL_STENCIL_TEST);
+        glfwWindowHint(GLFW_SAMPLES, 4);
+
         // Wireframe model
         //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    }
+
+    public void loadIcon() {
+        ByteBuffer icon16;
+        ByteBuffer icon32;
+        try {
+            icon16 = IOUtil.ioResourceToByteBuffer("textures/logo16.png", 2048);
+            icon32 = IOUtil.ioResourceToByteBuffer("textures/logo32.png", 4096);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        IntBuffer w = memAllocInt(1);
+        IntBuffer h = memAllocInt(1);
+        IntBuffer comp = memAllocInt(1);
+
+        try (GLFWImage.Buffer icons = GLFWImage.malloc(2)) {
+            ByteBuffer pixels16 = stbi_load_from_memory(icon16, w, h, comp, 4);
+            icons
+                    .position(0)
+                    .width(w.get(0))
+                    .height(h.get(0))
+                    .pixels(pixels16);
+
+            ByteBuffer pixels32 = stbi_load_from_memory(icon32, w, h, comp, 4);
+            icons
+                    .position(1)
+                    .width(w.get(0))
+                    .height(h.get(0))
+                    .pixels(pixels32);
+
+            icons.position(0);
+            glfwSetWindowIcon(windowHandle, icons);
+
+            stbi_image_free(pixels32);
+            stbi_image_free(pixels16);
+        }
+
+    }
+
+    /**
+     * Restores the state of the Window such that all options and flags are
+     * set as we want them to be. Has to be done because the NanoVG lib might
+     * change things
+     */
+    public void restoreState() {
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_STENCIL_TEST);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
     }
 
     

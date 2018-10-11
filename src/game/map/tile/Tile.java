@@ -4,6 +4,8 @@ import graphics.Mesh;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
+
 public class Tile {
 
     /**
@@ -22,20 +24,29 @@ public class Tile {
      * Solid tiles cannot be walked on by the player
      */
     private boolean solid;
+    /**
+     * Tags associated with this tile
+     */
+    private ArrayList<String> tags;
 
     public Tile(Vector2i position, Vector3f rotation, Mesh mesh, boolean solid) {
+        this(position, rotation, mesh, solid, new ArrayList<>());
+    }
+
+    public Tile(Vector2i position, Mesh mesh, boolean solid) {
+        this(position, new Vector3f(0, 0, 0), mesh, solid, new ArrayList<>());
+    }
+
+    public Tile(Vector2i position, Mesh mesh) {
+        this(position, new Vector3f(0, 0, 0), mesh, true, new ArrayList<>());
+    }
+
+    public Tile(Vector2i position, Vector3f rotation, Mesh mesh, boolean solid, ArrayList<String> tags) {
         this.position = position;
         this.rotation = rotation;
         this.mesh = mesh;
         this.solid = solid;
-    }
-
-    public Tile(Vector2i position, Mesh mesh, boolean solid) {
-        this(position, new Vector3f(0, 0, 0), mesh, solid);
-    }
-
-    public Tile(Vector2i position, Mesh mesh) {
-        this(position, new Vector3f(0, 0, 0), mesh, true);
+        this.tags = tags;
     }
 
     public Vector2i getPosition() {
@@ -57,4 +68,17 @@ public class Tile {
     public void setSolid(boolean solid) {
         this.solid = solid;
     }
+
+    public void addTag(String tag) {
+        tags.add(tag);
+    }
+
+    public boolean hasTag(String tag) {
+        return tags.contains(tag);
+    }
+
+    public ArrayList<String> getTags() {
+        return tags;
+    }
+
 }

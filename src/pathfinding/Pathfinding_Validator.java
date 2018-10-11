@@ -11,13 +11,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.util.List;
 
 public class Pathfinding_Validator {
     Map map;
     int count;
     Tile start; Tile target;
-    JButton bt; JPanel[][] grid;
+    JButton bt; drawCell[][] grid;
+    GridPane p;
     public static void main(String[] args) {
         new Pathfinding_Validator().run();
     }
@@ -31,8 +33,9 @@ public class Pathfinding_Validator {
         }
         //Make a new frame with all the components
         JFrame f = new JFrame("A*-search Validator");
-        grid = new JPanel[map.getWidth()][map.getHeight()];
-        f.add(new GridPane(map.getWidth(), map.getHeight()), BorderLayout.CENTER);
+        grid = new drawCell[map.getWidth()][map.getHeight()];
+        p = new GridPane(map.getWidth(), map.getHeight());
+        f.add(p, BorderLayout.CENTER);
         bt = new JButton("Run A*-search");
         bt.setEnabled(false);
         bt.addActionListener(new ActionListener() {
@@ -42,17 +45,37 @@ public class Pathfinding_Validator {
                 long time = System.nanoTime();
                 List<Tile> path = alg.computePath(start, target, map);
                 time = System.nanoTime() - time;
-                for (Tile s : alg.getClosedTiles()) {
-                    grid[s.getPosition().x][s.getPosition().y].setBackground(Color.BLUE);
-                }
                 for (Tile s : alg.getOpenedTiles()) {
                     grid[s.getPosition().x][s.getPosition().y].setBackground(Color.CYAN);
+                }
+                for (Tile s : alg.getClosedTiles()) {
+                    grid[s.getPosition().x][s.getPosition().y].setBackground(Color.BLUE);
                 }
                 for (Tile p : path) {
                     grid[p.getPosition().x][p.getPosition().y].setBackground(Color.GRAY);
                 }
+                for (A_star.Node n : alg.getNodes()) {
+                    if (n.p == null) {
+
+                    } else if (n.t.getPosition().x == n.p.t.getPosition().x) {
+                        if (n.t.getPosition().y<n.p.t.getPosition().y) {
+                            grid[n.t.getPosition().x][n.t.getPosition().y].drawArrow(270);
+                        } else {
+                            grid[n.t.getPosition().x][n.t.getPosition().y].drawArrow(90);
+                        }
+                    } else {
+                        if (n.t.getPosition().x < n.p.t.getPosition().x) {
+                            grid[n.t.getPosition().x][n.t.getPosition().y].drawArrow(0);
+                        } else {
+                            grid[n.t.getPosition().x][n.t.getPosition().y].drawArrow(180);
+                        }
+                    }
+                }
+
+
                 grid[start.getPosition().x][start.getPosition().y].setBackground(Color.GREEN);
                 grid[target.getPosition().x][target.getPosition().y].setBackground(Color.RED);
+
                 System.out.println("Grid coverage: " + (alg.getClosedTiles().size())
                         /(float)(map.getHeight()*map.getWidth()));
                 System.out.println("Time to compute in nsecond: " + time);
@@ -66,6 +89,7 @@ public class Pathfinding_Validator {
                 for (int i = 0; i < grid.length; i++) {
                     for (int j = 0; j < grid.length; j++) {
                         grid[i][j].setBackground(Color.WHITE);
+                        grid[i][j].clear();
                         count = 0;
                     }
                 }
@@ -90,7 +114,7 @@ public class Pathfinding_Validator {
             setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
             for (int i = 1; i <= (row * col); i++) {
-                JPanel pan = new JPanel();
+                drawCell pan = new drawCell();
 
                 pan.setEnabled(true);
                 pan.setBackground(Color.WHITE);
@@ -125,8 +149,34 @@ public class Pathfinding_Validator {
                 clickedBox.setBackground(Color.DARK_GRAY);
             }
             if (count > 1) bt.setEnabled(true);
+        }
+    }
 
-            // insert here the code defining what happens when a grid is clicked
+    class drawCell extends JPanel {
+        double degrees = 0;
+        boolean draw = false;
+        public void drawArrow(double degrees) {
+            this.degrees = degrees;
+            draw = true;
+        }
+        public void clear() {
+            draw = false;
+            repaint();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            int height = this.getHeight();
+            int width = this.getWidth();
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D)g;
+            AffineTransform old = g2d.getTransform();
+            AffineTransform at = new AffineTransform();
+            at.setToRotation(Math.toRadians(degrees), width/2, height/2);
+            g2d.setTransform(at);
+                if (draw) g2d.fillPolygon(new int[]{(width/2)-10, width/2, (width/2)+10}, new int[]{height/2,
+                        (height/2)+10, height/2}, 3);
+            g2d.setTransform(old);
         }
     }
 }
