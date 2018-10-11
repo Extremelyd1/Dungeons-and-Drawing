@@ -66,13 +66,18 @@ public class GUI {
     public void update() {
         mouse.input();
 
-        component.update(mouse);
+        if (component != null) {
+            component.update(mouse);
+        }
     }
 
     /**
      * Renders all components
      */
     public void render() {
+        if (component == null) {
+            return;
+        }
         nano.createFrame();
 
         component.render();
