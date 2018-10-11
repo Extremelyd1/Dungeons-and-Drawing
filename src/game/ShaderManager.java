@@ -19,8 +19,8 @@ import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
 import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 public class ShaderManager {
-    private static final int MAX_POINT_LIGHTS = 5;
-    private static final int MAX_SPOT_LIGHTS = 5;
+    private static final int MAX_POINT_LIGHTS = 10;
+    private static final int MAX_SPOT_LIGHTS = 10;
 
     private Shader sceneShader;
     private Shader depthShaderCube;
@@ -56,7 +56,6 @@ public class ShaderManager {
         //sceneShader.createUniform("view");
         //sceneShader.createUniform("projection");
         sceneShader.createUniform("projectionViewModel");
-        sceneShader.createUniform("shadowEnable");
 
         GameWindow.getGameWindow().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
@@ -99,7 +98,6 @@ public class ShaderManager {
 
         // Base variables
         sceneShader.setUniform("viewPos", viewPos);
-        sceneShader.setUniform("shadowEnable", shadowEnable);
         sceneShader.setUniform("ambientLight", sceneLight.ambientLight.getLight());
         sceneShader.setUniform("specularPower", specularPower);
         // Texture for the model

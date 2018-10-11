@@ -114,7 +114,7 @@ public class MapTestLevel extends Level {
 
         // Tree 2
         Entity g2 = new Entity(tree);
-        g2.setPosition(6.0f, 0.0f, 9.0f);
+        g2.setPosition(7.0f, 0.0f, 8.0f);
         g2.setRotation(-90, 0, 0);
 
         Mesh mobMesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
@@ -122,7 +122,7 @@ public class MapTestLevel extends Level {
         mob = new SimpleMob(mobMesh, map);
         mob.setScale(0.5f);
         mob.setPosition(3.0f, 1.0f, 3.0f);
-        mob.setSpeed(1.01f);
+        mob.setSpeed(1.75f);
         mob.setTarget(g2);
 
         gameEntities = new Entity[]{g, g2, light1, light2, mob};
