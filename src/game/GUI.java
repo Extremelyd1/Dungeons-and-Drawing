@@ -14,20 +14,42 @@ import java.util.List;
 public class GUI {
 
     private MouseInput mouse = new MouseInput();
-    private List<GUIComponent> components;
+    /**
+     * The current component this GUI handles
+     * Can only be one component
+     */
+    private GUIComponent component;
     private NanoVG nano;
 
     public GUI() {
-        components = new ArrayList<>();
+
     }
 
     /**
-     * Exposes the components list to mutate.
+     * Gets the GUIComponent
      *
-     * @return Component list
+     * @return Current component
      */
-    public List<GUIComponent> getComponents() {
-        return components;
+    public GUIComponent getComponent() {
+        return component;
+    }
+
+    /**
+     * Gets whether the GUI has a component that is being rendered
+     *
+     * @return whether the GUI has a component
+     */
+    public boolean hasComponent() {
+        return component != null;
+    }
+
+    /**
+     * Changed the current GUIComponent
+     *
+     * @param component the component to change to
+     */
+    public void setComponent(GUIComponent component) {
+        this.component = component;
     }
 
     /**
@@ -44,9 +66,7 @@ public class GUI {
     public void update() {
         mouse.input();
 
-        for (GUIComponent c : components) {
-            c.update(mouse);
-        }
+        component.update(mouse);
     }
 
     /**
@@ -55,9 +75,7 @@ public class GUI {
     public void render() {
         nano.createFrame();
 
-        for (GUIComponent c : components) {
-            c.render();
-        }
+        component.render();
 
         nano.terminateFrame();
     }

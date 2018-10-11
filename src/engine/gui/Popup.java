@@ -9,9 +9,9 @@ import org.joml.Vector2f;
  */
 public class Popup extends GUIComponent {
 
-    private static final RGBA POPUP_COLOR = new RGBA(218, 191, 148);
-    private static final RGBA POPUP_COLOR_DARK = new RGBA(156, 121, 79);
-    private static final RGBA POPUP_COLOR_TEXT = new RGBA(55, 50, 34);
+    static final RGBA POPUP_COLOR = new RGBA(218, 191, 148);
+    static final RGBA POPUP_COLOR_DARK = new RGBA(156, 121, 79);
+    static final RGBA POPUP_COLOR_TEXT = new RGBA(55, 50, 34);
 
     private static final float POPUP_DEFAULT_WIDTH = 800;
     private static final float POPUP_MINIMUM_HEIGHT = 150;
