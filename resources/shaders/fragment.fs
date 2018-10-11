@@ -169,7 +169,7 @@ float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2
     float closestDepth = texture(shadowMap, fragToLight).r;
     closestDepth *= plane.y;
     float currentDepth = length(fragToLight);
-    float bias = 0.0005;
+    float bias = 0.09;
     float shadow = currentDepth -  bias > closestDepth ? 0.0 : 1.0;
 
     return shadow;
