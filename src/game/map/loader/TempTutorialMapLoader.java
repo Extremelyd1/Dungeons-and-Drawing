@@ -18,12 +18,18 @@ public class TempTutorialMapLoader implements MapLoader {
         Mesh cell = PLYLoader.loadMesh("/models/tiles/prison_bars.ply");
         Mesh arc = PLYLoader.loadMesh("/models/tiles/arc.ply");
         Mesh crate = PLYLoader.loadMesh("/models/tiles/crate.ply");
+        Mesh pebbles = PLYLoader.loadMesh("/models/tiles/floor_pebbles.ply");
+        Mesh bush = PLYLoader.loadMesh("/models/tiles/test.ply");
+        Mesh door = PLYLoader.loadMesh("/models/tiles/wooden_door.ply");
 
         cube.setMaterial(new Material(0f));
         wall.setMaterial(new Material(0f));
         cell.setMaterial(new Material(0f));
         arc.setMaterial(new Material(0f));
         crate.setMaterial(new Material(0f));
+        pebbles.setMaterial(new Material(0f));
+        bush.setMaterial(new Material(0f));
+        door.setMaterial(new Material(0f));
 
         int x = 0;
 
@@ -38,7 +44,7 @@ public class TempTutorialMapLoader implements MapLoader {
                 {
                         new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
                         new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), pebbles, false),
                         new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
                         new Tile(new Vector2i(x++, 4), new Vector3f(0, 0, 0), wall, true)
                 },
@@ -54,7 +60,7 @@ public class TempTutorialMapLoader implements MapLoader {
                         new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
                         new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
                         new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), bush, false),
                         new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), cube, false),
                         new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), cube, false),
                 },
@@ -63,14 +69,14 @@ public class TempTutorialMapLoader implements MapLoader {
                         new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), crate, true),
                         new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
                         new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), bush, false),
                         new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), cube, false),
                 },
                 {
                         new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
                         new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
                         new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), bush, false),
                         new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), cube, false),
                         new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), cube, false),
                 },
@@ -87,7 +93,15 @@ public class TempTutorialMapLoader implements MapLoader {
                         new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
                         new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
                         new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), cell, true),
+                        new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), door, true),
+                        new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), cube, false)
+                },
+                {
+                        new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
+                        new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), pebbles, false),
+                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
+                        new Tile(new Vector2i(x, 4), new Vector3f(0, 180, 0), door, true),
                         new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), cube, false)
                 },
                 {
@@ -96,15 +110,7 @@ public class TempTutorialMapLoader implements MapLoader {
                         new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
                         new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
                         new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), cell, true),
-                        new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), cube, false)
-                },
-                {
-                        new Tile(new Vector2i(x, 0), new Vector3f(0, 0, 0), wall, true),
-                        new Tile(new Vector2i(x, 1), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(x, 2), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(x, 3), new Vector3f(0, 0, 0), cube, false),
-                        new Tile(new Vector2i(x, 4), new Vector3f(0, 0, 0), cell, true),
-                        new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), cube, false)
+                        new Tile(new Vector2i(x++, 5), new Vector3f(0, 0, 0), pebbles, false)
                 },
         };
 

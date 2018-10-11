@@ -16,12 +16,10 @@ import game.LevelController;
 import game.Renderer;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
-import game.map.loader.TempTutorialMapLoader;
 import game.mobs.SimpleMob;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 public class TutorialLevel extends Level {
