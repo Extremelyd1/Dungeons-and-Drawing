@@ -134,7 +134,6 @@ public class AnimatedTilesLevel extends Level {
     public void render() {
         renderer.render(
                 camera,
-                null,
                 entities,
                 sceneLight,
                 map
