@@ -13,6 +13,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import sun.security.ssl.Debug;
 
+import java.util.List;
+
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glViewport;
@@ -23,17 +25,17 @@ public class ShadowsManager {
     //
     // Public Methods for rendering Shadows
     //
-    public void renderDynamicShadows(Transformation transformation, SceneLight sceneLight, ShaderManager shaderManager, Map map, Entity[] entities) {
+    public void renderDynamicShadows(Transformation transformation, SceneLight sceneLight, ShaderManager shaderManager, Map map, List<Entity>  entities) {
         renderShadows(transformation, sceneLight, shaderManager, map, entities, true);
     }
-    public void renderStaticShadows(Transformation transformation, SceneLight sceneLight, ShaderManager shaderManager, Map map, Entity[] entities) {
+    public void renderStaticShadows(Transformation transformation, SceneLight sceneLight, ShaderManager shaderManager, Map map, List<Entity> entities) {
         renderShadows(transformation, sceneLight, shaderManager, map, entities, false);
     }
 
     //
     // Handle internally
     //
-    private void renderShadows(Transformation transformation, SceneLight sceneLight, ShaderManager shaderManager, Map map, Entity[] entities, boolean isDynamic) {
+    private void renderShadows(Transformation transformation, SceneLight sceneLight, ShaderManager shaderManager, Map map, List<Entity>  entities, boolean isDynamic) {
         FrustumIntersection frustumIntersection = new FrustumIntersection();
         Matrix4f model;
         int numLights;

@@ -3,9 +3,11 @@ package engine.gui;
 import engine.GameWindow;
 import engine.MouseInput;
 import engine.util.Timer;
-import game.action.Action;
+import game.NeuralNetwork;
 import game.puzzle.Puzzle;
 import org.joml.Vector2f;
+
+import java.awt.image.BufferedImage;
 
 public class DrawingList extends Popup {
 
@@ -17,11 +19,11 @@ public class DrawingList extends Popup {
     private float timeLeft;
     private String timeLeftString;
     private Timer timer;
-    private Action action;
     private Puzzle puzzle;
+    private DrawingCanvas canvas;
 
-    public DrawingList(Puzzle puzzle) {
-        super(GameWindow.getGameWindow().getWindowHeight() * 0.25f);
+    public DrawingList(Puzzle puzzle, DrawingCanvas canvas) {
+        super(GameWindow.getGameWindow().getWindowHeight() * 0.25f, null);
 
         setComponentHeight(GameWindow.getGameWindow().getWindowHeight() * 0.75f);
         setComponentWidth(GameWindow.getGameWindow().getWindowHeight() * 0.25f);
@@ -34,6 +36,8 @@ public class DrawingList extends Popup {
         resetCountdown();
 
         setCentered(false);
+
+        this.canvas = canvas;
     }
 
     public void resetCountdown() {
@@ -47,6 +51,8 @@ public class DrawingList extends Popup {
         super.render();
 
         NanoVG nano = NanoVG.getInstance();
+
+        nano.computeTextHeight(timeLeftString, getComponentWidth());
 
         nano.drawRectangle(new Vector2f(0, 0), getComponentWidth(),
                 nano.computeTextHeight(timeLeftString, getComponentWidth()) + 2 * TEXT_PADDING, Popup.POPUP_COLOR_DARK);
@@ -67,8 +73,14 @@ public class DrawingList extends Popup {
         if (isRunning) {
             timeLeft = Math.max(0, timeLeft - timer.getElapsedTime());
 
-            if (timeLeft == 0) {
-                puzzle.evaluate().execute();
+            if (timeLeft == 0 || mouse.isRightButtonPressed()) {
+                BufferedImage image = canvas.getImage();
+                if (image == null) {
+                    puzzle.getDefaultSolution().getAction().execute();
+                } else {
+                    String networkGuess = NeuralNetwork.getBestGuess(canvas.getImage(), options);
+                    puzzle.evaluate(networkGuess).execute();
+                }
                 isRunning = false;
             }
 

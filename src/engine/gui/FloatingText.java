@@ -1,5 +1,6 @@
 package engine.gui;
 
+import engine.GameWindow;
 import engine.MouseInput;
 import game.action.Action;
 import org.joml.Vector2f;
@@ -8,11 +9,10 @@ import org.joml.Vector2f;
  * Basic popup. Is centered by default and the height adjusts based on the text
  * that is to be displayed. Has a default width, but this can be changed
  */
-public class Popup extends GUIComponent {
+public class FloatingText extends GUIComponent {
 
-    static final RGBA POPUP_COLOR = new RGBA(218, 191, 148);
+    static final RGBA POPUP_COLOR_TEXT = new RGBA(255, 255, 255);
     static final RGBA POPUP_COLOR_DARK = new RGBA(156, 121, 79);
-    static final RGBA POPUP_COLOR_TEXT = new RGBA(55, 50, 34);
 
     private static final float POPUP_DEFAULT_WIDTH = 800;
     private static final float POPUP_MINIMUM_HEIGHT = 150;
@@ -27,7 +27,7 @@ public class Popup extends GUIComponent {
      * Constructs a popup with a custom width and no text
      * @param width the width of the popup in pixels
      */
-    public Popup(float width, Action action) {
+    public FloatingText(float width, Action action) {
         this(width, null, action);
     }
 
@@ -35,7 +35,7 @@ public class Popup extends GUIComponent {
      * Constructs a popup with the default width and some text
      * @param text text of the popup
      */
-    public Popup(String text, Action action) {
+    public FloatingText(String text, Action action) {
         this(POPUP_DEFAULT_WIDTH, text, action);
     }
 
@@ -45,11 +45,11 @@ public class Popup extends GUIComponent {
      * @param width width of the popup
      * @param action the action to execute when user closes the popup
      */
-    public Popup(float width, String text, Action action) {
+    public FloatingText(float width, String text, Action action) {
         super();
         setComponentWidth(width);
         this.text = text;
-        this.setCentered(true);
+        this.setCentered(false);
         this.action = action;
 
     }
@@ -60,19 +60,14 @@ public class Popup extends GUIComponent {
 
         nano.transform(this.getPosition());
 
-        // Base background of the popup
-        nano.drawRectangle(new Vector2f(0, 0), getComponentWidth(),
-                getComponentHeight(), POPUP_COLOR);
-
-        // Add stroke
-        nano.addStroke(5, POPUP_COLOR_DARK);
-
         if (text != null) {
+            GameWindow window = GameWindow.getGameWindow();
+
             // Draw the text
-            float posX = getComponentWidth() / 2.0f - 0.375f * getComponentWidth();
-            float posY = getComponentHeight() / 2.0f - textHeight / 2.0f;
-            nano.drawParagraphText(new Vector2f(posX, posY),
-                    getComponentWidth() * 0.75f, text, POPUP_COLOR_TEXT);
+            float posX = window.getWindowWidth() / 2f - getComponentWidth() / 2.0f;
+            float posY = window.getWindowHeight() - getComponentHeight() * 1.2f - textHeight / 2.0f;
+            nano.drawHintText(new Vector2f(posX, posY),
+                    getComponentWidth(), text, POPUP_COLOR_TEXT);
         }
    }
 

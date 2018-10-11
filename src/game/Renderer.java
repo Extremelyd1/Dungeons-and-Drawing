@@ -16,6 +16,9 @@ import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import sun.security.ssl.Debug;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
 
@@ -65,6 +68,14 @@ public class Renderer {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 
+    public void render(Camera camera, Entity[] entities, SceneLight sceneLight, Map map) {
+        List<Entity> entityList = new ArrayList<>();
+        for (Entity entity : entities) {
+            entityList.add(entity);
+        }
+        render(camera, entityList, sceneLight, map);
+    }
+
     /**
      * Renders the scene
      *
@@ -72,10 +83,9 @@ public class Renderer {
      * @param entities         List of entities to draw
      * @param sceneLight       The scene light object
      */
-
     public void render(
             Camera camera,
-            Entity[] entities,
+            List<Entity>  entities,
             SceneLight sceneLight,
             Map map
     ) {
@@ -105,7 +115,7 @@ public class Renderer {
     }
 
     public void renderScene(Camera camera,
-                            Entity[] entities,
+                            List<Entity> entities,
                             SceneLight sceneLight,
                             Map map) {
         // Compute necessary matrices

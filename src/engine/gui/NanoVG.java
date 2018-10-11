@@ -37,6 +37,7 @@ public class NanoVG {
     private static final String VECNA = "VECNA";
 
     public static final float FONT_SIZE_PARAGRAPH = 24.0f;
+    public static final float FONT_SIZE_HINT = 36f;
     public static final float FONT_SIZE_TITLE = 96.0f;
 
 
@@ -181,6 +182,21 @@ public class NanoVG {
      */
     public void drawParagraphText(Vector2f relativePosition, float textWidth, String text, RGBA rgba) {
         nvgFontSize(nanoVGHandler, FONT_SIZE_PARAGRAPH);
+        nvgFontFace(nanoVGHandler, SEGOE_UI);
+        nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+        nvgFillColor(nanoVGHandler, rgba(rgba, color));
+        nvgTextBox(nanoVGHandler, relativePosition.x, relativePosition.y, textWidth, text);
+    }
+
+    /**
+     * Draws hint text in the hint style
+     *
+     * @param relativePosition relative position from gui component
+     * @param text The text content
+     * @param rgba The color of the text
+     */
+    public void drawHintText(Vector2f relativePosition, float textWidth, String text, RGBA rgba) {
+        nvgFontSize(nanoVGHandler, FONT_SIZE_HINT);
         nvgFontFace(nanoVGHandler, SEGOE_UI);
         nvgTextAlign(nanoVGHandler, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
         nvgFillColor(nanoVGHandler, rgba(rgba, color));

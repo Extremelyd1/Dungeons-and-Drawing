@@ -3,7 +3,6 @@ package engine.gui;
 import engine.GameWindow;
 import engine.MouseInput;
 import engine.util.Utilities;
-import game.NeuralNetwork;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 
@@ -35,7 +34,7 @@ public class DrawingCanvas extends Popup {
     public DrawingCanvas() {
 
         // Canvas is by default centered and has a default size
-        super(GameWindow.getGameWindow().getWindowHeight() * 0.75f);
+        super(GameWindow.getGameWindow().getWindowHeight() * 0.75f, null);
 
         // Stores the canvas size
         this.canvasSize = GameWindow.getGameWindow().getWindowHeight() * 0.75f;
@@ -164,6 +163,9 @@ public class DrawingCanvas extends Popup {
      * @return the image drawn in BufferedImage format
      */
     public BufferedImage getImage() {
+        if (drawing.size() == 0) {
+            return null;
+        }
         addSubdrawingToImage(drawing.size() - 1);
         g.drawImage(image, 0, 0, null);
         return image;
