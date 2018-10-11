@@ -1,9 +1,8 @@
 package game;
 
 import engine.MouseInput;
-import engine.gui.*;
-import org.joml.Vector2f;
-import sun.text.resources.cldr.rw.FormatData_rw;
+import engine.gui.GUIComponent;
+import engine.gui.NanoVG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +21,26 @@ public class GUI {
         components = new ArrayList<>();
     }
 
+    /**
+     * Exposes the components list to mutate.
+     *
+     * @return Component list
+     */
+    public List<GUIComponent> getComponents() {
+        return components;
+    }
+
+    /**
+     * Initialises nano vg
+     */
     public void initialize() {
         nano = NanoVG.getInstance();
         mouse.init();
     }
 
+    /**
+     * Updates the gui
+     */
     public void update() {
         mouse.input();
 
@@ -35,6 +49,9 @@ public class GUI {
         }
     }
 
+    /**
+     * Renders all components
+     */
     public void render() {
         nano.createFrame();
 
@@ -45,8 +62,10 @@ public class GUI {
         nano.terminateFrame();
     }
 
+    /**
+     * Free resources
+     */
     public void terminate() {
         nano.terminateNanoVG();
     }
-
 }
