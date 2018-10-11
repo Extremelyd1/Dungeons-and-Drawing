@@ -119,37 +119,48 @@ public class FullLevel1 extends Level {
         gui.initialize();
         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f));
 
+        // Load mesh for door
         Mesh doorMesh = AssetStore.getMesh("entities", "wooden_door");
         doorMesh.setMaterial(new Material(0f));
-        map.getTiles("door").forEach((t) ->
-                entities.add(new DoorEntity(
-                        doorMesh,
-                        new Vector3f(t.getPosition().x - 0.5f, 0f, t.getPosition().y),
-                        new Vector3f(t.getRotation()),
-                        0.5f,
-                        t
-                ))
-        );
 
+        // Define tile and door entity
+        Tile puzzle1Tile = map.getTile("door1");
+        DoorEntity puzzle1Door = new DoorEntity(
+                doorMesh,
+                new Vector3f(puzzle1Tile.getPosition().x - 0.5f, 0f, puzzle1Tile.getPosition().y),
+                new Vector3f(puzzle1Tile.getRotation()),
+                0.5f,
+                puzzle1Tile
+        );
+        entities.add(puzzle1Door);
+
+        // Load mesh for question mark
         Mesh question_mesh = AssetStore.getMesh("entities", "question_mark");
         question_mesh.setMaterial(new Material(0f));
-        map.getTiles("trigger").forEach((t) ->
-                entities.add(new IndicatorEntity(
-                        question_mesh,
-                        new Vector3f(t.getPosition().x, 1f, t.getPosition().y),
-                        t
-                ))
-        );
 
+        // Define tile and indicator entity
+        Tile trigger1Tile = map.getTile("trigger1");
+        IndicatorEntity trigger1Entity = new IndicatorEntity(
+                question_mesh,
+                new Vector3f(trigger1Tile.getPosition().x, 1f, trigger1Tile.getPosition().y),
+                trigger1Tile
+        );
+        entities.add(trigger1Entity);
+
+        // Define puzzle that uses the aforementioned indicator and door
         testPuzzle = new Puzzle(
                 "To open a door you draw:",
+                    // Possible guesses
                     new String[] {"key", "cactus", "hat"},
+                    // Solutions and their corresponding actions
                     new Solution[]{new Solution("key", () -> {
                         gui.setComponent(new Popup("Indeed! A key opens the door", () ->
                                 paused = false
                         ));
-                        ((DoorEntity) entities.get(1)).open();
-                        ((IndicatorEntity) entities.remove(2)).getTile().removeTag("trigger");
+                        puzzle1Door.open();
+                        entities.remove(trigger1Entity);
+                        trigger1Entity.getTile().removeTag("trigger");
+                    // Default solution and its action
                     })}, new Solution("", () -> {
                         gui.removeComponent();
                         paused = false;
@@ -181,12 +192,17 @@ public class FullLevel1 extends Level {
                     Math.round(player.getPosition().z)
             );
 
+            // Check for tiles that have a trigger
             if (currentPlayerTile.hasTag("trigger")) {
+                // Show interact hint
                 gui.setComponent(new FloatingText("Press 'e' to interact", () -> gui.removeComponent()));
-                if (KeyBinding.isInteractPressed() && currentPlayerTile.hasTag("puzzle1")) {
+                // Check the exact trigger
+                if (KeyBinding.isInteractPressed() && currentPlayerTile.hasTag("trigger1")) {
+                    // Show puzzle GUI
                     gui.setComponent(new PuzzleGUI(testPuzzle));
                     paused = true;
                 }
+            // If not on any trigger anymore, remove floating text
             } else if (gui.hasComponent()) {
                 gui.removeComponent();
             }

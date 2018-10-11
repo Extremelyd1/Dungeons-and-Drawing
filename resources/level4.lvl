@@ -89,7 +89,7 @@ stone_floor 0 0 light
 stone_floor 0 0
 corner_wall 0 1
 air 0 1
-corner_wall 0 1
+stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -209,7 +209,7 @@ stone_floor 0 0
 stone_floor 0 0
 corner_wall 0 1
 air 0 1
-stone_floor 0 0
+air 0 1
 air 0 1
 air 0 1
 air 0 1
@@ -407,7 +407,7 @@ prison_bars 0 1
 prison_bars 0 1
 corner_wall 0 1
 prison_bars 0 1
-stone_floor 0 0 door:puzzle1
+stone_floor 0 0 door1
 prison_bars 0 1
 corner_wall 0 1
 prison_bars 0 1
@@ -467,7 +467,7 @@ stone_floor 0 0
 stone_floor 0 0
 arc 1 0
 stone_floor 0 0
-stone_floor 0 0 trigger:puzzle1
+stone_floor 0 0 trigger:trigger1
 stone_floor 0 0
 arc 1 0
 stone_floor 0 0
