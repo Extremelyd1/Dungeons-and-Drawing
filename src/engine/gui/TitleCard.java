@@ -19,7 +19,7 @@ public class TitleCard extends GUIComponent {
     }
 
     @Override
-    public void update(MouseInput mouse) {
+    public void update(MouseInput mouse, float delta) {
         NanoVG nano = NanoVG.getInstance();
 
         textWidth = nano.computeTextWidth("Dungeons and Drawings");
@@ -28,7 +28,7 @@ public class TitleCard extends GUIComponent {
         setComponentHeight(textHeight);
         setComponentWidth(textWidth);
 
-        super.update(mouse);
+        super.update(mouse, delta);
     }
 
     @Override

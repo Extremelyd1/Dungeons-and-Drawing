@@ -69,7 +69,7 @@ public class DrawingList extends Popup {
     }
 
     @Override
-    public void update(MouseInput mouse) {
+    public void update(MouseInput mouse, float delta) {
         if (isRunning) {
             timeLeft = Math.max(0, timeLeft - timer.getElapsedTime());
 
@@ -86,6 +86,6 @@ public class DrawingList extends Popup {
 
             timeLeftString = "Time left: " + String.valueOf((int) Math.ceil(timeLeft));
         }
-        super.update(mouse);
+        super.update(mouse, delta);
     }
 }

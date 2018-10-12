@@ -34,13 +34,13 @@ public class PuzzleGUI extends GUIComponent{
     }
 
     @Override
-    public void update(MouseInput mouse) {
-        super.update(mouse);
+    public void update(MouseInput mouse, float delta) {
+        super.update(mouse, delta);
 
         canvas.setPosition(this.getPosition().x, this.getPosition().y);
         list.setPosition(this.getPosition().x + getComponentHeight() + PADDING, this.getPosition().y);
 
-        canvas.update(mouse);
-        list.update(mouse);
+        canvas.update(mouse, delta);
+        list.update(mouse, delta);
     }
 }

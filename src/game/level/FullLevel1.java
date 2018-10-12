@@ -8,9 +8,7 @@ import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
 import engine.entities.Player;
-import engine.gui.FloatingText;
-import engine.gui.Popup;
-import engine.gui.PuzzleGUI;
+import engine.gui.*;
 import engine.input.KeyBinding;
 import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
@@ -21,11 +19,9 @@ import engine.util.AssetStore;
 import game.GUI;
 import game.LevelController;
 import game.Renderer;
-import game.action.Action;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
 import game.map.tile.Tile;
-import game.mobs.SimpleMob;
 import game.puzzle.Puzzle;
 import game.puzzle.Solution;
 import graphics.Material;
@@ -148,7 +144,7 @@ public class FullLevel1 extends Level {
                     new String[] {"key", "cactus", "hat"},
                     // Solutions and their corresponding actions
                     new Solution[]{new Solution("key", () -> {
-                        gui.setComponent(new Popup("Indeed! A key opens the door", () ->
+                        gui.setComponent(new ScrollingPopup("Indeed! A key opens the door", () ->
                                 paused = false
                         ));
                         puzzle1Door.open();
@@ -188,9 +184,11 @@ public class FullLevel1 extends Level {
 
             // Check for tiles that have a trigger
             if (currentPlayerTile.hasTag("trigger")) {
-                // Show interact hint
-                gui.setComponent(new FloatingText("Press 'e' to interact", () -> gui.removeComponent()));
-                // Check the exact trigger
+                if (!gui.hasComponent()) {
+                    // Show interact hint
+                    gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
+                    // Check the exact trigger
+                }
                 if (KeyBinding.isInteractPressed() && currentPlayerTile.hasTag("trigger1")) {
                     // Show puzzle GUI
                     gui.setComponent(new PuzzleGUI(testPuzzle));
@@ -202,7 +200,7 @@ public class FullLevel1 extends Level {
             }
         }
 
-        gui.update();
+        gui.update(delta);
     }
 
     @Override
