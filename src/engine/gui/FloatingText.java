@@ -12,7 +12,6 @@ import org.joml.Vector2f;
 public class FloatingText extends GUIComponent {
 
     static final RGBA POPUP_COLOR_TEXT = new RGBA(255, 255, 255);
-    static final RGBA POPUP_COLOR_DARK = new RGBA(156, 121, 79);
 
     private static final float POPUP_DEFAULT_WIDTH = 800;
     private static final float POPUP_MINIMUM_HEIGHT = 150;
@@ -22,14 +21,6 @@ public class FloatingText extends GUIComponent {
     private float textHeight;
 
     private Action action;
-
-    /**
-     * Constructs a popup with a custom width and no text
-     * @param width the width of the popup in pixels
-     */
-    public FloatingText(float width, Action action) {
-        this(width, null, action);
-    }
 
     /**
      * Constructs a popup with the default width and some text
@@ -61,12 +52,8 @@ public class FloatingText extends GUIComponent {
         nano.transform(this.getPosition());
 
         if (text != null) {
-            GameWindow window = GameWindow.getGameWindow();
-
             // Draw the text
-            float posX = window.getWindowWidth() / 2f - getComponentWidth() / 2.0f;
-            float posY = window.getWindowHeight() - getComponentHeight() * 1.2f - textHeight / 2.0f;
-            nano.drawHintText(new Vector2f(posX, posY),
+            nano.drawHintText(getPosition(),
                     getComponentWidth(), text, POPUP_COLOR_TEXT);
         }
    }
@@ -77,8 +64,14 @@ public class FloatingText extends GUIComponent {
 
         // Compute the height of the text
         if (text != null) {
+            GameWindow window = GameWindow.getGameWindow();
+
             textHeight = nano.computeTextHeight(text, POPUP_TEXT_WIDTH);
             setComponentHeight(Math.max(textHeight + 70, POPUP_MINIMUM_HEIGHT));
+
+            float posX = window.getWindowWidth() / 2f - getComponentWidth() / 2.0f;
+            float posY = window.getWindowHeight() - getComponentHeight() * 1.2f - textHeight / 2.0f;
+            setPosition(posX, posY);
         }
 
         if (mouse.isLeftButtonPressed() && action != null) {
