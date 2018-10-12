@@ -3,20 +3,23 @@ package engine.entities;
 import engine.animation.Animation;
 import engine.animation.Animator;
 import engine.util.AssetStore;
+import game.map.tile.Tile;
 import graphics.Mesh;
 import org.joml.Vector3f;
 
 public class IndicatorEntity extends MultiAnimatedEntity {
 
-    public IndicatorEntity(Mesh mesh, Vector3f position) {
-        this(mesh, position, new Vector3f(0));
+    Tile tile;
+
+    public IndicatorEntity(Mesh mesh, Vector3f position, Tile tile) {
+        this(mesh, position, new Vector3f(0), tile);
     }
 
-    public IndicatorEntity(Mesh mesh, Vector3f position, Vector3f rotation) {
-        this(mesh, position, rotation, 1);
+    public IndicatorEntity(Mesh mesh, Vector3f position, Vector3f rotation, Tile tile) {
+        this(mesh, position, rotation, 1, tile);
     }
 
-    public IndicatorEntity(Mesh mesh, Vector3f position, Vector3f rotation, float scale) {
+    public IndicatorEntity(Mesh mesh, Vector3f position, Vector3f rotation, float scale, Tile tile) {
         super(
                 mesh,
                 position,
@@ -27,6 +30,7 @@ public class IndicatorEntity extends MultiAnimatedEntity {
                         AssetStore.getAnimator("indicatorMovement")
                 }
         );
+        this.tile = tile;
     }
 
     @Override
@@ -36,6 +40,10 @@ public class IndicatorEntity extends MultiAnimatedEntity {
 
         float heightValue = animators[1].update(delta);
         position.y = heightValue;
+    }
+
+    public Tile getTile() {
+        return tile;
     }
 
 }

@@ -77,7 +77,8 @@ public class AnimatedTilesLevel extends Level {
                         crateMesh,
                         new Vector3f(t.getPosition().x, 2f, t.getPosition().y),
                         new Vector3f(0),
-                        0.25f
+                        0.25f,
+                        t
                 ))
         );
 

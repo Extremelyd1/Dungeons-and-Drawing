@@ -52,6 +52,10 @@ public class GUI {
         this.component = component;
     }
 
+    public void removeComponent() {
+        this.component = null;
+    }
+
     /**
      * Initialises nano vg
      */

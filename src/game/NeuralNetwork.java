@@ -9,9 +9,7 @@ import org.nd4j.linalg.factory.Nd4j;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class NeuralNetwork {
 
@@ -76,7 +74,7 @@ public class NeuralNetwork {
      * @return the label for the best guess
      */
     public static String getBestGuess(BufferedImage image, String... options) {
-        return getBestGuess(image, options);
+        return getBestGuess(image, new HashSet<>(Arrays.asList(options)));
     }
 
     /**

@@ -16,8 +16,8 @@ public class PuzzleGUI extends GUIComponent{
 
     public PuzzleGUI(Puzzle puzzle) {
 
-        this.list = new DrawingList(puzzle);
         this.canvas = new DrawingCanvas();
+        this.list = new DrawingList(puzzle, canvas);
 
         float windowHeight = GameWindow.getGameWindow().getWindowHeight();
         float totalPuzzleGUIWidth = windowHeight + PADDING;

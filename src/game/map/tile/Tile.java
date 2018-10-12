@@ -73,6 +73,10 @@ public class Tile {
         tags.add(tag);
     }
 
+    public void removeTag(String tag) {
+        tags.remove(tag);
+    }
+
     public boolean hasTag(String tag) {
         return tags.contains(tag);
     }
