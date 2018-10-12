@@ -5,17 +5,20 @@ import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
+import engine.entities.IndicatorEntity;
 import engine.entities.Player;
 import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
+import engine.util.AssetStore;
 import game.GUI;
 import game.LevelController;
 import game.Renderer;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
+import game.map.tile.Tile;
 import game.mobs.SimpleMob;
 import graphics.Material;
 import graphics.Mesh;
@@ -32,6 +35,8 @@ public class TutorialLevel extends Level {
     private Entity[] entities;
     private SceneLight sceneLight;
     private GUI gui;
+
+    private IndicatorEntity indicatorEntity;
 
     public TutorialLevel(LevelController levelController) {
         super(levelController);
@@ -69,8 +74,6 @@ public class TutorialLevel extends Level {
         mob.setSpeed(2.5f);
         mob.setTarget(player);
 
-        entities = new Entity[]{player, mob};
-
         // Setup camera
         camera = new FollowCamera(
                 player,
@@ -103,6 +106,19 @@ public class TutorialLevel extends Level {
         gui = new GUI();
         gui.initialize();
         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f));
+
+        Mesh questionMesh = AssetStore.getMesh("entities", "question_mark");
+        questionMesh.setMaterial(new Material(0f));
+
+        Tile triggerTile1 = map.getTile("trigger");
+        indicatorEntity = new IndicatorEntity(
+                questionMesh,
+                new Vector3f(triggerTile1.getPosition().x, 1f, triggerTile1.getPosition().y),
+                triggerTile1
+        );
+
+        entities = new Entity[]{player, mob, indicatorEntity};
+
     }
 
     @Override
@@ -117,8 +133,9 @@ public class TutorialLevel extends Level {
         camera.update();
         player.update(interval);
         mob.update(interval);
+        indicatorEntity.update(interval);
         sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
-        gui.update();
+        gui.update(interval);
     }
 
     @Override

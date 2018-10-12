@@ -8,9 +8,9 @@ import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
 import engine.entities.Player;
-import engine.gui.FloatingText;
-import engine.gui.Popup;
+import engine.gui.FloatingScrollText;
 import engine.gui.PuzzleGUI;
+import engine.gui.ScrollingPopup;
 import engine.input.KeyBinding;
 import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
@@ -21,11 +21,9 @@ import engine.util.AssetStore;
 import game.GUI;
 import game.LevelController;
 import game.Renderer;
-import game.action.Action;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
 import game.map.tile.Tile;
-import game.mobs.SimpleMob;
 import game.puzzle.Puzzle;
 import game.puzzle.Solution;
 import graphics.Material;
@@ -43,6 +41,10 @@ public class FullLevel1 extends Level {
     private Renderer renderer;
     private Camera camera;
     private List<Entity> entities;
+    /**
+     * Keeps track of a list of entities that should be removed
+     */
+    private List<Entity> entitiesToRemove;
     private SceneLight sceneLight;
     private GUI gui;
 
@@ -57,6 +59,7 @@ public class FullLevel1 extends Level {
     @Override
     public void init() throws Exception {
         entities = new ArrayList<>();
+        entitiesToRemove = new ArrayList<>();
 
         // Load map
         map = new MapFileLoader("/level4.lvl").load();
@@ -92,12 +95,12 @@ public class FullLevel1 extends Level {
 
         map.getTiles("light").forEach(
                 t -> sceneLight.pointLights.add(new PointLight(
-                                    new Vector3f(1f, 1f, 1f),
-                                    new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
-                                    0.4f,
-                                    new Vector2f(1f, 100f)
-                            )
-                    )
+                                new Vector3f(1f, 1f, 1f),
+                                new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
+                                0.4f,
+                                new Vector2f(1f, 100f)
+                        )
+                )
         );
 
         sceneLight.directionalLight = new DirectionalLight(
@@ -144,22 +147,22 @@ public class FullLevel1 extends Level {
         // Define puzzle that uses the aforementioned indicator and door
         testPuzzle = new Puzzle(
                 "To open a door you draw:",
-                    // Possible guesses
-                    new String[] {"key", "cactus", "hat"},
-                    // Solutions and their corresponding actions
-                    new Solution[]{new Solution("key", () -> {
-                        gui.setComponent(new Popup("Indeed! A key opens the door", () ->
-                                paused = false
-                        ));
-                        puzzle1Door.open();
-                        entities.remove(trigger1Entity);
-                        trigger1Entity.getTile().removeTag("trigger");
+                // Possible guesses
+                new String[]{"key", "cactus", "hat"},
+                // Solutions and their corresponding actions
+                new Solution[]{new Solution("key", () -> {
+                    gui.setComponent(new ScrollingPopup("Indeed! A key opens the door", () ->
+                            paused = false
+                    ));
+                    puzzle1Door.open();
+                    trigger1Entity.remove(() -> entitiesToRemove.add(trigger1Entity));
+                    trigger1Entity.getTile().removeTag("trigger");
                     // Default solution and its action
-                    })}, new Solution("", () -> {
-                        gui.removeComponent();
-                        paused = false;
-                    })
-                    , 20
+                })}, new Solution("", () -> {
+            gui.removeComponent();
+            paused = false;
+        })
+                , 20
         );
     }
 
@@ -181,6 +184,10 @@ public class FullLevel1 extends Level {
                 entity.update(delta);
             }
 
+            // Remove entities
+            entities.removeAll(entitiesToRemove);
+            entitiesToRemove = new ArrayList<>();
+
             Tile currentPlayerTile = map.getTile(
                     Math.round(player.getPosition().x),
                     Math.round(player.getPosition().z)
@@ -188,21 +195,23 @@ public class FullLevel1 extends Level {
 
             // Check for tiles that have a trigger
             if (currentPlayerTile.hasTag("trigger")) {
-                // Show interact hint
-                gui.setComponent(new FloatingText("Press 'e' to interact", () -> gui.removeComponent()));
-                // Check the exact trigger
+                if (!gui.hasComponent()) {
+                    // Show interact hint
+                    gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
+                    // Check the exact trigger
+                }
                 if (KeyBinding.isInteractPressed() && currentPlayerTile.hasTag("trigger1")) {
                     // Show puzzle GUI
                     gui.setComponent(new PuzzleGUI(testPuzzle));
                     paused = true;
                 }
-            // If not on any trigger anymore, remove floating text
+                // If not on any trigger anymore, remove floating text
             } else if (gui.hasComponent()) {
                 gui.removeComponent();
             }
         }
 
-        gui.update();
+        gui.update(delta);
     }
 
     @Override

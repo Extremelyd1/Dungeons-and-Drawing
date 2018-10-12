@@ -64,7 +64,7 @@ public class DrawingCanvas extends Popup {
     }
 
     @Override
-    public void update(MouseInput mouse) {
+    public void update(MouseInput mouse, float delta) {
 
         // Listen to what is being drawn
         if (mouse.isLeftButtonPressed()) {
@@ -109,7 +109,7 @@ public class DrawingCanvas extends Popup {
         }
 
         // Center the canvas
-        super.update(mouse);
+        super.update(mouse, delta);
 
         // For testing uncomment
 //        if (mouse.isRightButtonPressed()) {

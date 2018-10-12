@@ -67,11 +67,11 @@ public class GUI {
     /**
      * Updates the gui
      */
-    public void update() {
+    public void update(float delta) {
         mouse.input();
 
         if (component != null) {
-            component.update(mouse);
+            component.update(mouse, delta);
         }
     }
 

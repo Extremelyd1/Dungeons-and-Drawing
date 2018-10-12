@@ -66,7 +66,7 @@ public class Button extends GUIComponent {
     }
 
     @Override
-    public void update(MouseInput mouse) {
+    public void update(MouseInput mouse, float delta) {
 
         // Compute the bounds of the button object
         float xBoundLeft = this.getPosition().x;
@@ -87,7 +87,7 @@ public class Button extends GUIComponent {
         }
 
         // Handles the centering of the object if needed
-        super.update(mouse);
+        super.update(mouse, delta);
 
     }
 

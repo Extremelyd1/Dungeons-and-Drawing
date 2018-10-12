@@ -14,14 +14,14 @@ public class Popup extends GUIComponent {
     static final RGBA POPUP_COLOR_DARK = new RGBA(156, 121, 79);
     static final RGBA POPUP_COLOR_TEXT = new RGBA(55, 50, 34);
 
-    private static final float POPUP_DEFAULT_WIDTH = 800;
-    private static final float POPUP_MINIMUM_HEIGHT = 150;
-    private static final float POPUP_TEXT_WIDTH = 0.75f * POPUP_DEFAULT_WIDTH;
+    protected static final float POPUP_DEFAULT_WIDTH = 800;
+    protected static final float POPUP_MINIMUM_HEIGHT = 150;
+    protected static final float POPUP_TEXT_WIDTH = 0.75f * POPUP_DEFAULT_WIDTH;
 
-    private String text;
-    private float textHeight;
+    protected String text;
+    protected float textHeight;
 
-    private Action action;
+    protected Action action;
 
     /**
      * Constructs a popup with a custom width and no text
@@ -77,7 +77,7 @@ public class Popup extends GUIComponent {
    }
 
     @Override
-    public void update(MouseInput mouse) {
+    public void update(MouseInput mouse, float delta) {
         NanoVG nano = NanoVG.getInstance();
 
         // Compute the height of the text
@@ -91,6 +91,6 @@ public class Popup extends GUIComponent {
         }
 
         // Center the object
-        super.update(mouse);
+        super.update(mouse, delta);
     }
 }

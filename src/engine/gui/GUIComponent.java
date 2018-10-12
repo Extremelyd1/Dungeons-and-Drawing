@@ -42,7 +42,7 @@ public abstract class GUIComponent {
      *  Centers the object in the middle of the screen. Assumes the origin is in
      *  the upper-left corner of the guicomponent
      */
-    public void update(MouseInput mouse) {
+    public void update(MouseInput mouse, float delta) {
         if (isCentered()) {
             center();
         }
