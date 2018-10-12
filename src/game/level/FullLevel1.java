@@ -148,7 +148,7 @@ public class FullLevel1 extends Level {
                                 paused = false
                         ));
                         puzzle1Door.open();
-                        entities.remove(trigger1Entity);
+                        trigger1Entity.remove(() -> entities.remove(trigger1Entity));
                         trigger1Entity.getTile().removeTag("trigger");
                     // Default solution and its action
                     })}, new Solution("", () -> {
