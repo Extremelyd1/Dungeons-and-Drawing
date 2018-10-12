@@ -91,19 +91,13 @@ public class FullLevel1 extends Level {
         sceneLight = new SceneLight();
 
         map.getTiles("light").forEach(
-                t -> {
-                    System.out.println("start " + sceneLight.pointLights.size());
-                    if (sceneLight.pointLights.size() < 3) {
-                        sceneLight.pointLights.add(new PointLight(
-                                        new Vector3f(1f, 1f, 1f),
-                                        new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
-                                        0.4f,
-                                        new Vector2f(1f, 100f)
-                                )
-                        );
-                    }
-                    System.out.println("end " + sceneLight.pointLights.size());
-                }
+                t -> sceneLight.pointLights.add(new PointLight(
+                                    new Vector3f(1f, 1f, 1f),
+                                    new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
+                                    0.4f,
+                                    new Vector2f(1f, 100f)
+                            )
+                    )
         );
 
         sceneLight.directionalLight = new DirectionalLight(

@@ -22,22 +22,18 @@ public class ShadowMap {
     }
 
     public void initShadowCubeMap() throws Exception {
-        System.out.println("cubemap 1");
         // Create depth map texture
         glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
         glBindTexture(GL_TEXTURE_CUBE_MAP, depthMap);
-        System.out.println("cubemap 2");
         for (int i = 0; i < 6; i++) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
                     resolution, resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, (ByteBuffer)null);
         }
-        System.out.println("cubemap 3");
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        System.out.println("cubemap 4");
 
         // Create FBO
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -45,19 +41,13 @@ public class ShadowMap {
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
 
-        System.out.println("cubemap 5");
-
         // Error Check
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
             throw new Exception("ShadowMap could not create FrameBuffer");
 
-        System.out.println("cubemap 6");
-
         // Unbind Depth Map and FBO
         glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        System.out.println("cubemap 7");
     }
 
     public void initShadowMap() throws Exception {
