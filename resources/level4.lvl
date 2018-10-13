@@ -89,7 +89,7 @@ stone_floor 0 0 light
 stone_floor 0 0
 corner_wall 0 1
 air 0 1
-stone_floor 0 0
+corner_wall 0 1
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0

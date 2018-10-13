@@ -1,6 +1,8 @@
 package game.level;
 
+import engine.GameWindow;
 import engine.MouseInput;
+import engine.camera.AnimatedCamera;
 import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
@@ -9,6 +11,7 @@ import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
 import engine.entities.Player;
 import engine.gui.FloatingScrollText;
+import engine.gui.GUIImage;
 import engine.gui.PuzzleGUI;
 import engine.gui.ScrollingPopup;
 import engine.input.KeyBinding;
@@ -18,6 +21,7 @@ import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
 import engine.util.AssetStore;
+import engine.util.Utilities;
 import game.GUI;
 import game.LevelController;
 import game.Renderer;
@@ -34,10 +38,9 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FullLevel1 extends Level {
+public class TitleScreenLevel extends Level {
 
     private Map map;
-    private Player player;
     private Renderer renderer;
     private Camera camera;
     private List<Entity> entities;
@@ -52,7 +55,7 @@ public class FullLevel1 extends Level {
 
     private boolean paused = false;
 
-    public FullLevel1(LevelController levelController) {
+    public TitleScreenLevel(LevelController levelController) {
         super(levelController);
     }
 
@@ -68,26 +71,33 @@ public class FullLevel1 extends Level {
         renderer = new Renderer();
         renderer.init();
 
-        // Setup player
-        Mesh playerMesh = PLYLoader.loadMesh("/models/basic/basic_cylinder_two_colors_1.ply");
-        playerMesh.setMaterial(new Material(0.5f));
-        playerMesh.setIsStatic(false);
-        player = new Player(playerMesh, map);
-        player.setSpeed(5);
-        player.setScale(new Vector3f(1, 2, 1));
-        player.setPosition(2, 0.5f, 3);
-
-        //Vector2i spawn = map.getTile("spawn").getPosition();
-        //player.setPosition(spawn.x, 0.5f, spawn.y);
-
-        entities.add(player);
+        Vector3f[] cameraPoints = new Vector3f[] {
+                new Vector3f(7, 11, 3),
+                new Vector3f(10, 11, 2),
+                new Vector3f(11, 11, 3),
+                new Vector3f(13, 11, 5),
+                new Vector3f(16, 11, 4),
+                new Vector3f(19, 11, 3),
+                new Vector3f(19, 11, 6),
+                new Vector3f(19, 11, 8),
+                new Vector3f(17, 11, 9),
+                new Vector3f(15, 11, 10),
+                new Vector3f(16, 11, 12),
+                new Vector3f(18, 11, 16),
+                new Vector3f(15, 11, 18),
+                new Vector3f(12, 11, 20),
+                new Vector3f(10, 11, 17),
+                new Vector3f(8, 11, 14),
+                new Vector3f(6, 11, 13),
+                new Vector3f(4, 11, 12),
+                new Vector3f(5, 11, 10),
+                new Vector3f(6, 11, 8),
+                new Vector3f(5, 11, 6),
+                new Vector3f(4, 11, 4),
+        };
 
         // Setup camera
-        camera = new FollowCamera(
-                player,
-                new Vector3f(75f, -10f, 0f),
-                new Vector3f(3, 11, 3)
-        );
+        camera = new AnimatedCamera(cameraPoints, new Vector3f(75f, -10f, 0f));
 //        camera = new FreeCamera();
 
         // Setup lights
@@ -114,6 +124,8 @@ public class FullLevel1 extends Level {
         // Setup gui
         gui = new GUI();
         gui.initialize();
+        float imageSize = (float) GameWindow.getGameWindow().getWindowWidth() / 2f;
+        gui.setComponent(new GUIImage(imageSize, imageSize, Utilities.getResourcePath("textures/logo.png")));
         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f));
 
         // Load mesh for door
@@ -143,27 +155,6 @@ public class FullLevel1 extends Level {
                 trigger1Tile
         );
         entities.add(trigger1Entity);
-
-        // Define puzzle that uses the aforementioned indicator and door
-        testPuzzle = new Puzzle(
-                "To open a door you draw:",
-                // Possible guesses
-                new String[]{"key", "cactus", "hat"},
-                // Solutions and their corresponding actions
-                new Solution[]{new Solution("key", () -> {
-                    gui.setComponent(new ScrollingPopup("Indeed! A key opens the door", () ->
-                            paused = false
-                    ));
-                    puzzle1Door.open();
-                    trigger1Entity.remove(() -> entitiesToRemove.add(trigger1Entity));
-                    trigger1Entity.getTile().removeTag("trigger");
-                    // Default solution and its action
-                })}, new Solution("", () -> {
-            gui.removeComponent();
-            paused = false;
-        })
-                , 20
-        );
     }
 
     @Override
@@ -175,41 +166,15 @@ public class FullLevel1 extends Level {
 
     @Override
     public void update(float delta, MouseInput mouseInput) {
-        if (!paused) {
-            camera.update(delta);
-            player.update(delta);
-            sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
+        camera.update(delta);
 
-            for (Entity entity : entities) {
-                entity.update(delta);
-            }
-
-            // Remove entities
-            entities.removeAll(entitiesToRemove);
-            entitiesToRemove = new ArrayList<>();
-
-            Tile currentPlayerTile = map.getTile(
-                    Math.round(player.getPosition().x),
-                    Math.round(player.getPosition().z)
-            );
-
-            // Check for tiles that have a trigger
-            if (currentPlayerTile.hasTag("trigger")) {
-                if (!gui.hasComponent()) {
-                    // Show interact hint
-                    gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
-                    // Check the exact trigger
-                }
-                if (KeyBinding.isInteractPressed() && currentPlayerTile.hasTag("trigger1")) {
-                    // Show puzzle GUI
-                    gui.setComponent(new PuzzleGUI(testPuzzle));
-                    paused = true;
-                }
-                // If not on any trigger anymore, remove floating text
-            } else if (gui.hasComponent()) {
-                gui.removeComponent();
-            }
+        for (Entity entity : entities) {
+            entity.update(delta);
         }
+
+        // Remove entities
+        entities.removeAll(entitiesToRemove);
+        entitiesToRemove = new ArrayList<>();
 
         gui.update(delta);
     }

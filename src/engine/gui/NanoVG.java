@@ -4,6 +4,7 @@ import engine.GameWindow;
 import engine.util.Utilities;
 import org.joml.Vector2f;
 import org.lwjgl.nanovg.NVGColor;
+import org.lwjgl.nanovg.NVGPaint;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -30,6 +31,8 @@ public class NanoVG {
     private List<ByteBuffer> fontData; // To keep the buffers to be removed by the Garbage Collector
 
     private NVGColor color;
+
+    private List<Integer> loadedImages;
 
     private static final String SEGOE_UI = "SEGOE_UI";
     private static final String SEGOE_UI_BOLD = "SEGOE_UI_BOLD";
@@ -67,6 +70,8 @@ public class NanoVG {
 
         // Initializes fonts
         initializeFonts();
+
+        loadedImages = new ArrayList<>();
     }
 
     /**
@@ -357,6 +362,27 @@ public class NanoVG {
         for (int i = 1; i < points.length / 2; i++) {
             nvgLineTo(nanoVGHandler, points[i * 2], points[i * 2 + 1]);
         }
+    }
+
+    public void drawImage(Vector2f relativePosition, float width, float height, int handle) {
+        nvgBeginPath(nanoVGHandler);
+        nvgRect(nanoVGHandler, relativePosition.x, relativePosition.y, width, height);
+        NVGPaint imgPaint = NVGPaint.create();
+        imgPaint = nvgImagePattern(
+                nanoVGHandler,
+                relativePosition.x, relativePosition.y,
+                width, height,
+                0f, handle, 1f, imgPaint);
+        nvgFillPaint(nanoVGHandler, imgPaint);
+        nvgFill(nanoVGHandler);
+    }
+
+    public int createImage(String path) {
+        return nvgCreateImage(nanoVGHandler, path, 0);
+    }
+
+    public void removeImage(int handle) {
+        nvgDeleteImage(nanoVGHandler, handle);
     }
 
     /**

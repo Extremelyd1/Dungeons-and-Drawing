@@ -117,7 +117,7 @@ public class AnimatedTilesLevel extends Level {
 
     @Override
     public void update(float interval, MouseInput mouseInput) {
-        camera.update();
+        camera.update(interval);
         for (Entity entity : entities) {
             entity.update(interval);
         }

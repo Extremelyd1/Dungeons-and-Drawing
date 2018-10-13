@@ -4,10 +4,11 @@ import org.joml.Vector3f;
 import sun.security.ssl.Debug;
 
 public class Spline {
-    Vector3f[] p = new Vector3f[3];
-    Vector3f v1, v2;
-    float t = 0;
-    Vector3f result;
+
+    private Vector3f[] p;
+    private Vector3f v1, v2;
+    private float t;
+    private Vector3f result;
 
     public Spline() {
     }
@@ -17,6 +18,7 @@ public class Spline {
     }
 
     public void setup(Vector3f p1, Vector3f p2, Vector3f p3) {
+        p = new Vector3f[3];
         // Base Initialization
         p[0] = p1;
         p[1] = p2;
