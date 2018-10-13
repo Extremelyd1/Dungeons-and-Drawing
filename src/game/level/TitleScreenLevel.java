@@ -4,22 +4,14 @@ import engine.GameWindow;
 import engine.MouseInput;
 import engine.camera.AnimatedCamera;
 import engine.camera.Camera;
-import engine.camera.FollowCamera;
-import engine.camera.FreeCamera;
 import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
-import engine.entities.Player;
-import engine.gui.FloatingScrollText;
 import engine.gui.GUIImage;
-import engine.gui.PuzzleGUI;
-import engine.gui.ScrollingPopup;
-import engine.input.KeyBinding;
 import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
-import engine.loader.PLYLoader;
 import engine.util.AssetStore;
 import engine.util.Utilities;
 import game.GUI;
@@ -28,8 +20,6 @@ import game.Renderer;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
 import game.map.tile.Tile;
-import game.puzzle.Puzzle;
-import game.puzzle.Solution;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
@@ -47,13 +37,8 @@ public class TitleScreenLevel extends Level {
     /**
      * Keeps track of a list of entities that should be removed
      */
-    private List<Entity> entitiesToRemove;
     private SceneLight sceneLight;
     private GUI gui;
-
-    private Puzzle testPuzzle;
-
-    private boolean paused = false;
 
     public TitleScreenLevel(LevelController levelController) {
         super(levelController);
@@ -62,7 +47,6 @@ public class TitleScreenLevel extends Level {
     @Override
     public void init() throws Exception {
         entities = new ArrayList<>();
-        entitiesToRemove = new ArrayList<>();
 
         // Load map
         map = new MapFileLoader("/level4.lvl").load();
@@ -71,7 +55,7 @@ public class TitleScreenLevel extends Level {
         renderer = new Renderer();
         renderer.init();
 
-        Vector3f[] cameraPoints = new Vector3f[] {
+        Vector3f[] cameraPoints = new Vector3f[]{
                 new Vector3f(7, 11, 3),
                 new Vector3f(10, 11, 2),
                 new Vector3f(11, 11, 3),
@@ -157,12 +141,7 @@ public class TitleScreenLevel extends Level {
         entities.add(trigger1Entity);
     }
 
-    @Override
-    public void input(MouseInput mouseInput) {
-        if (camera instanceof FreeCamera) {
-            ((FreeCamera) camera).handleInput(mouseInput);
-        }
-    }
+    public void input(MouseInput mouseinput) {}
 
     @Override
     public void update(float delta, MouseInput mouseInput) {
@@ -171,10 +150,6 @@ public class TitleScreenLevel extends Level {
         for (Entity entity : entities) {
             entity.update(delta);
         }
-
-        // Remove entities
-        entities.removeAll(entitiesToRemove);
-        entitiesToRemove = new ArrayList<>();
 
         gui.update(delta);
     }

@@ -1,7 +1,6 @@
 package engine.util;
 
 import org.joml.Vector3f;
-import sun.security.ssl.Debug;
 
 public class Spline {
 
@@ -10,20 +9,36 @@ public class Spline {
     private float t;
     private Vector3f result;
 
+    /**
+     * Creates a empty spline.
+     * Call {@link Spline#setup} to define points
+     */
     public Spline() {
     }
 
+    /**
+     * Creates a spline with the given points.
+     * @param p1 The start point of the spline
+     * @param p2 The control point of the spline
+     * @param p3 The end point of the spline
+     */
     public Spline(Vector3f p1, Vector3f p2, Vector3f p3) {
         setup(p1, p2, p3);
     }
 
+    /**
+     * Sets the points for the spline
+     * @param p1 The start point of the spline
+     * @param p2 The control point of the spline
+     * @param p3 The end point of the spline
+     */
     public void setup(Vector3f p1, Vector3f p2, Vector3f p3) {
         p = new Vector3f[3];
         // Base Initialization
         p[0] = p1;
         p[1] = p2;
         p[2] = p3;
-        t= 0;
+        t = 0;
         // V1
         v1 = new Vector3f(p1).mul(2);
         v1.sub(new Vector3f(p2).mul(4));
@@ -35,6 +50,12 @@ public class Spline {
         result = new Vector3f(p[0]);
     }
 
+    /**
+     * Updates the current position on the spline with given speed.
+     * @param speed The speed at which to advance on the spline
+     * @return The remaining distance to travel on the spline between
+     * 0 and 1
+     */
     public float update(float speed) {
         float remaining = -1;
         if (p[0] != null && p[1] != null && p[2] != null) {
@@ -57,11 +78,19 @@ public class Spline {
         return remaining;
     }
 
+    /**
+     * Gets the current position on the spline.
+     * @return The current position
+     */
     public Vector3f getResult() {
         return result;
     }
 
-    public boolean isDone(){
+    /**
+     * Returns whether moving over the spline is finished.
+     * @return true if finished, false otherwise
+     */
+    public boolean isDone() {
         if (t == 1) return true;
         else return false;
     }

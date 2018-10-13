@@ -41,4 +41,5 @@ public class GUIImage extends GUIComponent {
 
         nano.drawImage(new Vector2f(0, 0), getComponentWidth(), getComponentHeight(), imageHandle);
     }
+
 }

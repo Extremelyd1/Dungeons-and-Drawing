@@ -1,11 +1,10 @@
 package engine.camera;
 
-import engine.entities.Entity;
 import engine.util.Spline;
 import org.joml.Vector3f;
 
 /**
- * This camera follows a certain entity.
+ * This camera follows a set of predefined points
  */
 public class AnimatedCamera extends Camera {
 
@@ -18,7 +17,8 @@ public class AnimatedCamera extends Camera {
     /**
      * Constructs a camera object that follows the given spline
      * with given rotation
-     * @param points a list of points that the camera should use to construct splines
+     *
+     * @param points   a list of points that the camera should use to construct splines
      * @param rotation the camera rotation
      */
     public AnimatedCamera(Vector3f[] points, Vector3f rotation) {
@@ -28,9 +28,10 @@ public class AnimatedCamera extends Camera {
     /**
      * Constructs a camera object that follows the given spline
      * with given rotation and given speed
-     * @param points a list of points that the camera should use to construct splines
+     *
+     * @param points   a list of points that the camera should use to construct splines
      * @param rotation the camera rotation
-     * @param speed the speed of the camera movement
+     * @param speed    the speed of the camera movement
      */
     public AnimatedCamera(Vector3f[] points, Vector3f rotation, float speed) {
         super(points[0], rotation);
@@ -39,7 +40,7 @@ public class AnimatedCamera extends Camera {
     }
 
     /**
-     * Update the position of the camera to match the position of the entity
+     * Update the position of the camera to follow the set of points
      */
     @Override
     public void update(float delta) {
@@ -56,6 +57,11 @@ public class AnimatedCamera extends Camera {
         setPosition(spline.getResult());
     }
 
+    /**
+     * Gets the next point of the sequence.
+     * Wrap back to zero if index exceeds length.
+     * @return The next point of the sequence
+     */
     private Vector3f getNextPoint() {
         index %= points.length;
         return new Vector3f(points[index]);

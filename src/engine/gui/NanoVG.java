@@ -378,7 +378,9 @@ public class NanoVG {
     }
 
     public int createImage(String path) {
-        return nvgCreateImage(nanoVGHandler, path, 0);
+        int imageHandle = nvgCreateImage(nanoVGHandler, path, 0);
+        loadedImages.add(imageHandle);
+        return imageHandle;
     }
 
     public void removeImage(int handle) {
@@ -455,6 +457,9 @@ public class NanoVG {
     }
 
     public void terminateNanoVG() {
+        while (!loadedImages.isEmpty()) {
+            removeImage(loadedImages.remove(0));
+        }
         nvgDelete(nanoVGHandler);
     }
 }
