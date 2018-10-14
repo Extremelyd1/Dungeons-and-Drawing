@@ -17,6 +17,10 @@ import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
+import engine.sound.SoundBuffer;
+import engine.sound.SoundListener;
+import engine.sound.SoundManager;
+import engine.sound.SoundSource;
 import engine.util.AssetStore;
 import game.GUI;
 import game.LevelController;
@@ -47,6 +51,7 @@ public class FullLevel1 extends Level {
     private List<Entity> entitiesToRemove;
     private SceneLight sceneLight;
     private GUI gui;
+    private SoundManager soundManager;
 
     private Puzzle testPuzzle;
 
@@ -164,6 +169,18 @@ public class FullLevel1 extends Level {
         })
                 , 20
         );
+
+        // Sound
+        soundManager = new SoundManager();
+        soundManager.init();
+
+        SoundBuffer buffBack = new SoundBuffer("/sound/impossible.ogg");
+        soundManager.addSoundBuffer(buffBack);
+        SoundSource sourceBack = new SoundSource(true, true);
+        sourceBack.setBuffer(buffBack.getBufferId());
+        soundManager.addSoundSource("music", sourceBack);
+        soundManager.setListener(new SoundListener(new Vector3f(0, 0, 0)));
+        sourceBack.play();
     }
 
     @Override
@@ -212,6 +229,9 @@ public class FullLevel1 extends Level {
         }
 
         gui.update(delta);
+
+        // Sound
+        soundManager.updateListenerPosition(camera);
     }
 
     @Override
@@ -228,5 +248,6 @@ public class FullLevel1 extends Level {
     @Override
     public void terminate() {
         gui.terminate();
+        soundManager.cleanup();
     }
 }
