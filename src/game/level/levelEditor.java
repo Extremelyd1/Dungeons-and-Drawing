@@ -60,6 +60,10 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
 
     public levelEditor(LevelController levelController) {
         super(levelController);
+    }
+
+    @Override
+    public void init() throws Exception {
         renderer = new Renderer();
         sceneLight = new SceneLight();
 
@@ -85,10 +89,7 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
         // Existing entityModels
         entityModels.add("question_mark");
         entityModels.add("wooden_door");
-    }
 
-    @Override
-    public void init() throws Exception {
         camera = new FreeCamera();
 
         //map = new Map(tiles); //Enable this to generate a new Map
@@ -142,7 +143,7 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
 
     @Override
     public void update(float delta, MouseInput mouseInput) {
-
+        
     }
 
     @Override
