@@ -179,7 +179,7 @@ public class FullLevel1 extends Level {
         SoundSource sourceBack = new SoundSource(true, true);
         sourceBack.setBuffer(buffBack.getBufferId());
         soundManager.addSoundSource("music", sourceBack);
-        soundManager.setListener(new SoundListener(new Vector3f(0, 0, 0)));
+        soundManager.setListener(SoundListener.getSoundListener());
         sourceBack.play();
     }
 
