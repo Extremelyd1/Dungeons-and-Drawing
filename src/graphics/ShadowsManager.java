@@ -64,7 +64,7 @@ public class ShadowsManager {
                             continue;
                         }
                         Vector3f tilePos = new Vector3f(tile.getPosition().x, 0, tile.getPosition().y);
-                        int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(0.0f,2.5f, 0.0f));
+                        int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(1.0f,3.0f, 1.0f));
                         // Calculate the Model matrix in World coordinates
                         if (frustrum == -2 || frustrum == -1) {
                             Mesh mesh = tile.getMesh();
@@ -83,8 +83,8 @@ public class ShadowsManager {
                 }
             }
             for (Entity entity : entities) {
-                // Calculate the Model matrix in World coordinates
-                if (frustumIntersection.testSphere(new Vector3f(entity.getPosition()), 0.5f)) {
+                int frustrum = frustumIntersection.intersectAab(new Vector3f(entity.getPosition()).sub(1.0f, 1.1f, 1.0f), new Vector3f(entity.getPosition()).add(1.0f,3.0f, 1.0f));
+                if (frustrum == -2 || frustrum == -1) {
                     Mesh mesh = entity.getMesh();
                     if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
                         model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
@@ -123,25 +123,29 @@ public class ShadowsManager {
                             }
                             // Calculate the Model matrix in World coordinates
                             Mesh mesh = tile.getMesh();
-                            if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
-                                model = transformation.getWorldMatrix(
-                                        new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
-                                        tile.getRotation(),
-                                        0.5f);
-                                // Set model view matrix for this item
-                                shaderManager.updateDepthCubeMapShader(model);
-                                // Render the mesh
-                                mesh.render();
+                            if ((new Vector3f(pointLight.getPosition()).sub(new Vector3f(tile.getPosition().x, 0, tile.getPosition().y))).length() <= pointLight.getPlane().y) {
+                                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || pointLight.isDynamicOnly()) {
+                                    model = transformation.getWorldMatrix(
+                                            new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
+                                            tile.getRotation(),
+                                            0.5f);
+                                    // Set model view matrix for this item
+                                    shaderManager.updateDepthCubeMapShader(model);
+                                    // Render the mesh
+                                    mesh.render();
+                                }
                             }
                         }
                     }
                 }
                 for (Entity entity : entities) {
                     Mesh mesh = entity.getMesh();
-                    if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
-                        model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
-                        shaderManager.updateDepthCubeMapShader(model);
-                        mesh.render();
+                    if ((new Vector3f(pointLight.getPosition()).sub(new Vector3f(entity.getPosition()))).length() <= pointLight.getPlane().y) {
+                        if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                            model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
+                            shaderManager.updateDepthCubeMapShader(model);
+                            mesh.render();
+                        }
                     }
                 }
                 //Unbind FBO and shader
@@ -173,7 +177,7 @@ public class ShadowsManager {
                                 continue;
                             }
                             Vector3f tilePos = new Vector3f(tile.getPosition().x, 0, tile.getPosition().y);
-                            int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(0.0f,2.5f, 0.0f));
+                            int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(1.0f,3.0f, 1.0f));
                             // Calculate the Model matrix in World coordinates
                             if (frustrum == -2 || frustrum == -1) {
                                 Mesh mesh = tile.getMesh();
@@ -192,8 +196,8 @@ public class ShadowsManager {
                     }
                 }
                 for (Entity entity : entities) {
-                    // Calculate the Model matrix in World coordinates
-                    if (frustumIntersection.testSphere(new Vector3f(entity.getPosition()), 0.5f)) {
+                    int frustrum = frustumIntersection.intersectAab(new Vector3f(entity.getPosition()).sub(1.0f, 1.1f, 1.0f), new Vector3f(entity.getPosition()).add(1.0f,3.0f, 1.0f));
+                    if (frustrum == -2 || frustrum == -1) {
                         Mesh mesh = entity.getMesh();
                         if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
                             model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());

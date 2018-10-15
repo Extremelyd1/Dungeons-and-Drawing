@@ -295,5 +295,6 @@ void main()
 
     vec4 result = ambientC * vec4(ambientLight, 1) + diffuseSpecularComp;
     result.w = 1;   // Bit of a hack to remove alpha component which break HDR
+    //fragColor = clamp(result, 0, 1);
     fragColor = result;
 }

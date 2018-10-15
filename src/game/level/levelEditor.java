@@ -35,7 +35,7 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
     private final Camera camera;
 
     // Map related
-    private int width = 25, height = 25;
+    private int width = 50, height = 50;
     private Tile[][] tiles = new Tile[width][height];
 
     // Movement related
@@ -261,7 +261,7 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
     }
 
     public void invoke(long window, int key, int scancode, int action, int mods) {
-        //Debug.println("KEY EVENT", "key: " + key + ", action:" + action);
+        Debug.println("KEY EVENT", "key: " + key + ", action:" + action);
         if (action == GLFW_RELEASE) {
             if (key == 328) { //Numpad 8 Move model up
                 float coordinateZ = currentEntity.getPosition().z;
@@ -363,7 +363,7 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
                 if (!editingLights) {
                     currentEntity.setRotation(0, currentEntity.getRotation().y - 90, 0);
                 }
-            } else if (key == 330) { // Numpad Del Delete tile
+            } else if (key == 261) { // Numpad Del Delete tile
                 if (!editingLights) {
                     if (!editingEntity) {
                         tiles[Math.round(currentEntity.getPosition().x)][Math.round(currentEntity.getPosition().z)] = null;
@@ -384,9 +384,10 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
                     mesh.setMaterial(new Material(0.0f));
                     currentEntity.setMesh(mesh);
                     currentEntity.setScale(0.125f);
-                    if (sceneLight.pointLights.get(lightNumber).getIntensity() != 0.0f)
+                    if (sceneLight.pointLights.get(lightNumber).getIntensity() != 0.0f) {
                         currentEntity.setPosition(sceneLight.pointLights.get(lightNumber).getPosition());
-                    else {
+                        intensity = sceneLight.pointLights.get(lightNumber).getIntensity();
+                    } else {
                         sceneLight.pointLights.get(lightNumber).setPosition(currentEntity.getPosition());
                     }
                     sceneLight.pointLights.get(lightNumber).setIntensity(intensity);
@@ -408,7 +409,6 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
                                 Math.round(currentEntity.getPosition().z)
                         );
                         currentEntity.setPosition(position);
-                        editingLights = false;
                         movementPrecision = 1.0f;
                     } else {
                         movementPrecision = 0.25f;
@@ -425,6 +425,7 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
                         );
                         currentEntity.setPosition(position);
                     }
+                    editingLights = false;
                 }
             } else if (key == 325) { // Numpad 5 Switch to entity mode
                 if (!editingEntity) {

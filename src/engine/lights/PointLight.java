@@ -19,7 +19,7 @@ public class PointLight {
     
     public PointLight(Vector3f color, Vector3f position, float intensity, Vector2f plane) {
         try {
-            staticShadowMap = new ShadowMap(4096);
+            staticShadowMap = new ShadowMap(2048);
             dynamicShadowMap = new ShadowMap(1024);
             staticShadowMap.initShadowCubeMap();
             dynamicShadowMap.initShadowCubeMap();
@@ -37,6 +37,16 @@ public class PointLight {
     public PointLight(Vector3f color, Vector3f position, float intensity, Attenuation attenuation, Vector2f plane) {
         this(color, position, intensity, plane);
         this.attenuation = attenuation;
+    }
+
+    public void setToDynamicOnly() {
+        staticShadowMap.cleanup();
+        staticShadowMap = null;
+    }
+
+    public boolean isDynamicOnly() {
+        if (staticShadowMap == null) return true;
+        else return false;
     }
 
     public Vector3f getColor() {
