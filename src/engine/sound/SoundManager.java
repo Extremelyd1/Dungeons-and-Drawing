@@ -18,6 +18,9 @@ import static org.lwjgl.openal.ALC10.*;
 import org.lwjgl.openal.ALCCapabilities;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+/**
+ * Class that manages all sound related actions
+ */
 public class SoundManager {
 
     private long device;

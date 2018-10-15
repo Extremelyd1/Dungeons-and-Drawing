@@ -3,15 +3,23 @@ package engine.sound;
 import org.joml.Vector3f;
 import static org.lwjgl.openal.AL10.*;
 
+/**
+ * Singleton class that basically is the 'set of ears' that hears the sound
+ */
 public class SoundListener {
 
-    public SoundListener() {
-        this(new Vector3f(0, 0, 0));
+    private static SoundListener soundListener;
+
+    private SoundListener() {
+        alListener3f(AL_POSITION, 0, 0, 0);
+        alListener3f(AL_VELOCITY, 0, 0, 0);
     }
 
-    public SoundListener(Vector3f position) {
-        alListener3f(AL_POSITION, position.x, position.y, position.z);
-        alListener3f(AL_VELOCITY, 0, 0, 0);
+    public static SoundListener getSoundListener() {
+        if (soundListener == null) {
+            soundListener = new SoundListener();
+        }
+        return soundListener;
     }
     
     public void setSpeed(Vector3f speed) {

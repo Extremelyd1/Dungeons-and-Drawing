@@ -12,6 +12,9 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import static org.lwjgl.system.MemoryUtil.*;
 
+/**
+ * A buffer to store sound media. Media has to be supplied as a path name to an .ogg file
+ */
 public class SoundBuffer {
 
     private final int bufferId;

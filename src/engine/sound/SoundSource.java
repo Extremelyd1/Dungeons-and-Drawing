@@ -3,6 +3,9 @@ package engine.sound;
 import org.joml.Vector3f;
 import static org.lwjgl.openal.AL10.*;
 
+/**
+ * Class that defines a point in the scene that emits sound
+ */
 public class SoundSource {
 
     private final int sourceId;
