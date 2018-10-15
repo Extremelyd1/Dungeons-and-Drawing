@@ -261,7 +261,7 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
     }
 
     public void invoke(long window, int key, int scancode, int action, int mods) {
-        Debug.println("KEY EVENT", "key: " + key + ", action:" + action);
+        //Debug.println("KEY EVENT", "key: " + key + ", action:" + action);
         if (action == GLFW_RELEASE) {
             if (key == 328) { //Numpad 8 Move model up
                 float coordinateZ = currentEntity.getPosition().z;

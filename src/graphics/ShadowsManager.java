@@ -44,7 +44,7 @@ public class ShadowsManager {
         ShadowMap shadowMap;
 
         if (sceneLight.directionalLight != null && sceneLight.directionalLight.isShadowEnabled()) {
-            if (isDynamic) {
+            if (isDynamic || sceneLight.directionalLight.isDynamicOnly()) {
                 shadowMap = sceneLight.directionalLight.getDynamicShadowMap();
             } else {
                 shadowMap = sceneLight.directionalLight.getStaticShadowMap();
@@ -68,7 +68,7 @@ public class ShadowsManager {
                         // Calculate the Model matrix in World coordinates
                         if (frustrum == -2 || frustrum == -1) {
                             Mesh mesh = tile.getMesh();
-                            if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                            if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || sceneLight.directionalLight.isDynamicOnly()) {
                                 model = transformation.getWorldMatrix(
                                         new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
                                         tile.getRotation(),
@@ -86,7 +86,7 @@ public class ShadowsManager {
                 int frustrum = frustumIntersection.intersectAab(new Vector3f(entity.getPosition()).sub(1.0f, 1.1f, 1.0f), new Vector3f(entity.getPosition()).add(1.0f,3.0f, 1.0f));
                 if (frustrum == -2 || frustrum == -1) {
                     Mesh mesh = entity.getMesh();
-                    if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                    if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || sceneLight.directionalLight.isDynamicOnly()) {
                         model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
                         shaderManager.updateDepthShader(model);
                         // Render the mesh
@@ -141,7 +141,7 @@ public class ShadowsManager {
                 for (Entity entity : entities) {
                     Mesh mesh = entity.getMesh();
                     if ((new Vector3f(pointLight.getPosition()).sub(new Vector3f(entity.getPosition()))).length() <= pointLight.getPlane().y) {
-                        if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                        if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())|| sceneLight.directionalLight.isDynamicOnly()) {
                             model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
                             shaderManager.updateDepthCubeMapShader(model);
                             mesh.render();
