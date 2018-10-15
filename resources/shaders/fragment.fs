@@ -293,5 +293,7 @@ void main()
     diffuseSpecularComp += calcSpotLightComponents(spotLights[8]);
     diffuseSpecularComp += calcSpotLightComponents(spotLights[9]);
 
-    fragColor = clamp(ambientC * vec4(ambientLight, 1) + diffuseSpecularComp, 0, 1);
+    vec4 result = ambientC * vec4(ambientLight, 1) + diffuseSpecularComp;
+    result.w = 1;   // Bit of a hack to remove alpha component which break HDR
+    fragColor = result;
 }

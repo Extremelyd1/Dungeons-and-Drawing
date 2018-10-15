@@ -109,4 +109,8 @@ public class Entity {
     public Mesh getMesh() {
         return mesh;
     }
+
+    public void setMesh(Mesh mesh) {
+        this.mesh = mesh;
+    }
 }

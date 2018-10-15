@@ -26,10 +26,12 @@ public class ShadowsManager {
     // Public Methods for rendering Shadows
     //
     public void renderDynamicShadows(Transformation transformation, SceneLight sceneLight, ShaderManager shaderManager, Map map, List<Entity>  entities) {
-        renderShadows(transformation, sceneLight, shaderManager, map, entities, true);
+        if (sceneLight != null)
+            renderShadows(transformation, sceneLight, shaderManager, map, entities, true);
     }
     public void renderStaticShadows(Transformation transformation, SceneLight sceneLight, ShaderManager shaderManager, Map map, List<Entity> entities) {
-        renderShadows(transformation, sceneLight, shaderManager, map, entities, false);
+        if (sceneLight != null)
+            renderShadows(transformation, sceneLight, shaderManager, map, entities, false);
     }
 
     //

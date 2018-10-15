@@ -14,11 +14,14 @@ import java.util.List;
 
 public class MapFileLoader implements MapLoader {
 
+    private boolean editorMode = false;
     private String resourcePath;
 
     public MapFileLoader(String resourcePath) {
         this.resourcePath = resourcePath;
     }
+
+    public void setEditorMode(boolean editorMode) { this.editorMode = editorMode; }
 
     @Override
     public Map load() throws Exception {
@@ -68,6 +71,7 @@ public class MapFileLoader implements MapLoader {
                 Mesh mesh = AssetStore.getTileMesh(meshName);
 
                 Tile tile = new Tile(position, rotation, mesh, solid);
+                if (editorMode) tile.getMesh().setName(meshName);
                 tileList[y][x] = tile;
 
                 if (tileProperties.length == 4) {

@@ -26,6 +26,7 @@ public class ShaderManager {
     private Shader sceneShader;
     private Shader depthShaderCube;
     private Shader depthShader;
+    private Shader hdrShader;
 
     /**
      * Initialize the main shader for the scene
@@ -87,6 +88,18 @@ public class ShaderManager {
         depthShader.createUniform("modelMatrix");
     }
 
+    /**
+     * Initialize the HDR shader
+     */
+    public void setupHDRShader() throws Exception {
+        hdrShader = new Shader();
+        hdrShader.createVertexShader(Utilities.loadResource("/shaders/hdr.vs"));
+        hdrShader.createFragmentShader(Utilities.loadResource("/shaders/hdr.fs"));
+        hdrShader.link();
+        // Create HDR Shader Variables
+        hdrShader.createUniform("hdrTexture");
+    }
+
     //
     // Scene shader management Functions
     //
@@ -94,6 +107,7 @@ public class ShaderManager {
         sceneShader.bind();
     }
     public void initializeSceneShader(Vector3f viewPos, boolean shadowEnable, SceneLight sceneLight, float specularPower){
+        if (sceneLight == null) return;
         int numPointLights = sceneLight.pointLights != null ? sceneLight.pointLights.size() : 0;
         int numSpotLights = sceneLight.spotLights != null ? sceneLight.spotLights.size() : 0;
 
@@ -247,6 +261,21 @@ public class ShaderManager {
     public void unbindDepthCubeMapShader(){
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         depthShaderCube.unbind();
+    }
+
+    //
+    // HDR Shader management Functions
+    //
+    public void bindHDRShader(){
+        hdrShader.bind();
+    }
+    public void allocateTextureUnitsToHDRShader(int texture) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        hdrShader.setUniform("hdrTexture", 0);
+    }
+    public void unbindHDRShader(){
+        hdrShader.unbind();
     }
 
     //
