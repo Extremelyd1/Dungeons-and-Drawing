@@ -110,12 +110,10 @@ public class Renderer {
         if (hdrManager == null) {
             hdrManager = new HDR(window.getWindowWidth(), window.getWindowHeight());
             try {hdrManager.init();} catch (Exception e) { Debug.println("HDR", "FAILURE TO INITIALIZE");}
-            Debug.println("HDR", "Instantiated with (" + window.getWindowWidth() + ", " + window.getWindowHeight() + "), ID: " + hdrManager.getHdr());
         } else if (hdrManager.getWidth() != window.getWindowWidth() || hdrManager.getHeight() != window.getWindowHeight()) {
             hdrManager.cleanup();
             hdrManager = new HDR(window.getWindowWidth(), window.getWindowHeight());
             try {hdrManager.init();} catch (Exception e) { Debug.println("HDR", "FAILURE TO INITIALIZE");}
-            Debug.println("HDR", "Instantiated with (" + window.getWindowWidth() + ", " + window.getWindowHeight() + "), ID: " + hdrManager.getHdr());
         }
 
         if (shadowEnable){

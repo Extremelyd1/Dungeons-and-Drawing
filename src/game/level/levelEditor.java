@@ -201,7 +201,7 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
             file = new File(fullPath, "generatedEditorLevel_entities.lvl");
             file.createNewFile();
             writer = new OutputStreamWriter(new FileOutputStream(file));
-            for (int i = 0; i < entities.size(); i++) {
+            for (int i = 1; i < entities.size(); i++) {
                 writer.write(entities.get(i).getMesh().getName() + " " +
                         entities.get(i).getPosition().x + " " +
                         entities.get(i).getPosition().y + " " +
