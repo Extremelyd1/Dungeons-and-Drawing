@@ -12,10 +12,7 @@ import engine.gui.FloatingScrollText;
 import engine.gui.PuzzleGUI;
 import engine.gui.ScrollingPopup;
 import engine.input.KeyBinding;
-import engine.lights.AmbientLight;
-import engine.lights.DirectionalLight;
-import engine.lights.PointLight;
-import engine.lights.SceneLight;
+import engine.lights.*;
 import engine.loader.PLYLoader;
 import engine.util.AssetStore;
 import game.GUI;
@@ -92,6 +89,26 @@ public class FullLevel1 extends Level {
 
         // Setup lights
         sceneLight = new SceneLight();
+
+        /*sceneLight.pointLights.add(new PointLight(
+                        new Vector3f(1f, 1f, 1f),
+                        new Vector3f(player.getPosition().x, player.getPosition().y + 0.5f, player.getPosition().z),
+                        0.7f,
+                        new Vector2f(0.5f, 5f)
+                ));
+        sceneLight.pointLights.get(0).setToDynamicOnly();*/
+
+        /*Vector3f lightPosition6 = new Vector3f(2.0f, 15.0f, 2.0f);
+        float lightIntensity6 = 0.1f;
+        PointLight.Attenuation att6 = new PointLight.Attenuation(0.0f, 0.0f, 0.5f);
+        Vector3f coneDir2 = new Vector3f(-1f, -0.5f, 0);
+        float cutoff2 = (float) Math.cos(Math.toRadians(6.5f));
+        float outerCutOff2 = (float) Math.cos(Math.toRadians(11.5f));
+        SpotLight spotLight2 = new SpotLight(new Vector3f(1.0f, 1.0f, 1.0f), lightPosition6,
+                lightIntensity6, coneDir2, cutoff2, outerCutOff2, att6, new Vector2f(1.0f, 50f));
+        sceneLight.spotLights.add(spotLight2);
+        Vector3f coneDir = new Vector3f(sceneLight.spotLights.get(0).getPosition()).sub(new Vector3f(player.getPosition())).mul(-1);
+        sceneLight.spotLights.get(0).setConeDirection(coneDir);*/
 
         map.getTiles("light").forEach(
                 t -> sceneLight.pointLights.add(new PointLight(
@@ -178,6 +195,7 @@ public class FullLevel1 extends Level {
         if (!paused) {
             camera.update();
             player.update(delta);
+            //sceneLight.pointLights.get(0).setPosition(new Vector3f(player.getPosition().x, player.getPosition().y + 0.5f, player.getPosition().z + 1.5f));
             sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
 
             for (Entity entity : entities) {

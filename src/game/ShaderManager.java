@@ -70,12 +70,12 @@ public class ShaderManager {
         // Create Depth Cube Shader
         depthShaderCube = new Shader();
         depthShaderCube.createVertexShader(Utilities.loadResource("/shaders/depth_vertex_cube.vs"));
-        depthShaderCube.createGeometryShader(Utilities.loadResource("/shaders/depth_geometry_cube.gs"));
+        //depthShaderCube.createGeometryShader(Utilities.loadResource("/shaders/depth_geometry_cube.gs"));
         depthShaderCube.createFragmentShader(Utilities.loadResource("/shaders/depth_fragment_cube.fs"));
         depthShaderCube.link();
         // Create Depth Cube Shader variables
         depthShaderCube.createUniform("modelMatrix");
-        depthShaderCube.createUniform("shadowMatrices");
+        depthShaderCube.createUniform("shadowMatrice");
         depthShaderCube.createUniform("lightPos");
         depthShaderCube.createUniform("far_plane");
         // Create Depth Shader
@@ -161,8 +161,13 @@ public class ShaderManager {
 
         for (int i = 0; i < numPointLights; i++) {
             // Static Shadows
-            glActiveTexture(GL_TEXTURE1 + (i * 2));
-            glBindTexture(GL_TEXTURE_CUBE_MAP, sceneLight.pointLights.get(i).getStaticShadowMap().getDepthMap());
+            if (!sceneLight.pointLights.get(i).isDynamicOnly()) {
+                glActiveTexture(GL_TEXTURE1 + (i * 2));
+                glBindTexture(GL_TEXTURE_CUBE_MAP, sceneLight.pointLights.get(i).getStaticShadowMap().getDepthMap());
+            } else {
+                glActiveTexture(GL_TEXTURE1 + (i * 2));
+                glBindTexture(GL_TEXTURE_CUBE_MAP, sceneLight.pointLights.get(i).getDynamicShadowMap().getDepthMap());
+            }
             // Dynamic Shadows
             glActiveTexture(GL_TEXTURE1 + (i * 2) + 1);
             glBindTexture(GL_TEXTURE_CUBE_MAP, sceneLight.pointLights.get(i).getDynamicShadowMap().getDepthMap());
@@ -177,8 +182,10 @@ public class ShaderManager {
         }
         if (sceneLight.directionalLight != null) {
             // Static Shadows
-            glActiveTexture(GL_TEXTURE1 + numPointLights * 2 + numSpotLights * 2);
-            glBindTexture(GL_TEXTURE_2D, sceneLight.directionalLight.getStaticShadowMap().getDepthMap());
+            if (!sceneLight.directionalLight.isDynamicOnly()) {
+                glActiveTexture(GL_TEXTURE1 + numPointLights * 2 + numSpotLights * 2);
+                glBindTexture(GL_TEXTURE_2D, sceneLight.directionalLight.getStaticShadowMap().getDepthMap());
+            }
             // Dynamic Shadows
             glActiveTexture(GL_TEXTURE1 + numPointLights * 2 + numSpotLights * 2 + 1);
             glBindTexture(GL_TEXTURE_2D, sceneLight.directionalLight.getDynamicShadowMap().getDepthMap());
@@ -213,46 +220,9 @@ public class ShaderManager {
     public void bindDepthCubeMapShader(){
         depthShaderCube.bind();
     }
-    public void initializeDepthCubeMapShader(Transformation transformation, Vector3f position, Vector2f plane) {
-        Matrix4f shadowProj = new Matrix4f();
-        shadowProj.setPerspective((float) Math.toRadians(90), 1.0f,
-                plane.x,
-                plane.y);
-        Matrix4f views[] = new Matrix4f[6];
-
-        views[0] = transformation.getProjectionWithDirection(
-                position,
-                new Vector3f(1.0f, 0.0f, 0.0f),
-                shadowProj,
-                new Vector3f(0.0f, -1.0f, 0.0f));
-        views[1] = transformation.getProjectionWithDirection(
-                position,
-                new Vector3f(-1.0f, 0.0f, 0.0f),
-                shadowProj,
-                new Vector3f(0.0f, -1.0f, 0.0f));
-        views[2] = transformation.getProjectionWithDirection(
-                position,
-                new Vector3f(0.0f, 1.0f, 0.0f),
-                shadowProj,
-                new Vector3f(0.0f, 0.0f, 1.0f));
-        views[3] = transformation.getProjectionWithDirection(
-                position,
-                new Vector3f(0.0f, -1.0f, 0.0f),
-                shadowProj,
-                new Vector3f(0.0f, 0.0f, -1.0f));
-        views[4] = transformation.getProjectionWithDirection(
-                position,
-                new Vector3f(0.0f, 0.0f, 1.0f),
-                shadowProj,
-                new Vector3f(0.0f, -1.0f, 0.0f));
-        views[5] = transformation.getProjectionWithDirection(
-                position,
-                new Vector3f(0.0f, 0.0f, -1.0f),
-                shadowProj,
-                new Vector3f(0.0f, -1.0f, 0.0f));
-
-        depthShaderCube.setUniform("shadowMatrices", views, 6);
-        depthShaderCube.setUniform("lightPos", position);
+    public void initializeDepthCubeMapShader(Matrix4f view, Vector3f pos, Vector2f plane) {
+        depthShaderCube.setUniform("shadowMatrice", view);
+        depthShaderCube.setUniform("lightPos", pos);
         depthShaderCube.setUniform("far_plane",plane.y);
     }
     public void updateDepthCubeMapShader(Matrix4f model) {

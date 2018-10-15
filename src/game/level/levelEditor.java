@@ -124,7 +124,7 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
                     new Vector3f(1f, 1f, 1f),
                     new Vector3f(2, 2, 2),
                     0.0f,
-                    new Vector2f(0.1f, 100f)
+                    new Vector2f(0.1f, 60f)
             ));
         }
         loadLights();
