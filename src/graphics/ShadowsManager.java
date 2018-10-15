@@ -149,7 +149,7 @@ public class ShadowsManager {
                         if (frustrum == -2 || frustrum == -1) {
                             Mesh mesh = entity.getMesh();
                             if ((new Vector3f(pointLight.getPosition()).sub(new Vector3f(entity.getPosition()))).length() <= pointLight.getPlane().y) {
-                                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || sceneLight.directionalLight.isDynamicOnly()) {
+                                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || (sceneLight.directionalLight != null && sceneLight.directionalLight.isDynamicOnly())) {
                                     model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
                                     shaderManager.updateDepthCubeMapShader(model);
                                     mesh.render();

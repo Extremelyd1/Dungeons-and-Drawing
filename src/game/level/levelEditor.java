@@ -32,7 +32,7 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
 
     private Map map;
     private Renderer renderer;
-    private final Camera camera;
+    private Camera camera;
 
     // Map related
     private int width = 50, height = 50;
@@ -61,7 +61,6 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
     public levelEditor(LevelController levelController) {
         super(levelController);
         renderer = new Renderer();
-        camera = new FreeCamera();
         sceneLight = new SceneLight();
 
         // Existing tileModels
@@ -90,6 +89,8 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
 
     @Override
     public void init() throws Exception {
+        camera = new FreeCamera();
+
         //map = new Map(tiles); //Enable this to generate a new Map
         MapFileLoader mapFileLoader = new MapFileLoader("/levels/generatedEditorLevel_tiles.lvl");
         mapFileLoader.setEditorMode(true);
