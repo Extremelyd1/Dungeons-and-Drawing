@@ -5,7 +5,9 @@
  */
 package engine.lights;
 
+import engine.Transformation;
 import graphics.ShadowMap;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -16,6 +18,7 @@ public class PointLight {
     private Attenuation attenuation;
     private ShadowMap staticShadowMap, dynamicShadowMap;
     private Vector2f plane;
+    private Matrix4f[] views = new Matrix4f[6];
     
     public PointLight(Vector3f color, Vector3f position, float intensity, Vector2f plane) {
         try {
@@ -32,11 +35,65 @@ public class PointLight {
         this.position = position;
         this.intensity = intensity;
         this.plane = plane;
+
+        setupShadowViews();
     }
 
     public PointLight(Vector3f color, Vector3f position, float intensity, Attenuation attenuation, Vector2f plane) {
         this(color, position, intensity, plane);
         this.attenuation = attenuation;
+    }
+
+    public Matrix4f getView(int i) {
+        return views[i];
+    }
+
+    public void setupShadowViews() {
+        Transformation transformation = new Transformation();
+        Matrix4f shadowProj = new Matrix4f();
+        shadowProj.setPerspective((float) Math.toRadians(90), 1.0f,
+                plane.x,
+                plane.y);
+        views[0] = transformation.getProjectionWithDirection(
+                position,
+                new Vector3f(1.0f, 0.0f, 0.0f),
+                shadowProj,
+                new Vector3f(0.0f, -1.0f, 0.0f));
+        views[1] = transformation.getProjectionWithDirection(
+                position,
+                new Vector3f(-1.0f, 0.0f, 0.0f),
+                shadowProj,
+                new Vector3f(0.0f, -1.0f, 0.0f));
+        views[2] = transformation.getProjectionWithDirection(
+                position,
+                new Vector3f(0.0f, 1.0f, 0.0f),
+                shadowProj,
+                new Vector3f(0.0f, 0.0f, 1.0f));
+        views[3] = transformation.getProjectionWithDirection(
+                position,
+                new Vector3f(0.0f, -1.0f, 0.0f),
+                shadowProj,
+                new Vector3f(0.0f, 0.0f, -1.0f));
+        views[4] = transformation.getProjectionWithDirection(
+                position,
+                new Vector3f(0.0f, 0.0f, 1.0f),
+                shadowProj,
+                new Vector3f(0.0f, -1.0f, 0.0f));
+        views[5] = transformation.getProjectionWithDirection(
+                position,
+                new Vector3f(0.0f, 0.0f, -1.0f),
+                shadowProj,
+                new Vector3f(0.0f, -1.0f, 0.0f));
+    }
+
+    public void setToDynamicOnly() {
+        staticShadowMap.cleanup();
+        staticShadowMap = dynamicShadowMap;
+    }
+
+    public boolean isDynamicOnly() {
+        if (staticShadowMap == dynamicShadowMap) return true;
+        else return false;
     }
 
     public Vector3f getColor() {
@@ -53,6 +110,7 @@ public class PointLight {
 
     public void setPosition(Vector3f position) {
         this.position = position;
+        setupShadowViews();
     }
 
     public float getIntensity() {

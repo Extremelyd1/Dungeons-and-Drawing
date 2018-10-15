@@ -7,6 +7,7 @@ import engine.Transformation;
 import engine.lights.SceneLight;
 import game.map.Map;
 import game.map.tile.Tile;
+import graphics.HDR;
 import graphics.Mesh;
 import graphics.ShadowsManager;
 import org.joml.FrustumIntersection;
@@ -23,6 +24,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
 
 /**
  * Class that handles all graphic updates
@@ -34,6 +36,7 @@ public class Renderer {
     private FrustumIntersection frustumIntersection;
     private ShaderManager shaderManager;
     private ShadowsManager shadowsManager;
+    private HDR hdrManager;
     private boolean firstRender = true;
 
     private static final float FOV = (float) Math.toRadians(45.0f);
@@ -55,6 +58,7 @@ public class Renderer {
         shaderManager = new ShaderManager();
         shaderManager.setupSceneShader();
         shaderManager.setupDepthShader();
+        shaderManager.setupHDRShader();
 
         // Permanently Enable Back Face Culling
         glEnable(GL_CULL_FACE);
@@ -103,6 +107,15 @@ public class Renderer {
             }
         });
 
+        if (hdrManager == null) {
+            hdrManager = new HDR(window.getWindowWidth(), window.getWindowHeight());
+            try {hdrManager.init();} catch (Exception e) { Debug.println("HDR", "FAILURE TO INITIALIZE");}
+        } else if (hdrManager.getWidth() != window.getWindowWidth() || hdrManager.getHeight() != window.getWindowHeight()) {
+            hdrManager.cleanup();
+            hdrManager = new HDR(window.getWindowWidth(), window.getWindowHeight());
+            try {hdrManager.init();} catch (Exception e) { Debug.println("HDR", "FAILURE TO INITIALIZE");}
+        }
+
         if (shadowEnable){
             if (firstRender) {
                 shadowsManager.renderStaticShadows(transformation, sceneLight, shaderManager, map, entities);
@@ -111,7 +124,20 @@ public class Renderer {
             shadowsManager.renderDynamicShadows(transformation, sceneLight, shaderManager, map, entities);
         }
 
+        glBindRenderbuffer(GL_RENDERBUFFER, hdrManager.getRender());
+        glBindFramebuffer(GL_FRAMEBUFFER, hdrManager.getHdrFBO());
+        clear();
         renderScene(camera, entities, sceneLight, map);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+        clear();
+        glDisable(GL_CULL_FACE);
+        shaderManager.bindHDRShader();
+        shaderManager.allocateTextureUnitsToHDRShader(hdrManager.getHdr());
+        hdrManager.renderQuad();
+        shaderManager.unbindHDRShader();
+        glEnable(GL_CULL_FACE);
     }
 
     public void renderScene(Camera camera,
@@ -146,7 +172,7 @@ public class Renderer {
                         continue;
                     }
                     Vector3f tilePos = new Vector3f(tile.getPosition().x, 0, tile.getPosition().y);
-                    int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(0.0f,2.5f, 0.0f));
+                    int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(1.0f,3.0f, 1.0f));
                     // Calculate the Model matrix in World coordinates
                     if (frustrum == -2 || frustrum == -1) {
                         Mesh mesh = tile.getMesh();
@@ -164,7 +190,8 @@ public class Renderer {
         }
         // Render Entities
         for (Entity entity : entities) {
-            if (frustumIntersection.testSphere(new Vector3f(entity.getPosition()), 0.5f)) {
+            int frustrum = frustumIntersection.intersectAab(new Vector3f(entity.getPosition()).sub(1.0f, 1.1f, 1.0f), new Vector3f(entity.getPosition()).add(1.0f,3.0f, 1.0f));
+            if (frustrum == -2 || frustrum == -1) {
                 Mesh mesh = entity.getMesh();
                 model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
                 shaderManager.updateSceneShader(model, projectionAndView, mesh.getMaterial());
@@ -178,5 +205,9 @@ public class Renderer {
   
     public void terminate() {
         shaderManager.terminate();
+    }
+
+    public void resetShadowMap(){
+        firstRender = true;
     }
 }

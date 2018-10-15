@@ -4,10 +4,7 @@ import engine.IGameLogic;
 import engine.MouseInput;
 import engine.input.KeyBinding;
 import engine.util.Timer;
-import game.level.FullLevel1;
-import game.level.Level;
-import game.level.MapTestLevel;
-import game.level.TutorialLevel;
+import game.level.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +18,7 @@ public class LevelController implements IGameLogic {
 
     public LevelController() {
         this.levels = new ArrayList<>(Arrays.asList(
+                new levelEditor(this),
                 new FullLevel1(this)
         ));
         this.active = 0;

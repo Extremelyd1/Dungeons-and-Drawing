@@ -15,21 +15,21 @@ import sun.security.ssl.Debug;
 
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glViewport;
-import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
-import static org.lwjgl.opengl.GL30.glBindFramebuffer;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+import static org.lwjgl.opengl.GL30.*;
 
 public class ShadowsManager {
     //
     // Public Methods for rendering Shadows
     //
     public void renderDynamicShadows(Transformation transformation, SceneLight sceneLight, ShaderManager shaderManager, Map map, List<Entity>  entities) {
-        renderShadows(transformation, sceneLight, shaderManager, map, entities, true);
+        if (sceneLight != null)
+            renderShadows(transformation, sceneLight, shaderManager, map, entities, true);
     }
     public void renderStaticShadows(Transformation transformation, SceneLight sceneLight, ShaderManager shaderManager, Map map, List<Entity> entities) {
-        renderShadows(transformation, sceneLight, shaderManager, map, entities, false);
+        if (sceneLight != null)
+            renderShadows(transformation, sceneLight, shaderManager, map, entities, false);
     }
 
     //
@@ -42,7 +42,7 @@ public class ShadowsManager {
         ShadowMap shadowMap;
 
         if (sceneLight.directionalLight != null && sceneLight.directionalLight.isShadowEnabled()) {
-            if (isDynamic) {
+            if (isDynamic || sceneLight.directionalLight.isDynamicOnly()) {
                 shadowMap = sceneLight.directionalLight.getDynamicShadowMap();
             } else {
                 shadowMap = sceneLight.directionalLight.getStaticShadowMap();
@@ -62,11 +62,11 @@ public class ShadowsManager {
                             continue;
                         }
                         Vector3f tilePos = new Vector3f(tile.getPosition().x, 0, tile.getPosition().y);
-                        int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(0.0f,2.5f, 0.0f));
+                        int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(1.0f,3.0f, 1.0f));
                         // Calculate the Model matrix in World coordinates
                         if (frustrum == -2 || frustrum == -1) {
                             Mesh mesh = tile.getMesh();
-                            if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                            if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || sceneLight.directionalLight.isDynamicOnly()) {
                                 model = transformation.getWorldMatrix(
                                         new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
                                         tile.getRotation(),
@@ -81,10 +81,10 @@ public class ShadowsManager {
                 }
             }
             for (Entity entity : entities) {
-                // Calculate the Model matrix in World coordinates
-                if (frustumIntersection.testSphere(new Vector3f(entity.getPosition()), 0.5f)) {
+                int frustrum = frustumIntersection.intersectAab(new Vector3f(entity.getPosition()).sub(1.0f, 1.1f, 1.0f), new Vector3f(entity.getPosition()).add(1.0f,3.0f, 1.0f));
+                if (frustrum == -2 || frustrum == -1) {
                     Mesh mesh = entity.getMesh();
-                    if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                    if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || sceneLight.directionalLight.isDynamicOnly()) {
                         model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
                         shaderManager.updateDepthShader(model);
                         // Render the mesh
@@ -100,50 +100,66 @@ public class ShadowsManager {
         for (int i = 0; i < numLights; i++) {
             if (sceneLight.pointLights.get(i).getIntensity() > 0) {
                 PointLight pointLight = sceneLight.pointLights.get(i);
-                if (isDynamic) {
+                if (isDynamic || pointLight.isDynamicOnly()) {
                     shadowMap = pointLight.getDynamicShadowMap();
                 } else {
                     shadowMap = pointLight.getStaticShadowMap();
                 }
 
-                glViewport(0, 0, shadowMap.getResolution(), shadowMap.getResolution());
-                glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
-                glClear(GL_DEPTH_BUFFER_BIT);
+                for (int s = 0; s < 6; s++) {
+                    glViewport(0, 0, shadowMap.getResolution(), shadowMap.getResolution());
+                    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, shadowMap.getDepthMapFBO());
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + s, shadowMap.getDepthMap(), 0);
+                    glClear(GL_DEPTH_BUFFER_BIT);
 
-                shaderManager.bindDepthCubeMapShader();
-                shaderManager.initializeDepthCubeMapShader(transformation, pointLight.getPosition(), pointLight.getPlane());
+                    shaderManager.bindDepthCubeMapShader();
+                    shaderManager.initializeDepthCubeMapShader(pointLight.getView(s), pointLight.getPosition(), pointLight.getPlane());
 
-                if (map != null) {
-                    for (Tile[] row : map.getTiles()) {
-                        for (Tile tile : row) {
-                            if (tile == null) {
-                                continue;
-                            }
-                            // Calculate the Model matrix in World coordinates
-                            Mesh mesh = tile.getMesh();
-                            if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
-                                model = transformation.getWorldMatrix(
-                                        new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
-                                        tile.getRotation(),
-                                        0.5f);
-                                // Set model view matrix for this item
-                                shaderManager.updateDepthCubeMapShader(model);
-                                // Render the mesh
-                                mesh.render();
+                    frustumIntersection.set(pointLight.getView(s));
+                    if (map != null) {
+                        for (Tile[] row : map.getTiles()) {
+                            for (Tile tile : row) {
+                                if (tile == null) {
+                                    continue;
+                                }
+                                Vector3f tilePos = new Vector3f(tile.getPosition().x, 0, tile.getPosition().y);
+                                int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(1.0f,3.0f, 1.0f));
+                                // Calculate the Model matrix in World coordinates
+                                if (frustrum == -2 || frustrum == -1) {
+                                    // Calculate the Model matrix in World coordinates
+                                    Mesh mesh = tile.getMesh();
+                                    if ((new Vector3f(pointLight.getPosition()).sub(new Vector3f(tile.getPosition().x, 0, tile.getPosition().y))).length() <= pointLight.getPlane().y) {
+                                        if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || pointLight.isDynamicOnly()) {
+                                            model = transformation.getWorldMatrix(
+                                                    new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
+                                                    tile.getRotation(),
+                                                    0.5f);
+                                            // Set model view matrix for this item
+                                            shaderManager.updateDepthCubeMapShader(model);
+                                            // Render the mesh
+                                            mesh.render();
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-                }
-                for (Entity entity : entities) {
-                    Mesh mesh = entity.getMesh();
-                    if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
-                        model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
-                        shaderManager.updateDepthCubeMapShader(model);
-                        mesh.render();
+                    for (Entity entity : entities) {
+                        int frustrum = frustumIntersection.intersectAab(new Vector3f(entity.getPosition()).sub(1.0f, 1.1f, 1.0f), new Vector3f(entity.getPosition()).add(1.0f,3.0f, 1.0f));
+                        if (frustrum == -2 || frustrum == -1) {
+                            Mesh mesh = entity.getMesh();
+                            if ((new Vector3f(pointLight.getPosition()).sub(new Vector3f(entity.getPosition()))).length() <= pointLight.getPlane().y) {
+                                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || (sceneLight.directionalLight != null && sceneLight.directionalLight.isDynamicOnly())) {
+                                    model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
+                                    shaderManager.updateDepthCubeMapShader(model);
+                                    mesh.render();
+                                }
+                            }
+                        }
                     }
+                    //Unbind FBO and shader
+                    shaderManager.unbindDepthCubeMapShader();
                 }
-                //Unbind FBO and shader
-                shaderManager.unbindDepthCubeMapShader();
             }
         }
         // Spot Light Depth Shader
@@ -171,7 +187,7 @@ public class ShadowsManager {
                                 continue;
                             }
                             Vector3f tilePos = new Vector3f(tile.getPosition().x, 0, tile.getPosition().y);
-                            int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(0.0f,2.5f, 0.0f));
+                            int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(1.0f,3.0f, 1.0f));
                             // Calculate the Model matrix in World coordinates
                             if (frustrum == -2 || frustrum == -1) {
                                 Mesh mesh = tile.getMesh();
@@ -190,8 +206,8 @@ public class ShadowsManager {
                     }
                 }
                 for (Entity entity : entities) {
-                    // Calculate the Model matrix in World coordinates
-                    if (frustumIntersection.testSphere(new Vector3f(entity.getPosition()), 0.5f)) {
+                    int frustrum = frustumIntersection.intersectAab(new Vector3f(entity.getPosition()).sub(1.0f, 1.1f, 1.0f), new Vector3f(entity.getPosition()).add(1.0f,3.0f, 1.0f));
+                    if (frustrum == -2 || frustrum == -1) {
                         Mesh mesh = entity.getMesh();
                         if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
                             model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());

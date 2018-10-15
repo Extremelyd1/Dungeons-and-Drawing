@@ -55,4 +55,6 @@ public class KeyBinding {
     public static boolean isKeyPressed(int key) {
         return glfwGetKey(windowHandle, key) == GLFW_PRESS;
     }
+
+    public static boolean isKeyReleased(int key) { return glfwGetKey(windowHandle, key) == GLFW_RELEASE;}
 }
