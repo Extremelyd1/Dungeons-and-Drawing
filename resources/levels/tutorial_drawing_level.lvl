@@ -351,7 +351,7 @@ grass 0 0
 grass 0 0
 grass 0 0
 grass 0 0
-grass_path 0 0
+grass_path 0 0 tutorial_puzzle_1:trigger
 grass_path 0 0
 grass_path 0 0
 grass 0 0
@@ -390,7 +390,7 @@ grass 0 0
 grass 0 0
 air 0 1
 air 0 1
-grass_path 0 0
+air 0 1
 air 0 1
 air 0 1
 air 0 1
@@ -411,7 +411,7 @@ grass 0 0
 grass_pieces 0 0
 grass 0 0
 grass_path 0 0
-grass_path 0 0
+grass_path 0 0 tutorial_text_2:trigger
 grass_path 0 0
 grass_path 0 0
 grass 0 0
@@ -734,7 +734,7 @@ grass_path 0 0
 grass_path 0 0
 grass_path 0 0
 grass_path 0 0
-grass_path 0 0 tutorial_text_1
+grass_path 0 0 tutorial_text_1:trigger
 grass_path 0 0
 grass_path 0 0
 grass_path 0 0

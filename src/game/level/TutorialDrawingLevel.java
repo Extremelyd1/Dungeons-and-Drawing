@@ -43,9 +43,19 @@ public class TutorialDrawingLevel extends Level {
     private ArrayList<Entity> entities;
     private ArrayList<Entity> entitiesToRemove;
 
-    private ScrollingPopup text1;
+    /**
+     * Texts in the level
+     */
+    private ScrollingPopup text1, text2;
 
+    /**
+     * Flag whether the game is paused (because of gui)
+     */
     private boolean paused;
+    /**
+     * Flag whether a hint is shown (so not to remove stuff from the gui)
+     */
+    private boolean hintIsShown;
 
     public TutorialDrawingLevel(LevelController levelController) {
         super(levelController);
@@ -65,7 +75,7 @@ public class TutorialDrawingLevel extends Level {
         playerMesh.setMaterial(new Material(0.5f));
         playerMesh.setIsStatic(false);
         player = new Player(playerMesh, map);
-        player.setSpeed(4);
+        player.setSpeed(3f);
         player.setScale(new Vector3f(1, 2, 1));
 
         Vector2i spawn = map.getTile("spawn").getPosition();
@@ -84,23 +94,44 @@ public class TutorialDrawingLevel extends Level {
         questionMarkMesh.setIsStatic(false);
 
         // Create interactive tiles
-        Tile tutorialTextTile = map.getTile("tutorial_text_1");
-        IndicatorEntity tutorialText1Indicator = new IndicatorEntity(
+        Tile textTile1 = map.getTile("tutorial_text_1");
+        IndicatorEntity textIndicator1 = new IndicatorEntity(
                 questionMarkMesh,
-                new Vector3f(tutorialTextTile.getPosition().x, 1f, tutorialTextTile.getPosition().y),
-                tutorialTextTile
+                new Vector3f(textTile1.getPosition().x, 1f, textTile1.getPosition().y),
+                textTile1
+        );
+
+        Tile textTile2 = map.getTile("tutorial_text_2");
+        IndicatorEntity textIndicator2 = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(textTile2.getPosition().x, 1f, textTile2.getPosition().y),
+                textTile2
         );
 
         // Create dialogue
-        text1 = new ScrollingPopup("Welcome, traveller, I see you came from far?", () -> {
-            gui.setComponent(new ScrollingPopup("Who I am you ask? Oh, don't you worry. I'm the ominous voice", () -> {
+        text1 = new ScrollingPopup("Welcome, traveller, I see you came from quite far.", () -> {
+            gui.setComponent(new ScrollingPopup("Who I am you ask? Oh, don't you worry. I'm the ominous voice, obviously.", () -> {
                 gui.setComponent(new ScrollingPopup(
-                        "You seek the treasure of the ancient dwarfs? Hahahaha, countless men like you tried it.", () -> {
-                    gui.setComponent(new ScrollingPopup("We'll see how you're creativity holds up... Good luck traveller. Try to find the door", () -> {
-                        gui.removeComponent();
-                        tutorialText1Indicator.remove(() -> entitiesToRemove.add(tutorialText1Indicator));
-                        tutorialTextTile.removeTag("tutorial_text_1");
+                        "You seek the treasure of the ancient dwarfs? Hahahaha! hundreds, no, thousands, no, countless men tried before you!.", () -> {
+                    gui.setComponent(new ScrollingPopup("We'll see how you're creativity holds up... Good luck traveller. Try to find the entrance.", () -> {
+                        textIndicator1.remove(() -> entitiesToRemove.add(textIndicator1));
+                        textTile1.removeTag("trigger");
                         paused = false;
+                    }));
+                }));
+            }));
+        });
+
+        text2 = new ScrollingPopup("Great job, traveller. Now, you thought you would win this game eeeeh, dungeon by swinging a sword and shooting a bow, right?", () -> {
+            gui.setComponent(new ScrollingPopup("Too bad.", () -> {
+                gui.setComponent(new ScrollingPopup("In this world, you will need to use your drawing skills to solve the puzzles you'll encounter.", () -> {
+                    gui.setComponent(new ScrollingPopup("So, we have a door, with a lock. What would we need to open it?", () -> {
+                        gui.setComponent(new FloatingScrollText("Interact with the pencil"));
+                        textIndicator2.remove(() -> entitiesToRemove.add(textIndicator2));
+                        textTile2.removeTag("trigger");
+                        gui.setComponent(new FloatingScrollText("Interact with the pencil"));
+                        paused = false;
+                        hintIsShown = true;
                     }));
                 }));
             }));
@@ -147,10 +178,12 @@ public class TutorialDrawingLevel extends Level {
         entitiesToRemove = new ArrayList<>();
         entities = new ArrayList<>(Arrays.asList(
                 player,
-                tutorialText1Indicator
+                textIndicator1,
+                textIndicator2
         ));
 
         paused = false;
+        hintIsShown = false;
     }
 
     @Override
@@ -176,15 +209,28 @@ public class TutorialDrawingLevel extends Level {
                 Math.round(player.getPosition().z)
         );
 
-        if (currentPlayerTile.hasTag("tutorial_text_1")) {
+        if (currentPlayerTile.hasTag("trigger")) {
+            if (hintIsShown) {
+                hintIsShown = false;
+                gui.removeComponent();
+            }
             if (!gui.hasComponent()) {
                 gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
             }
             if (KeyBinding.isInteractPressed()) {
-                gui.setComponent(text1);
-                paused = true;
+                if (currentPlayerTile.hasTag("tutorial_text_1")) {
+                    gui.setComponent(text1);
+                    paused = true;
+                }
+                if (currentPlayerTile.hasTag("tutorial_text_2")) {
+                    gui.setComponent(text2);
+                    paused = true;
+                }
+                if (currentPlayerTile.hasTag("tutorial_puzzle_1")) {
+
+                }
             }
-        } else if (gui.hasComponent()) {
+        } else if (gui.hasComponent() && !hintIsShown) {
             gui.removeComponent();
         }
 
