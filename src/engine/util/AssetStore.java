@@ -106,6 +106,7 @@ public class AssetStore {
         try {
             mesh = PLYLoader.loadMesh(filePath);
         } catch (Exception e) {
+            System.err.println("Failed to load: " + filePath);
             e.printStackTrace();
             return null;
         }
