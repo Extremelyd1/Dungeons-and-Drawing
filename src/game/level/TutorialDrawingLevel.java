@@ -5,22 +5,31 @@ import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
+import engine.entities.IndicatorEntity;
 import engine.entities.Player;
+import engine.gui.FloatingScrollText;
+import engine.gui.ScrollingPopup;
+import engine.input.KeyBinding;
 import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
+import engine.util.AssetStore;
 import game.GUI;
 import game.LevelController;
 import game.Renderer;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
+import game.map.tile.Tile;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TutorialDrawingLevel extends Level {
 
@@ -28,9 +37,15 @@ public class TutorialDrawingLevel extends Level {
     private Player player;
     private Renderer renderer;
     private Camera camera;
-    private Entity[] entities;
     private SceneLight sceneLight;
     private GUI gui;
+
+    private ArrayList<Entity> entities;
+    private ArrayList<Entity> entitiesToRemove;
+
+    private ScrollingPopup text1;
+
+    private boolean paused;
 
     public TutorialDrawingLevel(LevelController levelController) {
         super(levelController);
@@ -63,6 +78,34 @@ public class TutorialDrawingLevel extends Level {
                 new Vector3f(3, 11, 3)
         );
 
+        // Load mesh for question mark
+        Mesh questionMarkMesh = AssetStore.getMesh("entities", "question_mark");
+        questionMarkMesh.setMaterial(new Material(0f));
+        questionMarkMesh.setIsStatic(false);
+
+        // Create interactive tiles
+        Tile tutorialTextTile = map.getTile("tutorial_text_1");
+        IndicatorEntity tutorialText1Indicator = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(tutorialTextTile.getPosition().x, 1f, tutorialTextTile.getPosition().y),
+                tutorialTextTile
+        );
+
+        // Create dialogue
+        text1 = new ScrollingPopup("Welcome, traveller, I see you came from far?", () -> {
+            gui.setComponent(new ScrollingPopup("Who I am you ask? Oh, don't you worry. I'm the ominous voice", () -> {
+                gui.setComponent(new ScrollingPopup(
+                        "You seek the treasure of the ancient dwarfs? Hahahaha, countless men like you tried it.", () -> {
+                    gui.setComponent(new ScrollingPopup("We'll see how you're creativity holds up... Good luck traveller. Try to find the door", () -> {
+                        gui.removeComponent();
+                        tutorialText1Indicator.remove(() -> entitiesToRemove.add(tutorialText1Indicator));
+                        tutorialTextTile.removeTag("tutorial_text_1");
+                        paused = false;
+                    }));
+                }));
+            }));
+        });
+
         // Setup lights
         sceneLight = new SceneLight();
         sceneLight.directionalLight = new DirectionalLight(
@@ -85,12 +128,29 @@ public class TutorialDrawingLevel extends Level {
                 )
         );
 
+        Vector2i lanternCratePos = map.getTile("crate_lantern").getPosition();
+        sceneLight.pointLights.add(
+                new PointLight(
+                        new Vector3f(0.8f, 0.2f, 0.2f),
+                        new Vector3f(lanternCratePos.x, 3.5f, lanternCratePos.y),
+                        0.6f,
+                        new PointLight.Attenuation(0f, 1f, 1.1f),
+                        new Vector2f(1f, 100f)
+                )
+        );
+
         // Setup gui
         gui = new GUI();
         gui.initialize();
 
         // Setup entities
-        entities = new Entity[]{player};
+        entitiesToRemove = new ArrayList<>();
+        entities = new ArrayList<>(Arrays.asList(
+                player,
+                tutorialText1Indicator
+        ));
+
+        paused = false;
     }
 
     @Override
@@ -102,10 +162,35 @@ public class TutorialDrawingLevel extends Level {
 
     @Override
     public void update(float interval, MouseInput mouseInput) {
+        gui.update(interval);
+
+        if (paused) {
+            return;
+        }
+
+        entities.forEach(e -> e.update(interval));
+        entitiesToRemove.forEach(e -> entities.remove(e));
+
+        Tile currentPlayerTile = map.getTile(
+                Math.round(player.getPosition().x),
+                Math.round(player.getPosition().z)
+        );
+
+        if (currentPlayerTile.hasTag("tutorial_text_1")) {
+            if (!gui.hasComponent()) {
+                gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
+            }
+            if (KeyBinding.isInteractPressed()) {
+                gui.setComponent(text1);
+                paused = true;
+            }
+        } else if (gui.hasComponent()) {
+            gui.removeComponent();
+        }
+
         camera.update();
         player.update(interval);
         sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
-        gui.update(interval);
     }
 
     @Override
