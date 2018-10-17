@@ -291,8 +291,8 @@ corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
-stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 tutorial_door_1
+stone_floor 0 0 tutorial_door_2
 corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
@@ -774,7 +774,7 @@ grass_pieces 0 0
 grass 0 0
 grass_tree 3 1
 grass 0 0
-grass 0 0
+grass_stone 0 1
 air 0 1
 air 0 1
 air 0 1
@@ -796,12 +796,12 @@ grass 0 0
 grass 0 0
 grass_pieces 0 0
 grass_pieces 2 0
-grass 0 0
+fence 0 1
+grass_solid 1 1
+grass_solid 0 1
 grass_pieces 1 0
-grass_pieces 0 0
-grass_pieces 1 0
-grass_pieces 2 0
-grass 0 0
+grass_stone 2 1
+grass_bush 0 1
 grass_pieces 0 0
 air 0 1
 air 0 1
@@ -822,16 +822,16 @@ grass 0 0
 grass 0 0
 grass_bush_2 0 1
 grass 0 0
-grass 0 0
-grass_pieces 0 0
-grass_pieces 2 0
+fence 0 1
+grass_solid 0 1
+grass_solid 2 1
 grass 0 0
 grass_tree 1 1
 grass 0 0
-grass 0 0
+grass_bush 1 1
 grass_tree 0 1
 grass_pieces 0 0
-grass_pieces 0 0
+grass_bush_2 0 1
 grass 0 0
 air 0 1
 air 0 1
@@ -858,7 +858,7 @@ grass_tree 2 1
 grass_pieces 2 0
 grass 0 0
 stone_small 0 1
-grass 0 0
+grass_bush_2 0 1
 grass 0 0
 air 0 1
 air 0 1

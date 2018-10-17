@@ -4,10 +4,12 @@ import engine.MouseInput;
 import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
+import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
 import engine.entities.Player;
 import engine.gui.FloatingScrollText;
+import engine.gui.PuzzleGUI;
 import engine.gui.ScrollingPopup;
 import engine.input.KeyBinding;
 import engine.lights.AmbientLight;
@@ -22,6 +24,8 @@ import game.Renderer;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
 import game.map.tile.Tile;
+import game.puzzle.Puzzle;
+import game.puzzle.Solution;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
@@ -47,6 +51,10 @@ public class TutorialDrawingLevel extends Level {
      * Texts in the level
      */
     private ScrollingPopup text1, text2;
+    /**
+     * Puzzles in the level
+     */
+    private Puzzle puzzle1;
 
     /**
      * Flag whether the game is paused (because of gui)
@@ -93,6 +101,16 @@ public class TutorialDrawingLevel extends Level {
         questionMarkMesh.setMaterial(new Material(0f));
         questionMarkMesh.setIsStatic(false);
 
+        // Load mesh for pencil
+        Mesh pencilMesh = AssetStore.getMesh("entities", "pencil");
+        pencilMesh.setMaterial(new Material(0f));
+        pencilMesh.setIsStatic(false);
+
+        // Load mesh for door
+        Mesh doorMesh = AssetStore.getMesh("entities", "wooden_door");
+        doorMesh.setMaterial(new Material(0f));
+        doorMesh.setIsStatic(false);
+
         // Create interactive tiles
         Tile textTile1 = map.getTile("tutorial_text_1");
         IndicatorEntity textIndicator1 = new IndicatorEntity(
@@ -107,6 +125,33 @@ public class TutorialDrawingLevel extends Level {
                 new Vector3f(textTile2.getPosition().x, 1f, textTile2.getPosition().y),
                 textTile2
         );
+
+        Tile pencilTile1 = map.getTile("tutorial_puzzle_1");
+        IndicatorEntity pencilIndicator1 = new IndicatorEntity(
+                pencilMesh,
+                new Vector3f(pencilTile1.getPosition().x, 1f, pencilTile1.getPosition().y),
+                pencilTile1
+        );
+
+        Tile doorTileLeft = map.getTile("tutorial_door_1");
+        DoorEntity doorLeft = new DoorEntity(
+                doorMesh,
+                new Vector3f(doorTileLeft.getPosition().x - 0.5f, 0f, doorTileLeft.getPosition().y + 0.4f),
+                new Vector3f(0),
+                0.5f,
+                doorTileLeft
+        );
+        doorTileLeft.setSolid(true);
+
+        Tile doorTileRight = map.getTile("tutorial_door_2");
+        DoorEntity doorRight = new DoorEntity(
+                doorMesh,
+                new Vector3f(doorTileRight.getPosition().x - 0.5f, 0f, doorTileRight.getPosition().y + 0.4f),
+                new Vector3f(180),
+                0.5f,
+                doorTileRight
+        );
+        doorTileRight.setSolid(true);
 
         // Create dialogue
         text1 = new ScrollingPopup("Welcome, traveller, I see you came from quite far.", () -> {
@@ -129,6 +174,7 @@ public class TutorialDrawingLevel extends Level {
                         gui.setComponent(new FloatingScrollText("Interact with the pencil"));
                         textIndicator2.remove(() -> entitiesToRemove.add(textIndicator2));
                         textTile2.removeTag("trigger");
+                        // TODO: Add check if the player did not already interact with the pencil
                         gui.setComponent(new FloatingScrollText("Interact with the pencil"));
                         paused = false;
                         hintIsShown = true;
@@ -136,6 +182,35 @@ public class TutorialDrawingLevel extends Level {
                 }));
             }));
         });
+
+        // Create puzzle(s)
+        puzzle1 = new Puzzle(
+                "This description does nothing",
+                // Options
+                new String[]{
+                        "key"
+                },
+                // Solutions
+                new Solution[]{
+                        new Solution("key", () -> {
+                            System.out.println("solution");
+                        }),
+                        new Solution("bomb", () -> {
+                            gui.setComponent(new ScrollingPopup("A bomb? You serious? That's a tad too violent... Try again.", () -> {
+//                                gui.setComponent(new PuzzleGUI(puzzle1));
+                            }));
+                        }),
+                        new Solution("axe", () -> {
+                            gui.setComponent(new ScrollingPopup("You little viking. But no, this is pg13. Try again.", () -> {
+//                                gui.setComponent(new PuzzleGUI(puzzle1));
+                            }));
+                        })
+                },
+                // Default solution
+                new Solution("", () -> {
+                }),
+                20
+        );
 
         // Setup lights
         sceneLight = new SceneLight();
@@ -179,7 +254,10 @@ public class TutorialDrawingLevel extends Level {
         entities = new ArrayList<>(Arrays.asList(
                 player,
                 textIndicator1,
-                textIndicator2
+                textIndicator2,
+                pencilIndicator1,
+                doorLeft,
+                doorRight
         ));
 
         paused = false;
@@ -227,7 +305,8 @@ public class TutorialDrawingLevel extends Level {
                     paused = true;
                 }
                 if (currentPlayerTile.hasTag("tutorial_puzzle_1")) {
-
+                    gui.setComponent(new PuzzleGUI(puzzle1));
+                    paused = true;
                 }
             }
         } else if (gui.hasComponent() && !hintIsShown) {
