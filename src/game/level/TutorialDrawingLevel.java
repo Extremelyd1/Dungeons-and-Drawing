@@ -149,7 +149,8 @@ public class TutorialDrawingLevel extends Level {
                 new Vector3f(doorTileRight.getPosition().x + 0.5f, 0f, doorTileRight.getPosition().y + 0.4f),
                 new Vector3f(0f, 180f, 0f),
                 0.5f,
-                doorTileRight
+                doorTileRight,
+                true
         );
         doorTileRight.setSolid(true);
 
@@ -207,7 +208,7 @@ public class TutorialDrawingLevel extends Level {
                             gui.setComponent(new ScrollingPopup("Good job! A key was indeed the key to the puzzle!", () -> {
                                 // Open the doors
                                 doorLeft.open();
-                                // doorRight.open(); TODO: Currently broken :(
+//                                doorRight.open(); // TODO: Currently broken :(
                                 doorTileLeft.setSolid(false);
                                 doorTileRight.setSolid(false);
 
