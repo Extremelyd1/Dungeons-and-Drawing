@@ -25,6 +25,7 @@ public class SimpleMob extends LivingEntity {
     private boolean isInLineOfSight = false;
     private boolean followOnSightOnly = true;
     private boolean forcePathUpdate = false;
+    protected boolean isMoving = false;
 
     public SimpleMob(Mesh mesh, Map map) {
         super(mesh, map);
@@ -138,12 +139,13 @@ public class SimpleMob extends LivingEntity {
             if ((new Vector2f(lastTargetPos).sub(pos)).length() > 0.5f) {
                 if (isInLineOfSightWithoutCollision(pos, lastTargetPos, 0.35f, delta * getSpeed())) {
                     isInLineOfSight = true;
-                    setupPathSmootherMode3(position, direction, new Vector3f(lastTargetPos.x, 1, lastTargetPos.y));
+                    setupPathSmootherMode3(position, direction, new Vector3f(lastTargetPos.x, getPosition().y, lastTargetPos.y));
                     pathSmoother.update(delta * getSpeed() * 0.8f);
                     Vector3f finalPos = pathSmoother.getResult();
                     direction = new Vector3f(finalPos).sub(position).normalize();
-                    setRotation(0, (float) Math.toDegrees(-Math.atan2(direction.z, direction.x)), 0);
+                    setRotation(0, (float) Math.toDegrees(-Math.atan2(direction.z, direction.x)) + 180, 0);
                     setPosition(finalPos);
+                    isMoving = true;
                 } else {
                     currentTile = super.getMap().getTile(Math.round(pos.x), Math.round(pos.y));
                     Tile newTargetCurrentTile = super.getMap().getTile(Math.round(lastTargetPos.x), Math.round(lastTargetPos.y));
@@ -161,6 +163,7 @@ public class SimpleMob extends LivingEntity {
                                         new Vector3f(path.get(pathProgress - 1).getPosition().x, getPosition().y, path.get(pathProgress - 1).getPosition().y),
                                         new Vector3f(path.get(pathProgress).getPosition().x, getPosition().y, path.get(pathProgress).getPosition().y));
                             } else {
+                                isMoving = false;
                                 return;
                             }
                         } else {
@@ -184,10 +187,13 @@ public class SimpleMob extends LivingEntity {
                     Vector3f finalPos = pathSmoother.getResult();
                     direction = new Vector3f(finalPos).sub(position);
                     if (direction.length() > 0) {
-                        setRotation(0, (float) Math.toDegrees(-Math.atan2(direction.z, direction.x)), 0);
+                        setRotation(0, (float) Math.toDegrees(-Math.atan2(direction.z, direction.x)) + 180, 0);
                     }
                     setPosition(finalPos);
+                    isMoving = true;
                 }
+            } else {
+                isMoving = false;
             }
         }
     }

@@ -22,6 +22,7 @@ import game.map.Map;
 import game.map.loader.MapFileLoader;
 import game.map.tile.Tile;
 import game.mobs.SimpleMob;
+import game.mobs.Snake;
 import game.puzzle.Puzzle;
 import game.puzzle.Solution;
 import graphics.Material;
@@ -43,7 +44,7 @@ public class MobEscape extends Level {
     private SceneLight sceneLight;
     private GUI gui;
     private Puzzle arcCollapsePuzzle;
-    private SimpleMob mob = null;
+    private Snake mob = null;
 
     private boolean paused = false;
 
@@ -190,12 +191,12 @@ public class MobEscape extends Level {
                     currentPlayerTile.getPosition().y <= 6) {
                     Mesh mobMesh;
                     try {
-                        mobMesh = PLYLoader.loadMesh("/models/PLY/cube.ply");
-                        mobMesh.setMaterial(new Material(0.1f));
+                        mobMesh = PLYLoader.loadMesh("/models/entities/snake.ply");
+                        mobMesh.setMaterial(new Material(0.0f));
                         mobMesh.setIsStatic(false);
-                        mob = new SimpleMob(mobMesh, map);
-                        mob.setScale(0.25f);
-                        mob.setPosition(14, 0.5f, 1);
+                        mob = new Snake(mobMesh, map);
+                        mob.setScale(0.08f);
+                        mob.setPosition(14, 0.49f, 1);
                         mob.setSpeed(2.5f);
                         mob.setTarget(player);
                         mob.followOnSightOnly(false);
@@ -206,7 +207,7 @@ public class MobEscape extends Level {
                 }
             } else {
                 if (mob.isCollidingWithTarget()) {
-                    Debug.println("Mob Escape", "Game Over");
+                    //Debug.println("Mob Escape", "Game Over");
                 }
             }
 
