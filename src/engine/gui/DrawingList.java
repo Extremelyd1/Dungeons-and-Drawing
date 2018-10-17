@@ -38,6 +38,7 @@ public class DrawingList extends Popup {
         setCentered(false);
 
         this.canvas = canvas;
+        this.timeLeftString = "Time left: " + String.valueOf((int) Math.ceil(timeLeft));
     }
 
     public void resetCountdown() {
