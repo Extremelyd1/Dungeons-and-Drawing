@@ -44,7 +44,7 @@ public class MapFileLoader implements MapLoader {
             height = tryParseInt(sizeArray[1]);
         }
 
-        Tile[][] tileList = new Tile[width][height];
+        Tile[][] tileList = new Tile[height][width];
         java.util.Map<String, List<Tile>> taggedTiles = new java.util.HashMap<>();
 
         for (int x = 0; x < width; x++) {
