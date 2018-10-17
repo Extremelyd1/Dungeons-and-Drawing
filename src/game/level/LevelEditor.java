@@ -103,7 +103,7 @@ public class LevelEditor extends Level implements GLFWKeyCallbackI {
 
 
         //Set up ambient light of the scene
-        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.6f, 0.6f, 0.6f));
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f, 0.1f, 0.1f));
 
         entities = new ArrayList<>();
 
@@ -129,7 +129,7 @@ public class LevelEditor extends Level implements GLFWKeyCallbackI {
                     0.0f,
                     new Vector2f(0.1f, 60f)
             ));
-            sceneLight.pointLights.get(i).setAttenuation(new PointLight.Attenuation(0.0f, 0.2f,1.5f));
+            sceneLight.pointLights.get(i).setAttenuation(new PointLight.Attenuation(0.0f, 0.00f,0.2f));
         }
         loadLights("/resources/levels/", "generatedEditorLevel_lights.lvl", sceneLight);
         loadEntities("/resources/levels/", "generatedEditorLevel_entities.lvl", entities);
@@ -181,7 +181,20 @@ public class LevelEditor extends Level implements GLFWKeyCallbackI {
                         String name = (tiles[c][r].getMesh()).getName();
                         float rotation = tiles[c][r].getRotation().y;
                         int rotationN = (int) rotation / 90;
-                        writer.write(name + " " + rotationN + " 0 \n");
+                        int solid;
+                        if (name.equals("stone_floor") ||
+                                name.equals("lantern") ||
+                                name.equals("arc") ||
+                                name.equals("wooden_bar") ||
+                                name.equals("floor_pebbles") ||
+                                name.equals("ladder_up") ||
+                                name.equals("ladder") ||
+                                name.equals("lantern_on_floor")) {
+                            solid = 0;
+                        } else {
+                            solid = 1;
+                        }
+                        writer.write(name + " " + rotationN + " " + solid + "\n");
                     }
                 }
             }

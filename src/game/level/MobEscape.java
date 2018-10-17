@@ -83,7 +83,7 @@ public class MobEscape extends Level {
 
         // Setup Map Lights
         sceneLight = new SceneLight();
-        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.6f, 0.6f, 0.6f));
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f, 0.2f, 0.2f));
         for (int i = 0; i < 10; i++) {
             sceneLight.pointLights.add(new PointLight(
                     new Vector3f(1f, 1f, 1f),
@@ -91,7 +91,7 @@ public class MobEscape extends Level {
                     0.0f,
                     new Vector2f(0.1f, 60f)
             ));
-            sceneLight.pointLights.get(i).setAttenuation(new PointLight.Attenuation(0.0f, 0.2f,1.5f));
+            sceneLight.pointLights.get(i).setAttenuation(new PointLight.Attenuation(0.0f, 0.00f,0.2f));
         }
         LevelEditor.loadLights("/resources/levels/mobEscape/", "generatedEditorLevel_lights.lvl", sceneLight);
 

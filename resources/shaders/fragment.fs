@@ -125,6 +125,29 @@ vec4 calcBlinnPhong(vec3 light_color, float light_intensity, vec3 position, vec3
     }
 }
 
+// Blinn-Phong lighting model 2
+vec4 calcBlinnPhong2(vec3 light_color, float light_intensity, vec3 position, vec3 light_direction, vec3 normal, float attenuation){
+    // Diffuse component
+    float diff = max(dot(normal, light_direction), 0.0) * attenuation;
+    if (diff != 0 ) {
+        vec4 diffuse = diffuseC * vec4(light_color, 1.0) * light_intensity * diff;
+        // Specular component
+        vec3 viewDir = normalize(viewPos - position);
+        vec3 halfwayDir = normalize(light_direction + viewDir);
+        float spec = pow(max(dot(normal, halfwayDir), 0.0), specularPower);
+        vec4 specular = speculrC * light_intensity * attenuation * spec * material.reflectance * vec4(light_color, 1.0);
+        return (diffuse + specular);
+    } else {
+        return vec4(0, 0, 0, 0);
+    }
+}
+
+// Calculate Attenuation
+float calcAttenuation(vec3 light_direction, Attenuation att) {
+    float distance = length(light_direction);
+    return (1.0f / (1.0f + att.constant + att.linear * distance + att.exponent * distance * distance));
+}
+
 // Calculate Direction Light
 vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal)
 {
@@ -134,33 +157,32 @@ vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal)
 // Calculate Point Light
 vec4 calcPointLight(PointLight light, vec3 position, vec3 normal)
 {
-    vec3 light_direction = normalize(light.position - position);
+    vec3 light_direction = light.position - position;
+    float att = calcAttenuation(light_direction, light.att);
 
-    vec4 light_colour = calcBlinnPhong(light.colour, light.intensity, position, light_direction, normal);
-
-    // Apply Attenuation
-    float distance = length(light_direction);
-    float attenuationInv = light.att.constant + light.att.linear * distance +
-        light.att.exponent * distance * distance;
-    return light_colour / attenuationInv;
+    vec4 light_colour = vec4(0, 0, 0, 0);
+    if (att > 0 ) {
+        light_colour = calcBlinnPhong2(light.colour, light.intensity, position, normalize(light_direction), normal, att);
+    }
+    return light_colour;
 }
 
 // Calculate Spot Light
 vec4 calcSpotLight(SpotLight light, vec3 position, vec3 normal)
 {
-    vec3 light_direction = normalize(light.position - position);
+    vec3 light_direction = light.position - position;
+    float att = calcAttenuation(light_direction, light.att);
+    light_direction = normalize(light_direction);
+    vec4 light_colour = vec4(0, 0, 0, 0);
+    if (att > 0) {
+        float theta = dot(light_direction, normalize(-light.conedir));
+        float epsilon = light.cutoff - light.outerCutoff;
+        float intensity = clamp((theta - light.outerCutoff) / epsilon, 0.0, 1.0);
 
-    float theta = dot(light_direction, normalize(-light.conedir));
-    float epsilon = light.cutoff - light.outerCutoff;
-    float intensity = clamp((theta - light.outerCutoff) / epsilon, 0.0, 1.0);
-
-    vec4 light_colour = calcBlinnPhong(light.colour, intensity, light.position, light_direction, normal);
-
+        light_colour = calcBlinnPhong2(light.colour, intensity, light.position, light_direction, normal, att);
+    }
     // Apply Attenuation
-    float distance = length(light_direction);
-    float attenuationInv = light.att.constant + light.att.linear * distance +
-        light.att.exponent * distance * distance;
-    return light_colour / attenuationInv;
+    return light_colour;
 }
 
 float calcShadow(vec3 position, vec3 light_position, samplerCube shadowMap, vec2 plane)
