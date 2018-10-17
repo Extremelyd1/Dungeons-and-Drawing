@@ -44,6 +44,8 @@ public class LivingEntity extends Entity {
         this.speed = speed;
     }
 
+    public void setMap(Map map) { this.map = map; }
+
     public Map getMap() {
         return map;
     }

@@ -28,7 +28,7 @@ import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class levelEditor extends Level implements GLFWKeyCallbackI {
+public class LevelEditor extends Level implements GLFWKeyCallbackI {
 
     private Map map;
     private Renderer renderer;
@@ -58,7 +58,7 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
     private boolean editingEntity = false;
     private int entityIndex = 0;
 
-    public levelEditor(LevelController levelController) {
+    public LevelEditor(LevelController levelController) {
         super(levelController);
     }
 
@@ -74,6 +74,7 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
         tileModels.add("floor_pebbles");
         tileModels.add("ladder");
         tileModels.add("ladder_up");
+        tileModels.add("lantern");
         tileModels.add("prison_bars");
         tileModels.add("stone_1");
         tileModels.add("stone_2");
@@ -128,9 +129,10 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
                     0.0f,
                     new Vector2f(0.1f, 60f)
             ));
+            sceneLight.pointLights.get(i).setAttenuation(new PointLight.Attenuation(0.0f, 0.2f,1.5f));
         }
-        loadLights();
-        loadEntities();
+        loadLights("/resources/levels/", "generatedEditorLevel_lights.lvl", sceneLight);
+        loadEntities("/resources/levels/", "generatedEditorLevel_entities.lvl", entities);
     }
 
     @Override
@@ -217,9 +219,9 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
         }
     }
 
-    public void loadLights() {
-        String fullPath = System.getProperty("user.dir") + "/resources/levels/";
-        File file = new File(fullPath, "generatedEditorLevel_lights.lvl");
+    public static void loadLights(String path, String name, SceneLight sceneLight) {
+        String fullPath = System.getProperty("user.dir") + path;
+        File file = new File(fullPath, name);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             int index = 0;
@@ -238,9 +240,9 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
         }
     }
 
-    public void loadEntities() {
-        String fullPath = System.getProperty("user.dir") + "/resources/levels/";
-        File file = new File(fullPath, "generatedEditorLevel_entities.lvl");
+    public static void loadEntities(String path, String name, List<Entity> entities) {
+        String fullPath = System.getProperty("user.dir") + path;
+        File file = new File(fullPath, name);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -359,11 +361,11 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
                 }
             } else if (key == 323) { // Numpad 3 Rotate model
                 if (!editingLights) {
-                    currentEntity.setRotation(0, currentEntity.getRotation().y + 90, 0);
+                    currentEntity.setRotation(new Vector3f(0, currentEntity.getRotation().y + 90, 0));
                 }
             } else if (key == 321) { // Numpad 1 Rotate model
                 if (!editingLights) {
-                    currentEntity.setRotation(0, currentEntity.getRotation().y - 90, 0);
+                    currentEntity.setRotation(new Vector3f(0, currentEntity.getRotation().y - 90, 0));
                 }
             } else if (key == 261) { // Numpad Del Delete tile
                 if (!editingLights) {
@@ -464,8 +466,12 @@ public class levelEditor extends Level implements GLFWKeyCallbackI {
                     currentEntity.setPosition(position);
                 }
             } else if (key == 332) { // Numpad 2 Show entity index
-                int index = findClosestEntity(currentEntity.getPosition());
-                if (index != -1) Debug.println("Map Editor", "Entity " + (index - 1));
+                if (editingEntity) {
+                    int index = findClosestEntity(currentEntity.getPosition());
+                    if (index != -1) Debug.println("Map Editor", "Entity " + (index - 1));
+                } else {
+                    Debug.println("Map Editor", "Tile " +  Math.round(currentEntity.getPosition().x) + ", " + Math.round(currentEntity.getPosition().z));
+                }
             }
         }
     }

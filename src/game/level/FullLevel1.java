@@ -265,7 +265,7 @@ public class FullLevel1 extends Level {
 
     @Override
     public void terminate() {
-        gui.terminate();
+        //gui.terminate(); DO NOT TERMINATE
         soundManager.cleanup();
     }
 }
