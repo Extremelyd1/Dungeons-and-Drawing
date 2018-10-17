@@ -208,7 +208,7 @@ public class TutorialDrawingLevel extends Level {
                             gui.setComponent(new ScrollingPopup("Good job! A key was indeed the key to the puzzle!", () -> {
                                 // Open the doors
                                 doorLeft.open();
-//                                doorRight.open(); // TODO: Currently broken :(
+                                doorRight.open(); // TODO: Currently broken :(
                                 doorTileLeft.setSolid(false);
                                 doorTileRight.setSolid(false);
 
@@ -375,6 +375,5 @@ public class TutorialDrawingLevel extends Level {
 
     @Override
     public void terminate() {
-        gui.terminate();
     }
 }

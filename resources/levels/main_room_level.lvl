@@ -369,9 +369,9 @@ stone_floor 0 0
 stone_floor 0 0
 pillar 0 1
 stone_floor 0 0
+shrine 0 1 shrine_1
 stone_floor 0 0
-stone_floor 0 0
-stone_floor 0 0
+shrine 0 1 shrine_3
 stone_floor 0 0
 corner_wall 0 1
 stone_floor 0 0
@@ -420,7 +420,7 @@ stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
+lantern 0 0 lantern
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -469,9 +469,9 @@ stone_floor 0 0
 stone_floor 0 0
 pillar 0 1
 stone_floor 0 0
+shrine 0 1 shrine_2
 stone_floor 0 0
-stone_floor 0 0
-stone_floor 0 0
+shrine 0 1 shrine_4
 stone_floor 0 0
 corner_wall 0 1
 air 0 1

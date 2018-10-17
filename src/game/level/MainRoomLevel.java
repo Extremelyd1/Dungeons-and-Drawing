@@ -5,6 +5,7 @@ import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
+import engine.entities.IndicatorEntity;
 import engine.entities.Player;
 import engine.gui.FloatingScrollText;
 import engine.gui.ScrollingPopup;
@@ -51,6 +52,10 @@ public class MainRoomLevel extends Level {
      * Puzzles in the level
      */
     private Puzzle puzzle1;
+    /**
+     * Flags that indicate whether the levels has been completed. These do NOT reset when the level reloads
+     */
+    private boolean level1, level2, level3, level4;
 
     /**
      * Flag whether the game is paused (because of gui)
@@ -59,10 +64,17 @@ public class MainRoomLevel extends Level {
 
     public MainRoomLevel(LevelController levelController) {
         super(levelController);
+
+        this.level1 = true;
+        this.level2 = true;
+        this.level3 = true;
+        this.level4 = true;
     }
 
     @Override
     public void init() throws Exception {
+        entities = new ArrayList<>();
+
         // Load map
         map = new MapFileLoader("/levels/main_room_level.lvl").load();
 
@@ -103,6 +115,8 @@ public class MainRoomLevel extends Level {
         doorMesh.setMaterial(new Material(0f));
         doorMesh.setIsStatic(false);
 
+        loadGems();
+
         // Create interactive tiles
 
         // Setup lights
@@ -135,11 +149,73 @@ public class MainRoomLevel extends Level {
 
         // Setup entities
         entitiesToRemove = new ArrayList<>();
-        entities = new ArrayList<>(Arrays.asList(
+        entities.addAll(Arrays.asList(
                 player
         ));
 
         paused = false;
+    }
+
+    private void loadGems() {
+        // Load meshes for gems
+        Mesh redGemMesh = AssetStore.getMesh("entities", "gem_red");
+        redGemMesh.setMaterial(new Material(0f));
+        redGemMesh.setIsStatic(false);
+
+        Mesh yellowGemMesh = AssetStore.getMesh("entities", "gem_yellow");
+        yellowGemMesh.setMaterial(new Material(0f));
+        yellowGemMesh.setIsStatic(false);
+
+        Mesh greenGemMesh = AssetStore.getMesh("entities", "gem_green");
+        greenGemMesh.setMaterial(new Material(0f));
+        greenGemMesh.setIsStatic(false);
+
+        Mesh blueGemMesh = AssetStore.getMesh("entities", "gem_blue");
+        blueGemMesh.setMaterial(new Material(0f));
+        blueGemMesh.setIsStatic(false);
+
+        Vector2i shrine1Pos = map.getTile("shrine_1").getPosition();
+        Vector2i shrine2Pos = map.getTile("shrine_2").getPosition();
+        Vector2i shrine3Pos = map.getTile("shrine_3").getPosition();
+        Vector2i shrine4Pos = map.getTile("shrine_4").getPosition();
+
+        Entity redGem = new IndicatorEntity(
+                redGemMesh,
+                new Vector3f(shrine1Pos.x, 1.5f, shrine1Pos.y),
+                new Vector3f(45f, 90f, 45f),
+                null
+        );
+        Entity yellowGem = new IndicatorEntity(
+                yellowGemMesh,
+                new Vector3f(shrine2Pos.x, 1.5f, shrine2Pos.y),
+                new Vector3f(45f, 90f, 45f),
+                null
+        );
+        Entity greenGem = new IndicatorEntity(
+                greenGemMesh,
+                new Vector3f(shrine3Pos.x, 1.5f, shrine3Pos.y),
+                new Vector3f(45f, 90f, 45f),
+                null
+        );
+        Entity blueGem = new IndicatorEntity(
+                blueGemMesh,
+                new Vector3f(shrine4Pos.x, 1.5f, shrine4Pos.y),
+                new Vector3f(45f, 90f, 45f),
+                null
+        );
+
+        if (level1) {
+            entities.add(redGem);
+        }
+        if (level2) {
+            entities.add(yellowGem);
+        }
+        if (level3) {
+            entities.add(greenGem);
+        }
+        if (level4) {
+            entities.add(blueGem);
+        }
     }
 
     @Override
@@ -196,7 +272,5 @@ public class MainRoomLevel extends Level {
 
     @Override
     public void terminate() {
-        gui.terminate();
     }
-
 }
