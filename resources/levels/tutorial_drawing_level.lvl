@@ -292,7 +292,7 @@ corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
 stone_floor 0 0 tutorial_door_1
-stone_floor 0 0 tutorial_door_2
+stone_floor 2 0 tutorial_door_2
 corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1

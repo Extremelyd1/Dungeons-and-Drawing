@@ -50,7 +50,7 @@ public class TutorialDrawingLevel extends Level {
     /**
      * Texts in the level
      */
-    private ScrollingPopup text1, text2;
+    private ScrollingPopup text1, text2, text3;
     /**
      * Puzzles in the level
      */
@@ -137,7 +137,7 @@ public class TutorialDrawingLevel extends Level {
         DoorEntity doorLeft = new DoorEntity(
                 doorMesh,
                 new Vector3f(doorTileLeft.getPosition().x - 0.5f, 0f, doorTileLeft.getPosition().y + 0.4f),
-                new Vector3f(0),
+                new Vector3f(0f),
                 0.5f,
                 doorTileLeft
         );
@@ -146,8 +146,8 @@ public class TutorialDrawingLevel extends Level {
         Tile doorTileRight = map.getTile("tutorial_door_2");
         DoorEntity doorRight = new DoorEntity(
                 doorMesh,
-                new Vector3f(doorTileRight.getPosition().x - 0.5f, 0f, doorTileRight.getPosition().y + 0.4f),
-                new Vector3f(180),
+                new Vector3f(doorTileRight.getPosition().x + 0.5f, 0f, doorTileRight.getPosition().y + 0.4f),
+                new Vector3f(0f, 180f, 0f),
                 0.5f,
                 doorTileRight
         );
@@ -183,33 +183,63 @@ public class TutorialDrawingLevel extends Level {
             }));
         });
 
+        text3 = new ScrollingPopup("In this game you need to draw your solution to puzzles.", () -> {
+            gui.setComponent(new ScrollingPopup("Use the drawing interface to draw your solution.", () -> {
+                gui.setComponent(new ScrollingPopup("You can see a list of possible options to your right and the timer in the right upper corner.", () -> {
+                    gui.setComponent(new ScrollingPopup("When the timer hits zero, you drawing will be evaluated. Or you can fast forwar dthis by pressing right mouse button", () -> {
+                        gui.setComponent(new PuzzleGUI(puzzle1));
+                    }));
+                }));
+            }));
+        });
+
         // Create puzzle(s)
         puzzle1 = new Puzzle(
                 "This description does nothing",
                 // Options
                 new String[]{
-                        "key"
+//                        "cannon", "giraffe", "guitar", "key", "axe" # This is the actual list, but the network is not trained yet
+                        "key", "mailbox", "mug" // Temporary list
                 },
                 // Solutions
                 new Solution[]{
                         new Solution("key", () -> {
-                            System.out.println("solution");
-                        }),
-                        new Solution("bomb", () -> {
-                            gui.setComponent(new ScrollingPopup("A bomb? You serious? That's a tad too violent... Try again.", () -> {
-//                                gui.setComponent(new PuzzleGUI(puzzle1));
+                            gui.setComponent(new ScrollingPopup("Good job! A key was indeed the key to the puzzle!", () -> {
+                                // Open the doors
+                                doorLeft.open();
+                                // doorRight.open(); TODO: Currently broken :(
+                                doorTileLeft.setSolid(false);
+                                doorTileRight.setSolid(false);
+
+                                // Remove the indicators
+                                pencilIndicator1.remove(() -> entitiesToRemove.add(pencilIndicator1));
+                                textIndicator2.remove(() -> entitiesToRemove.add(textIndicator2));
+
+                                // Remove triggers
+                                pencilTile1.removeTag("trigger");
+                                textTile2.removeTag("trigger");
+
+                                paused = false;
                             }));
                         }),
-                        new Solution("axe", () -> {
+                        new Solution("mug" /*"cannon"*/, () -> {
+                            gui.setComponent(new ScrollingPopup("A cannon? You serious? That's a tad too violent... Try again.", () -> {
+                                gui.setComponent(new PuzzleGUI(puzzle1));
+                            }));
+                        }),
+                        new Solution("mailbox" /*"axe"*/, () -> {
                             gui.setComponent(new ScrollingPopup("You little viking. But no, this is pg13. Try again.", () -> {
-//                                gui.setComponent(new PuzzleGUI(puzzle1));
+                                gui.setComponent(new PuzzleGUI(puzzle1));
                             }));
                         })
                 },
                 // Default solution
                 new Solution("", () -> {
+                    gui.setComponent(new ScrollingPopup("Hm, not sure if we can open a door with that...", () -> {
+                        gui.setComponent(new PuzzleGUI(puzzle1));
+                    }));
                 }),
-                20
+                60
         );
 
         // Setup lights
@@ -305,7 +335,7 @@ public class TutorialDrawingLevel extends Level {
                     paused = true;
                 }
                 if (currentPlayerTile.hasTag("tutorial_puzzle_1")) {
-                    gui.setComponent(new PuzzleGUI(puzzle1));
+                    gui.setComponent(text3);
                     paused = true;
                 }
             }
