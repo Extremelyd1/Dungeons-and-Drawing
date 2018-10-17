@@ -27,6 +27,7 @@ public class ShaderManager {
     private Shader depthShaderCube;
     private Shader depthShader;
     private Shader hdrShader;
+    private Shader animatedModelShader;
 
     /**
      * Initialize the main shader for the scene
@@ -98,6 +99,15 @@ public class ShaderManager {
         hdrShader.link();
         // Create HDR Shader Variables
         hdrShader.createUniform("hdrTexture");
+    }
+
+    public void setupAnimatedModelShader() throws Exception {
+        animatedModelShader = new Shader();
+        animatedModelShader.createVertexShader(Utilities.loadResource("/shaders/animated_entity_vertex.vs"));
+        animatedModelShader.createFragmentShader(Utilities.loadResource("/shaders/animated_entity_fragment.fs"));
+        animatedModelShader.link();
+        animatedModelShader.createUniform("projectionViewMatrix");
+        animatedModelShader.createUniform("jointTransforms");
     }
 
     //
@@ -246,6 +256,19 @@ public class ShaderManager {
     }
     public void unbindHDRShader(){
         hdrShader.unbind();
+    }
+
+    public void bindAnimatedModelShader() {
+        animatedModelShader.bind();
+    }
+    public void initializeAnimatedModelShader(Matrix4f model, Matrix4f projectionAndView, Matrix4f[] jointTransforms) {
+        Matrix4f projectionViewMatrix = new Matrix4f(projectionAndView);
+        projectionViewMatrix.mul(model);
+        animatedModelShader.setUniform("projectionViewMatrix", projectionViewMatrix);
+        animatedModelShader.setUniform("jointTransforms", jointTransforms, jointTransforms.length);
+    }
+    public void unbindAnimatedModelShader() {
+        animatedModelShader.unbind();
     }
 
     //

@@ -18,7 +18,6 @@ public class LevelController implements IGameLogic {
 
     public LevelController() {
         this.levels = new ArrayList<>(Arrays.asList(
-                new levelEditor(this),
                 new FullLevel1(this)
         ));
         this.active = 0;

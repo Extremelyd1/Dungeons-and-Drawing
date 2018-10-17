@@ -1,45 +1,62 @@
-package engine.entities;
+package engine.entities.animatedModel;
 
 import engine.GameWindow;
+import engine.entities.LivingEntity;
 import engine.input.KeyBinding;
 import engine.util.Timer;
 import game.map.Map;
 import graphics.Mesh;
+import graphics.Texture;
 import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_F6;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.glfwGetKey;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 /**
  * Player class, the controllable PC of the game
  */
 public class Player extends LivingEntity {
 
+    private AnimatedModel animatedModel;
+
     // The range of the cylindrical collision box around the player
     float collisionSize;
 
     private boolean checkCollision = true;
 
-    public Player(Mesh mesh, Map map){
-        super(mesh, map);
+    public Player(AnimatedModel model, Map map){
+        super(null, map);
+        this.animatedModel = model;
         collisionSize = 0.45f;
     }
 
-    public Player(Mesh mesh, Map map, Vector3f position, Vector3f rotation) {
-        super(mesh, map, position, rotation);
+    public Player(AnimatedModel model, Map map, Vector3f position, Vector3f rotation) {
+        super(null, map, position, rotation);
+        this.animatedModel = model;
         collisionSize = 0.45f;
     }
 
-    public Player(Mesh mesh, Map map, Vector3f position, Vector3f rotation, float speed) {
-        super(mesh, map, position, rotation, speed);
+    public Player(AnimatedModel model, Map map, Vector3f position, Vector3f rotation, float speed) {
+        super(null, map, position, rotation, speed);
+        this.animatedModel = model;
         collisionSize = 0.45f;
     }
 
-    public Player(Mesh mesh, Map map, Vector3f position, float scale) {
-        super(mesh, map, position, new Vector3f(0), scale, 1);
+    public Player(AnimatedModel model, Map map, Vector3f position, float scale) {
+        super(null, map, position, new Vector3f(0), scale, 1);
+        this.animatedModel = model;
         collisionSize = 0.45f;
     }
+
+    int update = 5;
 
     /**
      * Updates the player logic
@@ -47,6 +64,12 @@ public class Player extends LivingEntity {
      */
     @Override
     public void update(float delta) {
+
+        if (update-- == 0) {
+            animatedModel.update(delta);
+            update = 5;
+        }
+
         // Get input
         boolean forward = KeyBinding.isForwardPressed();
         boolean backward = KeyBinding.isBackwardPressed();
@@ -125,6 +148,21 @@ public class Player extends LivingEntity {
                 , newPosition.z - collisionSize, newPosition.z + collisionSize)) {
             getPosition().add(0, 0, zChange);
         }
+    }
+
+    @Override
+    public void render() {
+        // Draw the mesh
+        animatedModel.getVao().bind(0, 1, 2, 3, 4);
+
+        glDrawElements(GL_TRIANGLES, animatedModel.getVao().getIndexCount(), GL_UNSIGNED_INT, 0);
+
+        // Restore state
+        animatedModel.getVao().unbind(0, 1, 2, 3, 4);
+    }
+
+    public AnimatedModel getAnimatedModel() {
+        return animatedModel;
     }
 
     public void toggleCollisionDetection() {
