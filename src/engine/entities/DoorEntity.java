@@ -10,6 +10,7 @@ public class DoorEntity extends AnimatedEntity {
 
     private final Tile tile;
     private final boolean invertedRotation;
+    private final float startRotation;
 
     private boolean started = false;
     private boolean ended = false;
@@ -26,6 +27,7 @@ public class DoorEntity extends AnimatedEntity {
         super(mesh, position, rotation, scale, AssetStore.getAnimator("door"));
         this.tile = tile;
         this.invertedRotation = invertedRotation;
+        this.startRotation = rotation.y;
     }
 
     public void open() {
@@ -41,7 +43,7 @@ public class DoorEntity extends AnimatedEntity {
             return;
         }
         float value = animator.update(delta);
-        rotation.y = value * (invertedRotation ? 1 : -1);
+        rotation.y = startRotation + value * (invertedRotation ? 1 : -1);
         if (animator.hasEnded()) {
             tile.setSolid(false);
             ended = true;
