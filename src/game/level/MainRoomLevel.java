@@ -47,7 +47,7 @@ public class MainRoomLevel extends Level {
     /**
      * Texts in the level
      */
-    private ScrollingPopup text1, text2, text3;
+    private ScrollingPopup text1;
     /**
      * Puzzles in the level
      */
@@ -118,6 +118,25 @@ public class MainRoomLevel extends Level {
         loadGems();
 
         // Create interactive tiles
+        Tile textTile1 = map.getTile("main_room_text_1");
+        IndicatorEntity textIndicator1 = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(textTile1.getPosition().x, 1f, textTile1.getPosition().y),
+                textTile1
+        );
+
+        // Create dialogue
+        text1 = new ScrollingPopup("Ah, here we are, the 'main room'. This is where your journey will start.", () -> {
+            gui.setComponent(new ScrollingPopup("On the far right, you see a door, behind that door lies the treasure you seek so dearly.", () -> {
+                gui.setComponent(new ScrollingPopup("In order to open the door, however, you must find all four gems hidden in this dungeon", () -> {
+                    gui.setComponent(new ScrollingPopup("How you ask? Well, simply solve all the puzzles in the four adjacent rooms the ancient dwarfs let you! Good luck.", () -> {
+                        textIndicator1.remove(() -> entitiesToRemove.add(textIndicator1));
+                        textTile1.removeTag("trigger");
+                        paused = false;
+                    }));
+                }));
+            }));
+        });
 
         // Setup lights
         sceneLight = new SceneLight();
@@ -150,7 +169,8 @@ public class MainRoomLevel extends Level {
         // Setup entities
         entitiesToRemove = new ArrayList<>();
         entities.addAll(Arrays.asList(
-                player
+                player,
+                textIndicator1
         ));
 
         paused = false;
@@ -246,7 +266,10 @@ public class MainRoomLevel extends Level {
                 gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
             }
             if (KeyBinding.isInteractPressed()) {
-
+                if (currentPlayerTile.hasTag("main_room_text_1")) {
+                    gui.setComponent(text1);
+                    paused = true;
+                }
             }
         } else if (currentPlayerTile.hasTag("end")) {
             levelController.next();

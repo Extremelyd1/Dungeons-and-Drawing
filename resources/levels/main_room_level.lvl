@@ -407,7 +407,7 @@ stone_floor 0 0
 stone_floor 0 0
 arc 1 0
 stone_floor 0 0
-lantern 0 0 lantern
+lantern 0 0 lantern:main_room_text_1:trigger
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
