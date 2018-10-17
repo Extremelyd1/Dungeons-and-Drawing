@@ -275,6 +275,17 @@ public class TutorialDrawingLevel extends Level {
                 )
         );
 
+        Vector2i lanternCratePos2 = map.getTile("crate_lantern_2").getPosition();
+        sceneLight.pointLights.add(
+                new PointLight(
+                        new Vector3f(1f, 0.2f, 0.2f),
+                        new Vector3f(lanternCratePos2.x, 3.2f, lanternCratePos2.y + 0.5f),
+                        0.8f,
+                        new PointLight.Attenuation(0f, 1f, 0f),
+                        new Vector2f(1f, 100f)
+                )
+        );
+
         // Setup gui
         gui = new GUI();
         gui.initialize();
@@ -339,6 +350,8 @@ public class TutorialDrawingLevel extends Level {
                     paused = true;
                 }
             }
+        } else if (currentPlayerTile.hasTag("end")) {
+            levelController.next();
         } else if (gui.hasComponent() && !hintIsShown) {
             gui.removeComponent();
         }
