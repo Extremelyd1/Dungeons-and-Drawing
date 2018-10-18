@@ -167,10 +167,15 @@ public class SimpleMob extends LivingEntity {
                                 return;
                             }
                         } else {
-                            setupPathSmootherMode2(
-                                    getPosition(),
-                                    new Vector3f(getPosition()).add(new Vector3f(direction).normalize().mul(0.2f)),
-                                    new Vector3f(path.get(pathProgress).getPosition().x, getPosition().y, path.get(pathProgress).getPosition().y));
+                            if (pathProgress < path.size()) {
+                                setupPathSmootherMode2(
+                                        getPosition(),
+                                        new Vector3f(getPosition()).add(new Vector3f(direction).normalize().mul(0.2f)),
+                                        new Vector3f(path.get(pathProgress).getPosition().x, getPosition().y, path.get(pathProgress).getPosition().y));
+                            } else {
+                                isMoving = false;
+                                return;
+                            }
                         }
                     }
                     float remaining = pathSmoother.update(delta * getSpeed());
