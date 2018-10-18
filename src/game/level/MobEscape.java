@@ -5,6 +5,7 @@ import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
+import engine.entities.IndicatorEntity;
 import engine.entities.Player;
 import engine.gui.FloatingScrollText;
 import engine.gui.PuzzleGUI;
@@ -101,6 +102,13 @@ public class MobEscape extends Level {
         LevelEditor.loadEntities("/resources/levels/mobEscape", "generatedEditorLevel_entities.lvl", entities);
         entities.get(0).getMesh().setIsStatic(false);
 
+        IndicatorEntity trigger1Entity = new IndicatorEntity(
+                entities.get(0).getMesh(),
+                new Vector3f(entities.get(0).getPosition().x, 1f, entities.get(0).getPosition().z),
+                tiles[Math.round(entities.get(0).getPosition().x)][Math.round(entities.get(0).getPosition().z)]
+        );
+        entities.set(0, trigger1Entity);
+
         // Setup gui
         gui = new GUI();
         gui.initialize();
@@ -130,6 +138,7 @@ public class MobEscape extends Level {
                         mob = null;
                     } else {
                         mob.setMap(map);              // Update mob map
+                        mob.followOnSightOnly(true);
                     }
                 })}, new Solution("", () -> {
             gui.removeComponent();
@@ -207,7 +216,7 @@ public class MobEscape extends Level {
                 }
             } else {
                 if (mob.isCollidingWithTarget()) {
-                    //Debug.println("Mob Escape", "Game Over");
+                    levelController.restart();
                 }
             }
 
@@ -227,6 +236,11 @@ public class MobEscape extends Level {
             } else if (gui.hasComponent()) {
                 gui.removeComponent();
             }
+
+            // Check end of level
+            if (Math.round(player.getPosition().x) == 27 && Math.round(player.getPosition().z) == 22) {
+                levelController.next();
+            }
         }
 
         gui.update(interval);
@@ -245,6 +259,8 @@ public class MobEscape extends Level {
 
     @Override
     public void terminate() {
+        mob = null;
+        camera = null;
         //gui.terminate(); DO NOT TERMINATE
     }
 }
