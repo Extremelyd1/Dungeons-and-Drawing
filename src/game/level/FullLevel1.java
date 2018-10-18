@@ -31,7 +31,6 @@ import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.system.Pointer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -268,6 +267,6 @@ public class FullLevel1 extends Level {
     @Override
     public void terminate() {
         //gui.terminate(); DO NOT TERMINATE
-        soundManager.cleanup();
+        soundManager.terminate();
     }
 }
