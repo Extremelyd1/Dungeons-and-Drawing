@@ -32,7 +32,7 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MainRoomLevel extends Level {
+public class MurderMysteryLevel extends Level {
 
     private Map map;
     private Player player;
@@ -52,23 +52,14 @@ public class MainRoomLevel extends Level {
      * Puzzles in the level
      */
     private Puzzle puzzle1;
-    /**
-     * Flags that indicate whether the levels has been completed. These do NOT reset when the level reloads
-     */
-    private boolean level1, level2, level3, level4;
 
     /**
      * Flag whether the game is paused (because of gui)
      */
     private boolean paused;
 
-    public MainRoomLevel(LevelController levelController) {
+    public MurderMysteryLevel(LevelController levelController) {
         super(levelController);
-
-        this.level1 = true;
-        this.level2 = true;
-        this.level3 = true;
-        this.level4 = true;
     }
 
     @Override
@@ -76,7 +67,7 @@ public class MainRoomLevel extends Level {
         entities = new ArrayList<>();
 
         // Load map
-        map = new MapFileLoader("/levels/main_room_level.lvl").load();
+        map = new MapFileLoader("/levels/murder_mystery_level.lvl").load();
 
         // Setup rendering
         renderer = new Renderer();
@@ -110,33 +101,25 @@ public class MainRoomLevel extends Level {
         pencilMesh.setMaterial(new Material(0f));
         pencilMesh.setIsStatic(false);
 
-        // Load mesh for door
-        Mesh doorMesh = AssetStore.getMesh("entities", "wooden_door");
-        doorMesh.setMaterial(new Material(0f));
-        doorMesh.setIsStatic(false);
+        // Load gem
+        Mesh greenGemMesh = AssetStore.getMesh("entities", "gem_green");
+        greenGemMesh.setMaterial(new Material(0f));
+        greenGemMesh.setIsStatic(false);
 
-        loadGems();
+        Vector2i shrinePos = map.getTile("shrine").getPosition();
 
-        // Create interactive tiles
-        Tile textTile1 = map.getTile("main_room_text_1");
-        IndicatorEntity textIndicator1 = new IndicatorEntity(
-                questionMarkMesh,
-                new Vector3f(textTile1.getPosition().x, 1f, textTile1.getPosition().y),
-                textTile1
+        Entity greenGem = new IndicatorEntity(
+                greenGemMesh,
+                new Vector3f(shrinePos.x, 1.5f, shrinePos.y),
+                new Vector3f(45f, 90f, 45f),
+                null
         );
 
+        // Create interactive tiles
+
+
         // Create dialogue
-        text1 = new ScrollingPopup("Ah, here we are, the 'main room'. This is where your journey will start.", () -> {
-            gui.setComponent(new ScrollingPopup("On the far right, you see a door, behind that door lies the treasure you seek so dearly.", () -> {
-                gui.setComponent(new ScrollingPopup("In order to open the door, however, you must find all four gems hidden in this dungeon", () -> {
-                    gui.setComponent(new ScrollingPopup("How you ask? Well, simply solve all the puzzles in the four adjacent rooms the ancient dwarfs let you! Good luck.", () -> {
-                        textIndicator1.remove(() -> entitiesToRemove.add(textIndicator1));
-                        textTile1.removeTag("trigger");
-                        paused = false;
-                    }));
-                }));
-            }));
-        });
+
 
         // Setup lights
         sceneLight = new SceneLight();
@@ -161,6 +144,28 @@ public class MainRoomLevel extends Level {
                     )
             );
         });
+        map.getTiles("lantern_floor").forEach(t -> {
+            sceneLight.pointLights.add(
+                    new PointLight(
+                            new Vector3f(0.968f, 0.588f, 0.290f),
+                            new Vector3f(t.getPosition().x, 1f, t.getPosition().y),
+                            0.4f,
+                            new PointLight.Attenuation(0f, 1f, 0f),
+                            new Vector2f(1f, 100f)
+                    )
+            );
+        });
+        map.getTiles("lantern_crate").forEach(t -> {
+            sceneLight.pointLights.add(
+                    new PointLight(
+                            new Vector3f(0.768f, 0.688f, 0.290f),
+                            new Vector3f(t.getPosition().x, 2.5f, t.getPosition().y),
+                            0.45f,
+                            new PointLight.Attenuation(0f, 1f, 0f),
+                            new Vector2f(1f, 100f)
+                    )
+            );
+        });
 
         // Setup gui
         gui = new GUI();
@@ -170,72 +175,10 @@ public class MainRoomLevel extends Level {
         entitiesToRemove = new ArrayList<>();
         entities.addAll(Arrays.asList(
                 player,
-                textIndicator1
+                greenGem
         ));
 
         paused = false;
-    }
-
-    private void loadGems() {
-        // Load meshes for gems
-        Mesh redGemMesh = AssetStore.getMesh("entities", "gem_red");
-        redGemMesh.setMaterial(new Material(0f));
-        redGemMesh.setIsStatic(false);
-
-        Mesh yellowGemMesh = AssetStore.getMesh("entities", "gem_yellow");
-        yellowGemMesh.setMaterial(new Material(0f));
-        yellowGemMesh.setIsStatic(false);
-
-        Mesh greenGemMesh = AssetStore.getMesh("entities", "gem_green");
-        greenGemMesh.setMaterial(new Material(0f));
-        greenGemMesh.setIsStatic(false);
-
-        Mesh blueGemMesh = AssetStore.getMesh("entities", "gem_blue");
-        blueGemMesh.setMaterial(new Material(0f));
-        blueGemMesh.setIsStatic(false);
-
-        Vector2i shrine1Pos = map.getTile("shrine_1").getPosition();
-        Vector2i shrine2Pos = map.getTile("shrine_2").getPosition();
-        Vector2i shrine3Pos = map.getTile("shrine_3").getPosition();
-        Vector2i shrine4Pos = map.getTile("shrine_4").getPosition();
-
-        Entity redGem = new IndicatorEntity(
-                redGemMesh,
-                new Vector3f(shrine1Pos.x, 1.5f, shrine1Pos.y),
-                new Vector3f(45f, 90f, 45f),
-                null
-        );
-        Entity yellowGem = new IndicatorEntity(
-                yellowGemMesh,
-                new Vector3f(shrine2Pos.x, 1.5f, shrine2Pos.y),
-                new Vector3f(45f, 90f, 45f),
-                null
-        );
-        Entity greenGem = new IndicatorEntity(
-                greenGemMesh,
-                new Vector3f(shrine3Pos.x, 1.5f, shrine3Pos.y),
-                new Vector3f(45f, 90f, 45f),
-                null
-        );
-        Entity blueGem = new IndicatorEntity(
-                blueGemMesh,
-                new Vector3f(shrine4Pos.x, 1.5f, shrine4Pos.y),
-                new Vector3f(45f, 90f, 45f),
-                null
-        );
-
-        if (level1) {
-            entities.add(redGem);
-        }
-        if (level2) {
-            entities.add(yellowGem);
-        }
-        if (level3) {
-            entities.add(greenGem);
-        }
-        if (level4) {
-            entities.add(blueGem);
-        }
     }
 
     @Override
@@ -266,10 +209,7 @@ public class MainRoomLevel extends Level {
                 gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
             }
             if (KeyBinding.isInteractPressed()) {
-                if (currentPlayerTile.hasTag("main_room_text_1")) {
-                    gui.setComponent(text1);
-                    paused = true;
-                }
+
             }
         } else if (gui.hasComponent()) {
             gui.removeComponent();
@@ -294,4 +234,5 @@ public class MainRoomLevel extends Level {
     @Override
     public void terminate() {
     }
+
 }

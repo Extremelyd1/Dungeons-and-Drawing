@@ -20,6 +20,7 @@ public class LevelController implements IGameLogic {
         this.levels = new ArrayList<>(Arrays.asList(
                 new TutorialDrawingLevel(this),
                 new MainRoomLevel(this),
+                new MurderMysteryLevel(this),
                 new levelEditor(this),
                 new FullLevel1(this)
         ));
