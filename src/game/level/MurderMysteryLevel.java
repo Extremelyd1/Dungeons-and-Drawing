@@ -8,6 +8,7 @@ import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
 import engine.entities.Player;
 import engine.gui.FloatingScrollText;
+import engine.gui.PuzzleGUI;
 import engine.gui.ScrollingPopup;
 import engine.input.KeyBinding;
 import engine.lights.AmbientLight;
@@ -23,6 +24,7 @@ import game.map.Map;
 import game.map.loader.MapFileLoader;
 import game.map.tile.Tile;
 import game.puzzle.Puzzle;
+import game.puzzle.Solution;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
@@ -68,6 +70,11 @@ public class MurderMysteryLevel extends Level {
 
         // Load map
         map = new MapFileLoader("/levels/murder_mystery_level.lvl").load();
+
+        // Set crates to non-static so the shadow map is properly updated when they are removed
+        map.getTiles("crate").forEach(c -> {
+            c.getMesh().setIsStatic(false);
+        });
 
         // Setup rendering
         renderer = new Renderer();
@@ -115,6 +122,10 @@ public class MurderMysteryLevel extends Level {
                 null
         );
 
+        // Load normal floor mesh
+        Mesh floorMesh = AssetStore.getTileMesh("stone_floor");
+        floorMesh.setMaterial(new Material(0f));
+
         // Create interactive tiles
         Tile textTile1 = map.getTile("murder_mystery_text_1");
         IndicatorEntity textIndicator1 = new IndicatorEntity(
@@ -140,6 +151,13 @@ public class MurderMysteryLevel extends Level {
                 questionMarkMesh,
                 new Vector3f(hintTile3.getPosition().x, 1f, hintTile3.getPosition().y),
                 textTile1
+        );
+
+        Tile puzzleTile1 = map.getTile("murder_mystery_puzzle_1");
+        IndicatorEntity puzzle1Indicator = new IndicatorEntity(
+                pencilMesh,
+                new Vector3f(puzzleTile1.getPosition().x, 1f, puzzleTile1.getPosition().y),
+                puzzleTile1
         );
 
         // Create dialogue
@@ -170,6 +188,50 @@ public class MurderMysteryLevel extends Level {
             gui.removeComponent();
             paused = false;
         });
+
+        // Create puzzle
+        puzzle1 = new Puzzle(
+                "This does nothing...",
+                // Options
+                new String[]{"key", "lighting", "mug"}, // TODO: Temporary options
+//                new String[]{}, // These are the real options...
+                // Solutions
+                new Solution[]{
+                        new Solution("key", () -> { // TODO: Update to the real solution value
+                            gui.setComponent(new ScrollingPopup("Indeed! Now I remember! It was the pencil. Hah... what a coincidence. I will remove the boxes for you", () -> {
+                                gui.removeComponent();
+                                // Remove crates
+                                map.getTiles("crate").forEach(c -> {
+                                    c.setMesh(floorMesh);
+                                    c.setSolid(false);
+                                });
+                                // Remove indicators
+                                textIndicator1.remove(() -> entitiesToRemove.add(textIndicator1));
+                                puzzle1Indicator.remove(() -> entitiesToRemove.add(puzzle1Indicator));
+                                hintIndicator1.remove(() -> entitiesToRemove.add(hintIndicator1));
+                                hintIndicator2.remove(() -> entitiesToRemove.add(hintIndicator2));
+                                hintIndicator3.remove(() -> entitiesToRemove.add(hintIndicator3));
+                                // Remove triggers
+                                textTile1.removeTag("trigger");
+                                puzzleTile1.removeTag("trigger");
+                                hintTile1.removeTag("trigger");
+                                hintTile2.removeTag("trigger");
+                                hintTile3.removeTag("trigger");
+                                // Resume the game
+                                paused = false;
+                            }));
+                        })
+                },
+                // Default solution
+                new Solution("", () -> {
+                    // TODO: This should fire when anything else than the solution above is provided
+                    gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
+                        gui.removeComponent();
+                        paused = false;
+                    }));
+                }),
+                30
+        );
 
         // Setup lights
         sceneLight = new SceneLight();
@@ -229,7 +291,8 @@ public class MurderMysteryLevel extends Level {
                 textIndicator1,
                 hintIndicator1,
                 hintIndicator2,
-                hintIndicator3
+                hintIndicator3,
+                puzzle1Indicator
         ));
 
         paused = false;
@@ -265,15 +328,23 @@ public class MurderMysteryLevel extends Level {
             if (KeyBinding.isInteractPressed()) {
                 if (currentPlayerTile.hasTag("murder_mystery_text_1")) {
                     gui.setComponent(text1);
+                    paused = true;
                 }
                 if (currentPlayerTile.hasTag("puzzle_hint_1")) {
                     gui.setComponent(hintText1);
+                    paused = true;
                 }
                 if (currentPlayerTile.hasTag("puzzle_hint_2")) {
                     gui.setComponent(hintText2);
+                    paused = true;
                 }
                 if (currentPlayerTile.hasTag("puzzle_hint_3")) {
                     gui.setComponent(hintText3);
+                    paused = true;
+                }
+                if (currentPlayerTile.hasTag("murder_mystery_puzzle_1")) {
+                    gui.setComponent(new PuzzleGUI(puzzle1));
+                    paused = true;
                 }
             }
         } else if (gui.hasComponent()) {

@@ -158,10 +158,10 @@ stone_floor 0 0 trigger:murder_mystery_text_1
 stone_floor 0 0
 stone_floor 0 0 trigger:murder_mystery_puzzle_1
 stone_floor 0 0
-crate 0 1
-two_crates_normal 0 1
+crate 0 1 crate
+two_crates_normal 0 1 crate
 stone_floor 0 0
-three_crates_normal 0 1
+three_crates_normal 0 1 crate
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -180,9 +180,9 @@ lantern 0 0 lantern
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-crate 0 1
-three_crates_rotated 0 1
-crate 0 1
+crate 0 1 crate
+three_crates_rotated 0 1 crate
+crate 0 1 crate
 wooden_bar 1 0
 stone_floor 0 0
 shrine 0 1 shrine
@@ -202,8 +202,8 @@ stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-two_crates_normal 0 1
-three_crates_normal 0 1
+two_crates_normal 0 1 crate
+three_crates_normal 0 1 crate
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
