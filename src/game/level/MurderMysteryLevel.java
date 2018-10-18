@@ -47,7 +47,7 @@ public class MurderMysteryLevel extends Level {
     /**
      * Texts in the level
      */
-    private ScrollingPopup text1;
+    private ScrollingPopup text1, hintText1, hintText2, hintText3;
     /**
      * Puzzles in the level
      */
@@ -116,10 +116,60 @@ public class MurderMysteryLevel extends Level {
         );
 
         // Create interactive tiles
+        Tile textTile1 = map.getTile("murder_mystery_text_1");
+        IndicatorEntity textIndicator1 = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(textTile1.getPosition().x, 1f, textTile1.getPosition().y),
+                textTile1
+        );
 
+        Tile hintTile1 = map.getTile("puzzle_hint_1");
+        IndicatorEntity hintIndicator1 = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(hintTile1.getPosition().x, 1f, hintTile1.getPosition().y),
+                textTile1
+        );
+        Tile hintTile2 = map.getTile("puzzle_hint_2");
+        IndicatorEntity hintIndicator2 = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(hintTile2.getPosition().x, 1f, hintTile2.getPosition().y),
+                textTile1
+        );
+        Tile hintTile3 = map.getTile("puzzle_hint_3");
+        IndicatorEntity hintIndicator3 = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(hintTile3.getPosition().x, 1f, hintTile3.getPosition().y),
+                textTile1
+        );
 
         // Create dialogue
+        text1 = new ScrollingPopup("Boo! ... Oh, it didn't scare you...", () -> {
+            gui.setComponent(new ScrollingPopup("Ah, you're not here for me I see.. it's the gem, isn't it? ", () -> {
+                gui.setComponent(new ScrollingPopup("Hm, it only seems that there's a huge pile of boxes blocking your way. I could help you, but I want something in return.", () -> {
+                    gui.setComponent(new ScrollingPopup("I have been murdered, you see? But I'm sooooooo curious to know with what weapon. I have nothing else to do anyway.", () -> {
+                        gui.setComponent(new ScrollingPopup("I just can't figure it out. The other men *cough* errh, ghosts here might have some clues for you.", () -> {
+                            gui.removeComponent();
+                            paused = false;
+                        }));
+                    }));
+                }));
+            }));
+        });
 
+        hintText1 = new ScrollingPopup("Hm, I didn't see much, only that it was sort of pointy? Yea, pointy, Razor(tm) sharp.", () -> {
+            gui.removeComponent();
+            paused = false;
+        });
+
+        hintText2 = new ScrollingPopup("His death was certainly colorful.", () -> {
+            gui.removeComponent();
+            paused = false;
+        });
+
+        hintText3 = new ScrollingPopup("Some say it was mighty. Well, perhaps not for him in the end.", () -> {
+            gui.removeComponent();
+            paused = false;
+        });
 
         // Setup lights
         sceneLight = new SceneLight();
@@ -175,7 +225,11 @@ public class MurderMysteryLevel extends Level {
         entitiesToRemove = new ArrayList<>();
         entities.addAll(Arrays.asList(
                 player,
-                greenGem
+                greenGem,
+                textIndicator1,
+                hintIndicator1,
+                hintIndicator2,
+                hintIndicator3
         ));
 
         paused = false;
@@ -209,7 +263,18 @@ public class MurderMysteryLevel extends Level {
                 gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
             }
             if (KeyBinding.isInteractPressed()) {
-
+                if (currentPlayerTile.hasTag("murder_mystery_text_1")) {
+                    gui.setComponent(text1);
+                }
+                if (currentPlayerTile.hasTag("puzzle_hint_1")) {
+                    gui.setComponent(hintText1);
+                }
+                if (currentPlayerTile.hasTag("puzzle_hint_2")) {
+                    gui.setComponent(hintText2);
+                }
+                if (currentPlayerTile.hasTag("puzzle_hint_3")) {
+                    gui.setComponent(hintText3);
+                }
             }
         } else if (gui.hasComponent()) {
             gui.removeComponent();
