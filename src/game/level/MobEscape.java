@@ -60,7 +60,7 @@ public class MobEscape extends Level {
      *
      * Tile 26/17, 27/17, 28/17 to replace with boulders to  block the mob path	    Done
      *
-     * Tile 27/22 end of the level
+     * Tile 27/22 end of the level                                                  Done
      *
      * Tile 14/1 mob spawn                                                          Done
      *
