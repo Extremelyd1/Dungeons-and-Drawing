@@ -7,6 +7,7 @@ import engine.Transformation;
 import engine.lights.SceneLight;
 import game.map.Map;
 import game.map.tile.Tile;
+import game.mobs.Snake;
 import graphics.HDR;
 import graphics.Mesh;
 import graphics.ShadowsManager;
@@ -182,6 +183,7 @@ public class Renderer {
                                 0.5f);
                         shaderManager.updateSceneShader(model, projectionAndView, mesh.getMaterial());
                         shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
+                        shaderManager.setSceneShaderModeDefault();
                         // Render the mesh
                         mesh.render();
                     }
@@ -197,6 +199,11 @@ public class Renderer {
                 shaderManager.updateSceneShader(model, projectionAndView, mesh.getMaterial());
                 shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
                 // Render the mesh
+                if (entity instanceof Snake) {
+                    shaderManager.setSceneShaderMode0(((Snake) entity).getMorph(), new Vector3f(entity.getPosition()).add(1,0,0));
+                } else {
+                    shaderManager.setSceneShaderModeDefault();
+                }
                 mesh.render();
             }
         }

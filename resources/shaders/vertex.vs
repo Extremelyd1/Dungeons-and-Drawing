@@ -17,12 +17,31 @@ uniform mat4 view;
 uniform mat4 model;
 uniform mat4 projectionViewModel;
 
+uniform int mode;
+
+// Mode 0 related
+const float offset = 1.0;
+uniform float step;
+uniform vec3 headPos;
+
+// Mode 1 is default
+
 void main()
 {
-    vs_out.FragPos = vec3(model * vec4(position, 1.0));
+    vec3 pos;
+    if (mode == 0) {
+        float len = length(headPos - position);
+        pos.x = position.x;
+        pos.y = position.y;
+        pos.z = position.z + offset * sin(step + len * 0.55f);
+    } else {
+        pos = position;
+    }
+
+    vs_out.FragPos = vec3(model * vec4(pos, 1.0));
     vs_out.Normal  = transpose(inverse(mat3(model))) * vertexNormal;
     vs_out.TexCoords = texCoord;
-    gl_Position = projectionViewModel * vec4(position, 1.0);
+    gl_Position = projectionViewModel * vec4(pos, 1.0);
 
     vs_out.Color = vec4(colors, 1);
 }
