@@ -31,6 +31,7 @@ import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.lwjgl.system.Pointer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +120,8 @@ public class FullLevel1 extends Level {
                 t -> sceneLight.pointLights.add(new PointLight(
                                 new Vector3f(1f, 1f, 1f),
                                 new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
-                                0.4f,
+                                1.6f,
+                                new PointLight.Attenuation(0.0f,0.0f,0.05f),
                                 new Vector2f(1f, 100f)
                         )
                 )
@@ -129,14 +131,14 @@ public class FullLevel1 extends Level {
                 new Vector3f(0.0f, 7.0f, 0.0f),       // position
                 new Vector3f(0.8f, 0.8f, 0.8f),     // color
                 new Vector3f(0.0f, 1.0f, 0.4f),     // direction
-                0.2f,                                // intensity
+                0.15f,                                // intensity
                 new Vector2f(1.0f, 10.0f),             // near-far plane
                 false);
 
         // Setup gui
         gui = new GUI();
         gui.initialize();
-        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f));
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
 
         // Load mesh for door
         Mesh doorMesh = AssetStore.getMesh("entities", "wooden_door");
@@ -265,7 +267,7 @@ public class FullLevel1 extends Level {
 
     @Override
     public void terminate() {
-        gui.terminate();
+        //gui.terminate(); DO NOT TERMINATE
         soundManager.cleanup();
     }
 }

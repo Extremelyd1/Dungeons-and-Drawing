@@ -8,6 +8,7 @@ public class Spline {
     Vector3f v1, v2;
     float t = 0;
     Vector3f result;
+    Vector3f divisor;
 
     public Spline() {
     }
@@ -29,6 +30,7 @@ public class Spline {
         // V2
         v2 = new Vector3f(p1).mul(-2);
         v2.add(new Vector3f(p2).mul(2));
+        divisor = (new Vector3f(v1).mul(t)).add(v2);
         // Set default result
         result = new Vector3f(p[0]);
     }
@@ -38,7 +40,13 @@ public class Spline {
         if (p[0] != null && p[1] != null && p[2] != null) {
             Vector3f divisor = (new Vector3f(v1).mul(t)).add(v2);
 
-            t += speed / divisor.length();
+            if (divisor.length() != 0) {
+                t += speed / divisor.length();
+            } else {
+                t =1;
+                result = new Vector3f(p[2]);
+                return 0;
+            }
             if (t >= 1) {
                 remaining = t - 1.0f;
                 remaining = remaining * divisor.length();
@@ -51,6 +59,7 @@ public class Spline {
             result.add(new Vector3f(p[1]).mul(2 * t * (1 - t)));
             result.add(new Vector3f(p[2]).mul(t * t));
         }
+        //Debug.println("Spline", "result: " + result.toString());
 
         return remaining;
     }
