@@ -119,7 +119,7 @@ public class MobEscape extends Level {
                 // Possible guesses
                 new String[]{"key", "cactus", "hat"},
                 // Solutions and their corresponding actions
-                new Solution[]{new Solution("key", () -> {
+                new Solution[]{new Solution("key", (s) -> {
                     gui.setComponent(new ScrollingPopup("You hear a loud bang!", () ->
                             paused = false
                     ));
@@ -140,7 +140,7 @@ public class MobEscape extends Level {
                         mob.setMap(map);              // Update mob map
                         mob.followOnSightOnly(true);
                     }
-                })}, new Solution("", () -> {
+                })}, new Solution("", (s) -> {
             gui.removeComponent();
             paused = false;
         })

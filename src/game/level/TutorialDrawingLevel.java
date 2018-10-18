@@ -199,12 +199,12 @@ public class TutorialDrawingLevel extends Level {
                 "This description does nothing",
                 // Options
                 new String[]{
-//                        "cannon", "giraffe", "guitar", "key", "axe" # This is the actual list, but the network is not trained yet
-                        "key", "mailbox", "mug" // Temporary list
+                        "cannon", "giraffe", "guitar", "key", "axe" // This is the actual list, but the network is not trained yet
+//                        "key", "mailbox", "mug" // Temporary list
                 },
                 // Solutions
                 new Solution[]{
-                        new Solution("key", () -> {
+                        new Solution("key", (s) -> {
                             gui.setComponent(new ScrollingPopup("Good job! A key was indeed the key to the puzzle!", () -> {
                                 // Open the doors
                                 doorLeft.open();
@@ -223,20 +223,20 @@ public class TutorialDrawingLevel extends Level {
                                 paused = false;
                             }));
                         }),
-                        new Solution("mug" /*"cannon"*/, () -> {
+                        new Solution("cannon", (s) -> {
                             gui.setComponent(new ScrollingPopup("A cannon? You serious? That's a tad too violent... Try again.", () -> {
                                 gui.setComponent(new PuzzleGUI(puzzle1));
                             }));
                         }),
-                        new Solution("mailbox" /*"axe"*/, () -> {
+                        new Solution("axe", (s) -> {
                             gui.setComponent(new ScrollingPopup("You little viking. But no, this is pg13. Try again.", () -> {
                                 gui.setComponent(new PuzzleGUI(puzzle1));
                             }));
                         })
                 },
                 // Default solution
-                new Solution("", () -> {
-                    gui.setComponent(new ScrollingPopup("Hm, not sure if we can open a door with that...", () -> {
+                new Solution("", (s) -> {
+                    gui.setComponent(new ScrollingPopup("Hm, not sure if we can open a door with " + s + "...", () -> {
                         gui.setComponent(new PuzzleGUI(puzzle1));
                     }));
                 }),

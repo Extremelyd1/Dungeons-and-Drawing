@@ -174,7 +174,7 @@ public class FullLevel1 extends Level {
                 // Possible guesses
                 new String[]{"key", "cactus", "hat"},
                 // Solutions and their corresponding actions
-                new Solution[]{new Solution("key", () -> {
+                new Solution[]{new Solution("key", (s) -> {
                     gui.setComponent(new ScrollingPopup("Indeed! A key opens the door", () ->
                             paused = false
                     ));
@@ -182,7 +182,7 @@ public class FullLevel1 extends Level {
                     trigger1Entity.remove(() -> entitiesToRemove.add(trigger1Entity));
                     trigger1Entity.getTile().removeTag("trigger");
                     // Default solution and its action
-                })}, new Solution("", () -> {
+                })}, new Solution("", (s) -> {
             gui.removeComponent();
             paused = false;
         })
