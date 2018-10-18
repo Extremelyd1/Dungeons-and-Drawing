@@ -61,6 +61,10 @@ public class Tile {
         return mesh;
     }
 
+    public void setMesh(Mesh mesh) {
+        this.mesh = mesh;
+    }
+
     public boolean isSolid() {
         return solid;
     }
