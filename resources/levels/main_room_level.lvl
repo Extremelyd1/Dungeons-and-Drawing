@@ -473,7 +473,7 @@ stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 silver_door_left
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -503,7 +503,7 @@ stone_floor 0 0
 lantern 0 0 lantern
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 silver_door_center
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -533,7 +533,7 @@ stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 silver_door_right
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0

@@ -4,6 +4,7 @@ import engine.MouseInput;
 import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
+import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
 import engine.entities.Player;
@@ -115,10 +116,37 @@ public class MainRoomLevel extends Level {
         pencilMesh.setMaterial(new Material(0f));
         pencilMesh.setIsStatic(false);
 
-        // Load mesh for door
-        Mesh doorMesh = AssetStore.getMesh("entities", "wooden_door");
-        doorMesh.setMaterial(new Material(0f));
-        doorMesh.setIsStatic(false);
+        // Load mesh for silver door
+        Mesh silverDoorMesh = AssetStore.getMesh("entities", "silver_door");
+        silverDoorMesh.setMaterial(new Material(0f));
+        silverDoorMesh.setIsStatic(false);
+        Mesh silverDoorMeshMirror = AssetStore.getMesh("entities", "silver_door_mirror");
+        silverDoorMesh.setMaterial(new Material(0f));
+        silverDoorMesh.setIsStatic(false);
+
+        // Setup silver door
+        map.getTile("silver_door_left").setSolid(true);
+        map.getTile("silver_door_right").setSolid(true);
+        map.getTile("silver_door_center").setSolid(true);
+
+        Vector2i silverDoorLeftPos = map.getTile("silver_door_left").getPosition();
+        Vector2i silverDoorRightPos = map.getTile("silver_door_right").getPosition();
+
+        DoorEntity silverDoorLeft = new DoorEntity(
+                silverDoorMesh,
+                new Vector3f(silverDoorLeftPos.x, 0.5f, silverDoorLeftPos.y - 0.42f),
+                new Vector3f(0f),
+                new Vector3f(0.6f, 0.7f, 0.55f),
+                null
+        );
+        DoorEntity silverDoorRight = new DoorEntity(
+                silverDoorMeshMirror,
+                new Vector3f(silverDoorRightPos.x, 0.5f, silverDoorRightPos.y + 0.42f),
+                new Vector3f(0f, 0f, 0f),
+                new Vector3f(0.6f, 0.7f, 0.55f),
+                null,
+                true
+        );
 
         loadGems();
 
@@ -186,7 +214,9 @@ public class MainRoomLevel extends Level {
         entitiesToRemove = new ArrayList<>();
         entities.addAll(Arrays.asList(
                 player,
-                textIndicator1
+                textIndicator1,
+                silverDoorLeft,
+                silverDoorRight
         ));
 
         paused = false;
