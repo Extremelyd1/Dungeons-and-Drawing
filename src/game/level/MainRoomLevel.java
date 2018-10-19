@@ -363,6 +363,7 @@ public class MainRoomLevel extends Level {
 
     @Override
     public void terminate() {
+        sceneLight.cleanup();
     }
 
     public void setPlayerSpawnPoint() {
