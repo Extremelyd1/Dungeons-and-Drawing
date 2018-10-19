@@ -386,6 +386,7 @@ public class MurderMysteryLevel extends Level {
                 }
                 if (currentPlayerTile.hasTag("gem_pickup")) {
                     gui.setComponent(gemText);
+                    levelController.setGemFound(LevelController.GEM.GREEN);
                     paused = true;
                 }
                 if (currentPlayerTile.hasTag("ladder")) {

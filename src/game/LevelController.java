@@ -21,10 +21,10 @@ public class LevelController implements IGameLogic {
 
     public LevelController() {
         this.levels = new ArrayList<>(Arrays.asList(
-                new MainRoomLevel(this),
-                new MurderMysteryLevel(this),
                 new TutorialDrawingLevel(this),
-                new MobEscape(this)
+                new MobEscape(this),
+                new MainRoomLevel(this),
+                new MurderMysteryLevel(this)
         ));
         this.active = 0;
         this.timer = new Timer();
@@ -131,6 +131,15 @@ public class LevelController implements IGameLogic {
     }
 
     /**
+     * Set that a gem was found
+     *
+     * @param gem The found gem
+     */
+    public void setGemFound(GEM gem) {
+        mainRoomLevel.setGemFound(gem);
+    }
+
+    /**
      * @return The index of the main room
      */
     private int findMainRoom() {
@@ -141,5 +150,12 @@ public class LevelController implements IGameLogic {
         }
 
         throw new IllegalStateException("No main room level found in levels");
+    }
+
+    public enum GEM {
+        GREEN,
+        YELLOW,
+        RED,
+        BLUE
     }
 }

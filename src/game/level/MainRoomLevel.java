@@ -56,7 +56,7 @@ public class MainRoomLevel extends Level {
     /**
      * Flags that indicate whether the levels has been completed. These do NOT reset when the level reloads
      */
-    private boolean level1, level2, level3, level4;
+    private boolean level1Completed, level2Completed, level3Completed, level4Completed;
 
     /**
      * Flag whether the game is paused (because of gui)
@@ -70,10 +70,10 @@ public class MainRoomLevel extends Level {
     public MainRoomLevel(LevelController levelController) {
         super(levelController);
 
-        this.level1 = true;
-        this.level2 = true;
-        this.level3 = true;
-        this.level4 = true;
+        this.level1Completed = false;
+        this.level2Completed = false;
+        this.level3Completed = false;
+        this.level4Completed = false;
 
         this.spawnPoint = MAIN_ROOM_SPAWN.FROM_TUTORIAL;
     }
@@ -281,16 +281,16 @@ public class MainRoomLevel extends Level {
                 null
         );
 
-        if (level1) {
+        if (level1Completed) {
             entities.add(redGem);
         }
-        if (level2) {
+        if (level2Completed) {
             entities.add(yellowGem);
         }
-        if (level3) {
+        if (level3Completed) {
             entities.add(greenGem);
         }
-        if (level4) {
+        if (level4Completed) {
             entities.add(blueGem);
         }
     }
@@ -327,6 +327,19 @@ public class MainRoomLevel extends Level {
                     gui.setComponent(text1);
                     paused = true;
                 }
+                if (currentPlayerTile.hasTag("entrance_level_1")) {
+                    // TODO: Switch to level
+                }
+                if (currentPlayerTile.hasTag("entrance_level_2")) {
+                    // TODO: Switch to level
+                }
+                if (currentPlayerTile.hasTag("entrance_level_3")) {
+                    levelController.switchToLevel(3);
+                }
+                if (currentPlayerTile.hasTag("entrance_level_4")) {
+                    // TODO: Switch to level
+                }
+
             }
         } else if (gui.hasComponent()) {
             gui.removeComponent();
@@ -386,6 +399,23 @@ public class MainRoomLevel extends Level {
      */
     public void setSpawn(MAIN_ROOM_SPAWN spawnPoint) {
         this.spawnPoint = spawnPoint;
+    }
+
+    public void setGemFound(LevelController.GEM gem) {
+        switch (gem) {
+            case RED:
+                this.level1Completed = true;
+                break;
+            case BLUE:
+                this.level2Completed = true;
+                break;
+            case GREEN:
+                this.level3Completed = true;
+                break;
+            case YELLOW:
+                this.level4Completed = true;
+                break;
+        }
     }
 
     public enum MAIN_ROOM_SPAWN {
