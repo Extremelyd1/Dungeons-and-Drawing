@@ -42,6 +42,8 @@ public class Puzzle {
 
     public Action evaluate(String value) {
 
+        System.err.println("I guessed " + value);
+
         for (Solution solution : solutions) {
             if (solution.getValue().equals(value)) {
                 return solution.getAction();
