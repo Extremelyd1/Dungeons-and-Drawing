@@ -234,7 +234,7 @@ public class MurderMysteryLevel extends Level {
 //                new String[]{}, // These are the real options...
                 // Solutions
                 new Solution[]{
-                        new Solution("key", () -> { // TODO: Update to the real solution value
+                        new Solution("key", (s) -> { // TODO: Update to the real solution value
                             gui.setComponent(new ScrollingPopup("Indeed! Now I remember! It was the pencil. Hah... what a coincidence. I will remove the boxes for you", () -> {
                                 gui.removeComponent();
                                 // Remove crates
@@ -260,9 +260,8 @@ public class MurderMysteryLevel extends Level {
                         })
                 },
                 // Default solution
-                new Solution("", () -> {
-                    // TODO: This should fire when anything else than the solution above is provided
-                    gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
+                new Solution("", (s) -> {
+                    gui.setComponent(new ScrollingPopup("I don't think " + s + " killed me...", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));

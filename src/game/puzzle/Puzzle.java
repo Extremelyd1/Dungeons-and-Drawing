@@ -3,6 +3,7 @@ package game.puzzle;
 import engine.gui.DrawingCanvas;
 import game.NeuralNetwork;
 import game.action.Action;
+import game.action.PostPuzzleAction;
 
 public class Puzzle {
 
@@ -40,7 +41,7 @@ public class Puzzle {
         return time;
     }
 
-    public Action evaluate(String value) {
+    public PostPuzzleAction evaluate(String value) {
 
         for (Solution solution : solutions) {
             if (solution.getValue().equals(value)) {
