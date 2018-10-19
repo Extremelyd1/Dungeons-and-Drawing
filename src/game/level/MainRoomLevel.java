@@ -31,7 +31,6 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
 public class MainRoomLevel extends Level {
 
@@ -62,6 +61,10 @@ public class MainRoomLevel extends Level {
      * Flag whether the game is paused (because of gui)
      */
     private boolean paused;
+    /**
+     * The spawn point of the player
+     */
+    private MAIN_ROOM_SPAWN spawnPoint;
 
     public MainRoomLevel(LevelController levelController) {
         super(levelController);
@@ -70,6 +73,8 @@ public class MainRoomLevel extends Level {
         this.level2 = true;
         this.level3 = true;
         this.level4 = true;
+
+        this.spawnPoint = MAIN_ROOM_SPAWN.FROM_TUTORIAL;
     }
 
     @Override
@@ -91,8 +96,7 @@ public class MainRoomLevel extends Level {
         player.setSpeed(3f);
         player.setScale(new Vector3f(1, 2, 1));
 
-        Vector2i spawn = map.getTile("spawn").getPosition();
-        player.setPosition(spawn.x, 0.5f, spawn.y);
+        setPlayerSpawnPoint();
 
         // Setup camera
         camera = new FollowCamera(
@@ -305,5 +309,49 @@ public class MainRoomLevel extends Level {
 
     @Override
     public void terminate() {
+    }
+
+    public void setPlayerSpawnPoint() {
+        Vector2i spawn;
+
+        switch (spawnPoint) {
+            case FROM_TUTORIAL:
+                spawn = map.getTile("tutorial_spawn").getPosition();
+                break;
+            case FROM_LEVEL_1:
+                spawn = map.getTile("spawn_level_1").getPosition();
+                break;
+            case FROM_LEVEL_2:
+                spawn = map.getTile("spawn_level_2").getPosition();
+                break;
+            case FROM_LEVEL_3:
+                spawn = map.getTile("spawn_level_3").getPosition();
+                break;
+            case FROM_LEVEL_4:
+                spawn = map.getTile("spawn_level_4").getPosition();
+                break;
+
+            default:
+                spawn = map.getTile("tutorial_spawn").getPosition();
+        }
+
+        player.setPosition(spawn.x, 0.5f, spawn.y);
+    }
+
+    /**
+     * Sets the spawn point where the player should start when this level is loaded
+     *
+     * @param spawnPoint Spawn point
+     */
+    public void setSpawn(MAIN_ROOM_SPAWN spawnPoint) {
+        this.spawnPoint = spawnPoint;
+    }
+
+    public enum MAIN_ROOM_SPAWN {
+        FROM_TUTORIAL,
+        FROM_LEVEL_1,
+        FROM_LEVEL_2,
+        FROM_LEVEL_3,
+        FROM_LEVEL_4
     }
 }

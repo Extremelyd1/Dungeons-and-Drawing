@@ -64,7 +64,7 @@ air 0 1
 air 0 1
 corner_wall 0 1
 stone_floor 0 0
-ladder_up 1 0 ladder
+ladder_up 1 0 ladder:trigger
 stone_floor 0 0
 corner_wall 0 1
 air 0 1

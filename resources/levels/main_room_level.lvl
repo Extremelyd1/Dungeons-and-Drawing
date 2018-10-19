@@ -49,7 +49,7 @@ air 0 1
 air 0 1
 corner_wall 0 1
 stone_floor 0 0
-ladder 2 0 entrance_level_2
+ladder 2 0 entrance_level_2:trigger
 stone_floor 0 0
 corner_wall 0 1
 air 0 1
@@ -91,8 +91,8 @@ air 0 1
 air 0 1
 air 0 1
 wooden_wall 0 1
-wooden_bar 1 0
-ladder 1 0 entrance_level_1
+stone_floor 1 0
+ladder 1 0 entrance_level_1:trigger
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -109,7 +109,7 @@ corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
 stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 spawn_level_2
 stone_floor 0 0
 corner_wall 0 1
 air 0 1
@@ -124,7 +124,7 @@ wooden_wall 0 1
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 spawn_level_1
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -480,7 +480,7 @@ stone_floor 0 0
 air 0 1
 air 0 1
 stone_floor 0 0
-stone_floor 0 0 spawn
+stone_floor 0 0 tutorial_spawn
 arc 1 0
 stone_floor 0 0
 stone_floor 0 0
@@ -799,7 +799,7 @@ stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 spawn_level_4
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -812,9 +812,9 @@ air 0 1
 air 0 1
 wooden_wall 0 1
 wooden_bar 1 0
-ladder 1 0 entrance_level_3
+ladder 1 0 entrance_level_3:trigger
 lantern 0 0 lantern
-stone_floor 0 0
+stone_floor 0 0 spawn_level_3
 wooden_bar 1 0
 stone_floor 0 0
 stone_floor 0 0
@@ -831,7 +831,7 @@ wooden_bar 1 0
 stone_floor 0 0
 lantern 0 0 lantern
 stone_floor 0 0
-ladder 0 0 entrance_level_4
+ladder 0 0 entrance_level_4:trigger
 stone_floor 0 0
 corner_wall 0 1
 air 0 1

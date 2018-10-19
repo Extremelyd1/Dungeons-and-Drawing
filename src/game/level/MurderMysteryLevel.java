@@ -388,6 +388,9 @@ public class MurderMysteryLevel extends Level {
                     gui.setComponent(gemText);
                     paused = true;
                 }
+                if (currentPlayerTile.hasTag("ladder")) {
+                    levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_3);
+                }
             }
         } else if (gui.hasComponent()) {
             gui.removeComponent();
