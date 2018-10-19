@@ -116,13 +116,16 @@ public class MainRoomLevel extends Level {
         pencilMesh.setMaterial(new Material(0f));
         pencilMesh.setIsStatic(false);
 
-        // Load mesh for silver door
+        // Load mesh for silver door and lock
         Mesh silverDoorMesh = AssetStore.getMesh("entities", "silver_door");
         silverDoorMesh.setMaterial(new Material(0f));
         silverDoorMesh.setIsStatic(false);
         Mesh silverDoorMeshMirror = AssetStore.getMesh("entities", "silver_door_mirror");
         silverDoorMesh.setMaterial(new Material(0f));
         silverDoorMesh.setIsStatic(false);
+        Mesh lockMesh = AssetStore.getMesh("entities", "lock");
+        lockMesh.setMaterial(new Material(0f));
+        lockMesh.setIsStatic(false);
 
         // Setup silver door
         map.getTile("silver_door_left").setSolid(true);
@@ -131,6 +134,7 @@ public class MainRoomLevel extends Level {
 
         Vector2i silverDoorLeftPos = map.getTile("silver_door_left").getPosition();
         Vector2i silverDoorRightPos = map.getTile("silver_door_right").getPosition();
+        Vector2i silverDoorCenterPos = map.getTile("silver_door_center").getPosition();
 
         DoorEntity silverDoorLeft = new DoorEntity(
                 silverDoorMesh,
@@ -146,6 +150,12 @@ public class MainRoomLevel extends Level {
                 new Vector3f(0.6f, 0.7f, 0.55f),
                 null,
                 true
+        );
+        Entity lock = new Entity(
+                lockMesh,
+                new Vector3f(silverDoorCenterPos.x - 0.3f, 2.5f, silverDoorCenterPos.y),
+                new Vector3f(0f),
+                new Vector3f(1f)
         );
 
         loadGems();
@@ -216,7 +226,8 @@ public class MainRoomLevel extends Level {
                 player,
                 textIndicator1,
                 silverDoorLeft,
-                silverDoorRight
+                silverDoorRight,
+                lock
         ));
 
         paused = false;
