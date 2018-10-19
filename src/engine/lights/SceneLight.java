@@ -26,6 +26,8 @@ public class SceneLight {
     public void cleanup() {
         pointLights.forEach(PointLight::cleanup);
         spotLights.forEach(SpotLight::cleanup);
-        directionalLight.cleanup();
+        if (directionalLight != null) {
+            directionalLight.cleanup();
+        }
     }
 }
