@@ -1,5 +1,7 @@
 package game;
 
+import engine.animation.JointTransform;
+import engine.animation.Quaternion;
 import engine.camera.Camera;
 import engine.entities.Entity;
 import engine.GameWindow;
@@ -175,50 +177,51 @@ public class Renderer {
         GameWindow window = GameWindow.getGameWindow();
         glViewport(0, 0, window.getWindowWidth(), window.getWindowHeight());
 
-        shaderManager.bindSceneShader();
-        shaderManager.initializeSceneShader(camera.getPosition(), shadowEnable, sceneLight, specularPower);
-        // Render Map Layout
-        if (map != null) {
-            for (Tile[] row : map.getTiles()) {
-                for (Tile tile : row) {
-                    if (tile == null) {
-                        continue;
-                    }
-                    Vector3f tilePos = new Vector3f(tile.getPosition().x, 0, tile.getPosition().y);
-                    int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(1.0f,3.0f, 1.0f));
-                    // Calculate the Model matrix in World coordinates
-                    if (frustrum == -2 || frustrum == -1) {
-                        Mesh mesh = tile.getMesh();
-                        model = transformation.getWorldMatrix(
-                                new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
-                                tile.getRotation(),
-                                0.5f);
-                        shaderManager.updateSceneShader(model, projectionAndView, mesh.getMaterial());
-                        shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
-                        // Render the mesh
-                        mesh.render();
-                    }
-                }
-            }
-        }
-
-        // Render Entities
-        for (Entity entity : entities) {
-            int frustrum = frustumIntersection.intersectAab(new Vector3f(entity.getPosition()).sub(1.0f, 1.1f, 1.0f), new Vector3f(entity.getPosition()).add(1.0f,3.0f, 1.0f));
-            if (frustrum == -2 || frustrum == -1) {
-                Mesh mesh = entity.getMesh();
-                model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
-                shaderManager.updateSceneShader(model, projectionAndView, mesh.getMaterial());
-                shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
-                // Render the mesh
-                mesh.render();
-            }
-        }
-        shaderManager.unbindSceneShader();
+//        shaderManager.bindSceneShader();
+//        shaderManager.initializeSceneShader(camera.getPosition(), shadowEnable, sceneLight, specularPower);
+//        // Render Map Layout
+//        if (map != null) {
+//            for (Tile[] row : map.getTiles()) {
+//                for (Tile tile : row) {
+//                    if (tile == null) {
+//                        continue;
+//                    }
+//                    Vector3f tilePos = new Vector3f(tile.getPosition().x, 0, tile.getPosition().y);
+//                    int frustrum = frustumIntersection.intersectAab(new Vector3f(tilePos).sub(1.0f, 1.1f, 1.0f), new Vector3f(tilePos).add(1.0f,3.0f, 1.0f));
+//                    // Calculate the Model matrix in World coordinates
+//                    if (frustrum == -2 || frustrum == -1) {
+//                        Mesh mesh = tile.getMesh();
+//                        model = transformation.getWorldMatrix(
+//                                new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
+//                                tile.getRotation(),
+//                                0.5f);
+//                        shaderManager.updateSceneShader(model, projectionAndView, mesh.getMaterial());
+//                        shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
+//                        // Render the mesh
+//                        mesh.render();
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Render Entities
+//        for (Entity entity : entities) {
+//            int frustrum = frustumIntersection.intersectAab(new Vector3f(entity.getPosition()).sub(1.0f, 1.1f, 1.0f), new Vector3f(entity.getPosition()).add(1.0f,3.0f, 1.0f));
+//            if (frustrum == -2 || frustrum == -1) {
+//                Mesh mesh = entity.getMesh();
+//                model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
+//                shaderManager.updateSceneShader(model, projectionAndView, mesh.getMaterial());
+//                shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
+//                // Render the mesh
+//                mesh.render();
+//            }
+//        }
+//        shaderManager.unbindSceneShader();
 
         shaderManager.bindAnimatedModelShader();
 
-        model = transformation.getWorldMatrix(new Vector3f(player.getPosition()), player.getRotation(), new Vector3f(0.25f));
+        model = transformation.getWorldMatrix(new Vector3f(player.getPosition()), player.getRotation(), 1f);
+
         shaderManager.initializeAnimatedModelShader(model, projectionAndView, player.getAnimatedModel().getJointTransforms());
 
         player.render();

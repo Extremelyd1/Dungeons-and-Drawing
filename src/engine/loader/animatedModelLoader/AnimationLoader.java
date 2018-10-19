@@ -4,6 +4,7 @@ import engine.animation.JointTransform;
 import engine.animation.ModelAnimation;
 import engine.animation.Quaternion;
 import engine.animation.keyframe.ModelKeyFrame;
+import engine.entities.animatedModel.Joint;
 import engine.loader.animatedModelLoader.colladaLoader.ColladaLoader;
 import engine.loader.animatedModelLoader.dataStructures.AnimationData;
 import engine.loader.animatedModelLoader.dataStructures.JointTransformData;
@@ -13,6 +14,7 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,11 +38,23 @@ public class AnimationLoader {
      */
     public static ModelAnimation loadAnimation(String colladaFile) {
         AnimationData animationData = ColladaLoader.loadColladaAnimation(colladaFile);
-        ModelKeyFrame[] frames = new ModelKeyFrame[animationData.keyFrames.length];
-        for (int i = 0; i < frames.length; i++) {
-            frames[i] = createKeyFrame(animationData.keyFrames[i]);
+        ModelKeyFrame[] frames = new ModelKeyFrame[3];
+        Map<String, JointTransform> map = new HashMap<>();
+        for (JointTransformData jointData : animationData.keyFrames[0].jointTransforms) {
+            map.put(jointData.jointNameId, createCustomTransform(jointData));
         }
-        return new ModelAnimation(animationData.lengthSeconds, frames);
+        frames[0] = new ModelKeyFrame(0f, map);
+        map = new HashMap<>();
+        for (JointTransformData jointData : animationData.keyFrames[0].jointTransforms) {
+            map.put(jointData.jointNameId, createCustomTransform(jointData));
+        }
+        frames[1] = new ModelKeyFrame(1f, map);
+        map = new HashMap<>();
+        for (JointTransformData jointData : animationData.keyFrames[0].jointTransforms) {
+            map.put(jointData.jointNameId, createCustomTransform(jointData));
+        }
+        frames[2] = new ModelKeyFrame(2f, map);
+        return new ModelAnimation(2f, frames);
     }
 
     /**
@@ -69,9 +83,34 @@ public class AnimationLoader {
      */
     private static JointTransform createTransform(JointTransformData data) {
         Matrix4f mat = data.jointLocalTransform;
-        Vector3f translation = new Vector3f(mat.m30(), mat.m31(), mat.m32());
         Quaternion rotation = Quaternion.fromMatrix(mat);
-        return new JointTransform(translation, rotation);
+        return new JointTransform(rotation);
+    }
+
+    private static boolean firstReturn = false;
+
+    private static JointTransform createCustomTransform(JointTransformData data) {
+        if (data.jointNameId.equals("Upper_Arm_R")) {
+            Quaternion rotation = new Quaternion((float) Math.sin(Math.PI / 4), 0, 0, (float) Math.cos(Math.PI / 4));
+
+            return new JointTransform(rotation);
+        } else if (data.jointNameId.equals("Lower_Arm_R")) {
+            Quaternion rotationUp = new Quaternion((float) Math.sin(Math.PI / 4), 0, 0, (float) Math.cos(Math.PI / 4));
+            Quaternion rotationSide;
+            if (firstReturn) {
+                firstReturn = false;
+                rotationSide = new Quaternion(0, 0, (float) Math.sin(Math.PI / 8), (float) Math.cos(Math.PI / 8));
+            } else {
+                firstReturn = true;
+                rotationSide = new Quaternion(0, 0, (float) Math.sin(-Math.PI / 8), (float) Math.cos(-Math.PI / 8));
+            }
+
+            Quaternion rotation = Quaternion.fromMatrix(((Matrix4f) rotationUp.toRotationMatrix()).mul(rotationSide.toRotationMatrix()));
+            return new JointTransform(rotation);
+        } else {
+            Quaternion rotation = new Quaternion(0, 0, 0, 1);
+            return new JointTransform(rotation);
+        }
     }
 
 }

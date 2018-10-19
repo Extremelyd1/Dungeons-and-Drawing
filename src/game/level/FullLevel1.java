@@ -76,12 +76,12 @@ public class FullLevel1 extends Level {
         renderer.init();
 
         // Setup player
-        AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/model.dae");
+        AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/model.dae", "/textures/diffuse.png");
         ModelAnimation playerAnimation = AnimationLoader.loadAnimation("/models/entities/model.dae");
         playerModel.doAnimation(playerAnimation);
         player = new Player(playerModel, map);
         player.setSpeed(5);
-        player.setScale(new Vector3f(1, 2, 1));
+        //player.setScale(new Vector3f(1, 2, 1));
         player.setPosition(2, 0.5f, 3);
 
         //Vector2i spawn = map.getTile("spawn").getPosition();
@@ -90,12 +90,12 @@ public class FullLevel1 extends Level {
         //entities.add(player);
 
         // Setup camera
-        camera = new FollowCamera(
-                player,
-                new Vector3f(75f, -10f, 0f),
-                new Vector3f(3, 11, 3)
-        );
-//        camera = new FreeCamera();
+//        camera = new FollowCamera(
+//                player,
+//                new Vector3f(75f, -10f, 0f),
+//                new Vector3f(3, 20, 3)
+//        );
+        camera = new FreeCamera();
 
         // Setup lights
         sceneLight = new SceneLight();

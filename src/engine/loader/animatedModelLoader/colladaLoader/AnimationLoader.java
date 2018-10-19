@@ -88,7 +88,8 @@ public class AnimationLoader {
 			transform.transpose();
 			if(root){
 				//because up axis in Blender is different to up axis in game
-                transform.mul(CORRECTION);
+				CORRECTION.mul(transform, transform);
+//                transform.mul(CORRECTION);
 				//Matrix4f.mul(CORRECTION, transform, transform);
 			}
 			keyFrames[i].addJointTransform(new JointTransformData(jointName, transform));

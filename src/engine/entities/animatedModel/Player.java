@@ -56,8 +56,6 @@ public class Player extends LivingEntity {
         collisionSize = 0.45f;
     }
 
-    int update = 5;
-
     /**
      * Updates the player logic
      * @param delta the time in seconds since previous update call
@@ -65,10 +63,7 @@ public class Player extends LivingEntity {
     @Override
     public void update(float delta) {
 
-        if (update-- == 0) {
-            animatedModel.update(delta);
-            update = 5;
-        }
+        animatedModel.update(delta);
 
         // Get input
         boolean forward = KeyBinding.isForwardPressed();
@@ -153,6 +148,9 @@ public class Player extends LivingEntity {
     @Override
     public void render() {
         // Draw the mesh
+
+        animatedModel.getTexture().bindToUnit(0);
+
         animatedModel.getVao().bind(0, 1, 2, 3, 4);
 
         glDrawElements(GL_TRIANGLES, animatedModel.getVao().getIndexCount(), GL_UNSIGNED_INT, 0);

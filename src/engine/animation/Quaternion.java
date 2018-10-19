@@ -68,7 +68,7 @@ public class Quaternion {
      *         this quaternion.
      */
     public Matrix4fc toRotationMatrix() {
-        Matrix4fc matrix = new Matrix4f();
+        Matrix4f matrix = new Matrix4f();
         final float xy = x * y;
         final float xz = x * z;
         final float xw = x * w;
@@ -78,22 +78,22 @@ public class Quaternion {
         final float xSquared = x * x;
         final float ySquared = y * y;
         final float zSquared = z * z;
-        ((Matrix4f) matrix).m00(1 - 2 * (ySquared + zSquared));
-        ((Matrix4f) matrix).m01(2 * (xy - zw));
-        ((Matrix4f) matrix).m02(2 * (xz + yw));
-        ((Matrix4f) matrix).m03(0);
-        ((Matrix4f) matrix).m10(2 * (xy + zw));
-        ((Matrix4f) matrix).m11(1 - 2 * (xSquared + zSquared));
-        ((Matrix4f) matrix).m12(2 * (yz - xw));
-        ((Matrix4f) matrix).m13(0);
-        ((Matrix4f) matrix).m20(2 * (xz - yw));
-        ((Matrix4f) matrix).m21(2 * (yz + xw));
-        ((Matrix4f) matrix).m22(1 - 2 * (xSquared + ySquared));
-        ((Matrix4f) matrix).m23(0);
-        ((Matrix4f) matrix).m30(0);
-        ((Matrix4f) matrix).m31(0);
-        ((Matrix4f) matrix).m32(0);
-        ((Matrix4f) matrix).m33(1);
+        matrix.m00(1 - 2 * (ySquared + zSquared));
+        matrix.m01(2 * (xy - zw));
+        matrix.m02(2 * (xz + yw));
+        matrix.m03(0);
+        matrix.m10(2 * (xy + zw));
+        matrix.m11(1 - 2 * (xSquared + zSquared));
+        matrix.m12(2 * (yz - xw));
+        matrix.m13(0);
+        matrix.m20(2 * (xz - yw));
+        matrix.m21(2 * (yz + xw));
+        matrix.m22(1 - 2 * (xSquared + ySquared));
+        matrix.m23(0);
+        matrix.m30(0);
+        matrix.m31(0);
+        matrix.m32(0);
+        matrix.m33(1);
         return matrix;
     }
 
@@ -137,6 +137,11 @@ public class Quaternion {
             z = z4 / 4f;
         }
         return new Quaternion(x, y, z, w);
+    }
+
+    @Override
+    public String toString() {
+        return "w: " + w + " x: " + x + " y: " + y + " z: " + z;
     }
 
     /**

@@ -48,7 +48,8 @@ public class SkeletonLoader {
 		matrix.transpose();
 		if(isRoot){
 			//because in Blender z is up, but in our game y is up.
-            matrix.mul(CORRECTION);
+			CORRECTION.mul(matrix, matrix);
+//            matrix.mul(CORRECTION);
 			//Matrix4f.mul(CORRECTION, matrix, matrix);
 		}
 		jointCount++;
