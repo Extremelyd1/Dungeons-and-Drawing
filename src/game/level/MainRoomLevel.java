@@ -31,6 +31,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 public class MainRoomLevel extends Level {
 
@@ -154,10 +155,21 @@ public class MainRoomLevel extends Level {
             sceneLight.pointLights.add(
                     new PointLight(
                             new Vector3f(0.968f, 0.788f, 0.390f),
-                            new Vector3f(t.getPosition().x, 4.5f, t.getPosition().y),
-                            0.2f,
-                            new PointLight.Attenuation(0f, 1f, 0f),
-                            new Vector2f(1f, 100f)
+                            new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
+                            0.3f,
+                            new PointLight.Attenuation(0f, 0f, 0f),
+                            new Vector2f(0.1f, 100f)
+                    )
+            );
+        });
+        map.getTiles("lantern_crate").forEach(t -> {
+            sceneLight.pointLights.add(
+                    new PointLight(
+                            new Vector3f(0.9f, 0.3f, 0.2f),
+                            new Vector3f(t.getPosition().x, 2.5f, t.getPosition().y),
+                            0.4f,
+                            new PointLight.Attenuation(0f, 0.1f, 0f),
+                            new Vector2f(0.1f, 100f)
                     )
             );
         });

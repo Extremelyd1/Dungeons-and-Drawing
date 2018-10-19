@@ -159,7 +159,7 @@ public class TutorialDrawingLevel extends Level {
             gui.setComponent(new ScrollingPopup("Who I am you ask? Oh, don't you worry. I'm the ominous voice, obviously.", () -> {
                 gui.setComponent(new ScrollingPopup(
                         "You seek the treasure of the ancient dwarfs? Hahahaha! hundreds, no, thousands, no, countless men tried before you!.", () -> {
-                    gui.setComponent(new ScrollingPopup("We'll see how you're creativity holds up... Good luck traveller. Try to find the entrance.", () -> {
+                    gui.setComponent(new ScrollingPopup("We'll see how your creativity holds up... Good luck traveller. Try to find the entrance.", () -> {
                         textIndicator1.remove(() -> entitiesToRemove.add(textIndicator1));
                         textTile1.removeTag("trigger");
                         paused = false;
@@ -271,7 +271,7 @@ public class TutorialDrawingLevel extends Level {
                         new Vector3f(0.8f, 0.2f, 0.2f),
                         new Vector3f(lanternCratePos.x, 3.5f, lanternCratePos.y),
                         0.6f,
-                        new PointLight.Attenuation(0f, 1f, 1.1f),
+                        new PointLight.Attenuation(0f, 0.3f, 0f),
                         new Vector2f(1f, 100f)
                 )
         );
@@ -282,8 +282,8 @@ public class TutorialDrawingLevel extends Level {
                         new Vector3f(1f, 0.2f, 0.2f),
                         new Vector3f(lanternCratePos2.x, 3.2f, lanternCratePos2.y + 0.5f),
                         0.8f,
-                        new PointLight.Attenuation(0f, 1f, 0f),
-                        new Vector2f(1f, 100f)
+                        new PointLight.Attenuation(0f, 0.4f, 0f),
+                        new Vector2f(0.1f, 100f)
                 )
         );
 

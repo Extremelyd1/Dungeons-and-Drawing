@@ -134,7 +134,7 @@ corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
 stone_floor 0 0
-stone_floor 0 0 mob_standing_spot
+stone_floor 0 0 puzzle_ghost
 stone_floor 0 0
 corner_wall 0 1
 corner_wall 0 1
@@ -171,7 +171,7 @@ corner_wall 0 1
 stone_floor 0 0
 lantern 0 0 lantern
 stone_floor 0 0
-arc 1 0
+stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 arc 1 0
@@ -184,7 +184,7 @@ crate 0 1 crate
 three_crates_rotated 0 1 crate
 crate 0 1 crate
 wooden_bar 1 0
-stone_floor 0 0
+lantern 0 0 lantern:trigger:gem_pickup
 shrine 0 1 shrine
 stone_floor 0 0
 corner_wall 0 1
@@ -234,7 +234,7 @@ air 0 1
 air 0 1
 air 0 1
 corner_wall 0 1
-lantern_on_floor 0 0 lantern_floor
+crate_lantern 2 1 lantern_crate
 stone_floor 0 0
 stone_floor 0 0
 corner_wall 0 1
@@ -257,35 +257,14 @@ air 0 1
 corner_wall 0 1
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 ghost_2
 prison_bars 1 1
 stone_floor 0 0 puzzle_hint_3:trigger
 stone_floor 0 0
 stone_floor 0 0
 prison_bars 1 1
 stone_floor 0 0
-stone_floor 0 0
-stone_floor 0 0
-corner_wall 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-corner_wall 0 1
-stone_floor 0 0
-stone_floor 0 0
-stone_floor 0 0
-prison_bars 1 1
-stone_floor 0 0
-stone_floor 0 0
-stone_floor 0 0
-prison_bars 1 1
-stone_floor 0 0
-stone_floor 0 0
+crate_lantern 1 1 lantern_crate
 stone_floor 0 0
 corner_wall 0 1
 air 0 1
@@ -305,6 +284,27 @@ stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0 puzzle_hint_2:trigger
 prison_bars 1 1
+stone_floor 0 0 ghost_1
+stone_floor 0 0
+stone_floor 0 0
+corner_wall 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+corner_wall 0 1
+stone_floor 0 0
+stone_floor 0 0
+stone_floor 0 0
+prison_bars 1 1
+stone_floor 0 0
+stone_floor 0 0
+stone_floor 0 0
+prison_bars 1 1
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -362,10 +362,10 @@ air 0 1
 corner_wall 0 1
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 ghost_3
 prison_bars 1 1
 stone_floor 0 0 puzzle_hint_1:trigger
-stone_floor 0 0
+lantern 0 0 lantern
 stone_floor 0 0
 prison_bars 1 1
 stone_floor 0 0
