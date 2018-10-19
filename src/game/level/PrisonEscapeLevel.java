@@ -321,21 +321,6 @@ public class PrisonEscapeLevel extends Level{
                                 door3.open();
                                 door3Left.setSolid(false);
                                 door3Right.setSolid(false);
-                                // Spawn mob
-                                try {
-                                    Mesh mobMesh = PLYLoader.loadMesh("/models/entities/snake.ply");
-                                    mobMesh.setMaterial(new Material(0.0f));
-                                    mobMesh.setIsStatic(false);
-                                    mob[spawnedMobs] = new Snake(mobMesh, map);
-                                    mob[spawnedMobs].setScale(0.08f);
-                                    mob[spawnedMobs].setPosition( map.getTile("ghost1spawn").getPosition().x,
-                                            map.getTile("ghost1spawn").getPosition().y, 0f);
-                                    mob[spawnedMobs].setSpeed(2.5f);
-                                    mob[spawnedMobs].setTarget(player);
-                                    mob[spawnedMobs].followOnSightOnly(false);
-                                    entities.add(mob[spawnedMobs]);
-                                    spawnedMobs++;
-                                } catch(Exception e) {}
                                 // Remove indicators
                                 puzzle1Indicator3.remove(() -> entitiesToRemove.add(puzzle1Indicator3));
                                 // Remove triggers
