@@ -230,7 +230,7 @@ public class PrisonEscapeLevel extends Level{
                 "This does nothing...",
                 new String[]{"key", "lightning", "mug"},
                 new Solution[]{
-                        new Solution( "key", () -> {
+                        new Solution( "key", (s) -> {
                             gui.setComponent(new ScrollingPopup("The door swings open!", () -> {
                                 gui.removeComponent();
                                 // Open door
@@ -262,7 +262,7 @@ public class PrisonEscapeLevel extends Level{
                         })
                 },
                 // Default solution
-                new Solution("", () -> {
+                new Solution("", (s) -> {
                     // TODO: This should fire when anything else than the solution above is provided
                     gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
                         gui.removeComponent();
@@ -275,7 +275,7 @@ public class PrisonEscapeLevel extends Level{
                 "This does nothing...",
                 new String[]{"key", "lightning", "mug"},
                 new Solution[]{
-                        new Solution( "key", () -> {
+                        new Solution( "key", (s) -> {
                             gui.setComponent(new ScrollingPopup("The door swings open!", () -> {
                                 gui.removeComponent();
                                 // Open door
@@ -307,7 +307,7 @@ public class PrisonEscapeLevel extends Level{
                         })
                 },
                 // Default solution
-                new Solution("", () -> {
+                new Solution("", (s) -> {
                     // TODO: This should fire when anything else than the solution above is provided
                     gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
                         gui.removeComponent();
@@ -320,7 +320,7 @@ public class PrisonEscapeLevel extends Level{
                 "This does nothing...",
                 new String[]{"key", "lightning", "mug"},
                 new Solution[]{
-                        new Solution( "key", () -> {
+                        new Solution( "key", (s) -> {
                             gui.setComponent(new ScrollingPopup("The door swings open!", () -> {
                                 gui.removeComponent();
                                 // Open door
@@ -337,7 +337,7 @@ public class PrisonEscapeLevel extends Level{
                         })
                 },
                 // Default solution
-                new Solution("", () -> {
+                new Solution("", (s) -> {
                     // TODO: This should fire when anything else than the solution above is provided
                     gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
                         gui.removeComponent();
@@ -350,7 +350,7 @@ public class PrisonEscapeLevel extends Level{
                 "This does nothing...",
                 new String[]{"key", "lightning", "mug"},
                 new Solution[]{
-                        new Solution( "key", () -> {
+                        new Solution( "key", (s) -> {
                             gui.setComponent(new ScrollingPopup("The door swings open!", () -> {
                                 gui.removeComponent();
                                 // Open door
@@ -382,7 +382,7 @@ public class PrisonEscapeLevel extends Level{
                         })
                 },
                 // Default solution
-                new Solution("", () -> {
+                new Solution("", (s) -> {
                     // TODO: This should fire when anything else than the solution above is provided
                     gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
                         gui.removeComponent();
@@ -395,7 +395,7 @@ public class PrisonEscapeLevel extends Level{
                 "This does nothing...",
                 new String[]{"key", "lightning", "mug"},
                 new Solution[]{
-                        new Solution( "key", () -> {
+                        new Solution( "key", (s) -> {
                             gui.setComponent(new ScrollingPopup("The door swings open!", () -> {
                                 gui.removeComponent();
                                 // Open door
@@ -421,7 +421,7 @@ public class PrisonEscapeLevel extends Level{
                         })
                 },
                 // Default solution
-                new Solution("", () -> {
+                new Solution("", (s) -> {
                     // TODO: This should fire when anything else than the solution above is provided
                     gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
                         gui.removeComponent();
@@ -435,7 +435,7 @@ public class PrisonEscapeLevel extends Level{
                 "This does nothing...",
                 new String[]{"key", "cannon", "hammer", "mug", "lightning"},
                 new Solution[]{
-                        new Solution( "key", () -> { //@TODO: change to hammer
+                        new Solution( "key", (s) -> { //@TODO: change to hammer
                             gui.setComponent(new ScrollingPopup("You break down the wall with the hammer!", () -> {
                                 gui.setComponent(new ScrollingPopup("There seems to be a tunnel here!", () -> {
                                     gui.removeComponent();
@@ -456,7 +456,7 @@ public class PrisonEscapeLevel extends Level{
                         })
                 },
                 // Default solution
-                new Solution("", () -> {
+                new Solution("", (s) -> {
                     // TODO: This should fire when anything else than the solution above is provided
                     gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
                         gui.removeComponent();
