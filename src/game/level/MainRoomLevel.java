@@ -230,13 +230,14 @@ public class MainRoomLevel extends Level {
             player.setPosition(spawn.x, 0.5f, spawn.y);
 
             gui.setComponent(new ScrollingPopup("What's that... All gems are in place! What are all these moving sounds I hear?", () -> {
-                lock.remove(() -> {
+                lock.halfway(() -> {
                     silverDoorLeft.open();
                     silverDoorRight.open();
                     silverDoorLeftTile.setSolid(false);
                     silverDoorCenterTile.setSolid(false);
                     silverDoorRightTile.setSolid(false);
                 });
+                lock.remove(() -> entitiesToRemove.add(lock));
                 paused = false;
             }));
             paused = true;

@@ -136,7 +136,7 @@ public class AssetStore {
         } else if (name.equals("linear1sec")) {
             return new LinearAnimator(animation, false, true);
         } else if (name.equals("rotatingLock")) {
-
+            return new TrigonometricAnimator(animation, false, true);
         } else if (name.equals("flyingLock")) {
             return new LinearAnimator(animation, false, true);
         }
@@ -186,7 +186,12 @@ public class AssetStore {
             animation = new Animation(1f, keyFrames);
             loadedAnimations.put(name, animation);
         } else if (name.equals("rotatingLock")) {
+            KeyFrame[] keyFrames = new KeyFrame[2];
+            keyFrames[0] = new KeyFrame(0f, 0f);
+            keyFrames[1] = new KeyFrame(5f, 180f);
 
+            animation = new Animation(5f, keyFrames);
+            loadedAnimations.put(name, animation);
         } else if (name.equals("flyingLock")) {
             KeyFrame[] keyFrames = new KeyFrame[3];
             keyFrames[0] = new KeyFrame(0f, 0f);
