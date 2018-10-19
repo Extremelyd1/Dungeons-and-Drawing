@@ -157,7 +157,11 @@ public class DirectionalLight {
      * Cleanup memory
      */
     public void cleanup() {
-        staticShadowMap.cleanup();
-        dynamicShadowMap.cleanup();
+        if (isDynamicOnly()) {
+            dynamicShadowMap.cleanup();
+        } else {
+            staticShadowMap.cleanup();
+            dynamicShadowMap.cleanup();
+        }
     }
 }
