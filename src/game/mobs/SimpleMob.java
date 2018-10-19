@@ -47,7 +47,7 @@ public class SimpleMob extends LivingEntity {
         target = entity;
     }
 
-    public void followOnSightOnly(boolean sightOnly){
+    public void followOnSightOnly(boolean sightOnly) {
         followOnSightOnly = sightOnly;
     }
 
@@ -58,7 +58,7 @@ public class SimpleMob extends LivingEntity {
      * @param end
      * @return
      */
-    public boolean isInLineOfSightWithoutCollision(Vector2f start, Vector2f end, float radius, float precision){
+    public boolean isInLineOfSightWithoutCollision(Vector2f start, Vector2f end, float radius, float precision) {
         Vector2f pos = new Vector2f(start);
         Vector2f dir = new Vector2f(end).sub(start).normalize();
         if (dir.length() == 0) return false;
@@ -91,7 +91,8 @@ public class SimpleMob extends LivingEntity {
 
         return true;
     }
-    public boolean isInLineOfSight(Vector2f start, Vector2f end, float precision){
+
+    public boolean isInLineOfSight(Vector2f start, Vector2f end, float precision) {
         Vector2f pos = new Vector2f(start);
         float length = (new Vector2f(end).sub(start)).length();
         float t = 0;
@@ -114,7 +115,7 @@ public class SimpleMob extends LivingEntity {
         return true;
     }
 
-    private boolean isWithinMap(float x, float y){
+    private boolean isWithinMap(float x, float y) {
         int xr = Math.round(x), yr = Math.round(y);
         if (0 <= xr && xr < getMap().getWidth() && 0 <= yr && yr < getMap().getHeight()) {
             return true;
@@ -154,7 +155,6 @@ public class SimpleMob extends LivingEntity {
                         targetTile = super.getMap().getTile(Math.round(lastTargetPos.x), Math.round(lastTargetPos.y));
                         long time = System.nanoTime();
                         path = findPathToTile(currentTile, targetTile);
-                        Debug.println("A_Star", (System.nanoTime() - time) + "ns");
                         pathProgress = 1;
                         if (!isInLineOfSight) {
                             if (pathProgress < path.size()) {
@@ -203,7 +203,7 @@ public class SimpleMob extends LivingEntity {
         }
     }
 
-    private void setupPathSmootherMode3(Vector3f currentPos, Vector3f direction, Vector3f targetPos){
+    private void setupPathSmootherMode3(Vector3f currentPos, Vector3f direction, Vector3f targetPos) {
         Vector3f entrancePoint, midPoint, leavingPoint;
 
         entrancePoint = new Vector3f(currentPos);
@@ -212,7 +212,8 @@ public class SimpleMob extends LivingEntity {
 
         pathSmoother.setup(entrancePoint, midPoint, leavingPoint);
     }
-    private void setupPathSmootherMode2(Vector3f currentPos, Vector3f currentTilePos, Vector3f succesiveTilePos){
+
+    private void setupPathSmootherMode2(Vector3f currentPos, Vector3f currentTilePos, Vector3f succesiveTilePos) {
         Vector3f entrancePoint, midPoint, leavingPoint;
 
         entrancePoint = new Vector3f(currentPos);
@@ -225,7 +226,8 @@ public class SimpleMob extends LivingEntity {
 
         pathSmoother.setup(entrancePoint, midPoint, leavingPoint);
     }
-    private void setupPathSmootherMode1(Vector3f precedingTilePos, Vector3f currentTilePos, Vector3f succesiveTilePos){
+
+    private void setupPathSmootherMode1(Vector3f precedingTilePos, Vector3f currentTilePos, Vector3f succesiveTilePos) {
         Vector3f entrancePoint, leavingPoint;
 
         entrancePoint = new Vector3f(currentTilePos).sub(precedingTilePos).normalize();

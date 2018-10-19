@@ -16,6 +16,9 @@ public class LevelController implements IGameLogic {
     private int active;
     private Timer timer;
 
+    private int mainRoomIndex;
+    private MainRoomLevel mainRoomLevel;
+
     public LevelController() {
         this.levels = new ArrayList<>(Arrays.asList(
                 new TutorialDrawingLevel(this),
@@ -25,6 +28,9 @@ public class LevelController implements IGameLogic {
         ));
         this.active = 0;
         this.timer = new Timer();
+
+        this.mainRoomIndex = findMainRoom();
+        this.mainRoomLevel = (MainRoomLevel) levels.get(mainRoomIndex);
     }
 
     @Override
@@ -67,6 +73,11 @@ public class LevelController implements IGameLogic {
         levels.get(active).terminate();
     }
 
+    /**
+     * Switch to a new level
+     *
+     * @param levelIndex The index of the new level
+     */
     public void switchToLevel(int levelIndex) {
         // Unload level to release resources
         levels.get(active).terminate();
@@ -81,24 +92,71 @@ public class LevelController implements IGameLogic {
         }
     }
 
+    /**
+     * Switches the level to the main room
+     */
+    public void switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN spawnPoint) {
+        mainRoomLevel.setSpawn(spawnPoint);
+        switchToLevel(mainRoomIndex);
+    }
+
+    /**
+     * Goes to the next level
+     */
     public void next() {
         if (active < levels.size() - 1) {
             switchToLevel(active + 1);
         }
     }
 
+    /**
+     * Goes one level back
+     */
     public void previous() {
         if (active > 0) {
             switchToLevel(active - 1);
         }
     }
 
+    /**
+     * Restarts the current level
+     */
     public void restart() {
         try {
+            levels.get(active).terminate();
             levels.get(active).init();
         } catch (Exception e) {
             System.err.println("Could not load level " + active);
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Set that a gem was found
+     *
+     * @param gem The found gem
+     */
+    public void setGemFound(GEM gem) {
+        mainRoomLevel.setGemFound(gem);
+    }
+
+    /**
+     * @return The index of the main room
+     */
+    private int findMainRoom() {
+        for (int i = 0; i < levels.size(); i++) {
+            if (levels.get(i) instanceof MainRoomLevel) {
+                return i;
+            }
+        }
+
+        throw new IllegalStateException("No main room level found in levels");
+    }
+
+    public enum GEM {
+        GREEN,
+        YELLOW,
+        RED,
+        BLUE
     }
 }
