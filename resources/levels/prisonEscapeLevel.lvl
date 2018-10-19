@@ -48,7 +48,7 @@ stone_floor 0 0
 corner_wall 0 1
 stone_floor 0 0 bed
 stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 trigger:wall_puzzle
 stone_floor 0 0 lantern_crate
 corner_wall 0 1
 corner_wall 0 1

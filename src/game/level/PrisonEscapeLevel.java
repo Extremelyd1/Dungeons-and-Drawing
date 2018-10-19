@@ -151,6 +151,12 @@ public class PrisonEscapeLevel extends Level{
                 new Vector3f(puzzleTile5.getPosition().x, 1f, puzzleTile5.getPosition().y),
                 puzzleTile5
         );
+        Tile puzzleTile6 = map.getTile("wall_puzzle");
+        IndicatorEntity puzzle1Indicator6 = new IndicatorEntity(
+                pencilMesh,
+                new Vector3f(puzzleTile6.getPosition().x, 1f, puzzleTile6.getPosition().y),
+                puzzleTile5
+        );
         // Spawn wall
         Tile wall = map.getTile("cracked_wall");
         wall.setSolid(true);
@@ -404,12 +410,48 @@ public class PrisonEscapeLevel extends Level{
                                     wall.setMesh(crackedWall);//@TODO: replace with cracked wall
                                 } catch (Exception e){}
                                 //@TODO: spawn new puzzle
+                                entities.add(puzzle1Indicator6);
                                 // Remove indicators
                                 puzzle1Indicator5.remove(() -> entitiesToRemove.add(puzzle1Indicator5));
                                 // Remove triggers
                                 puzzleTile5.removeTag("trigger");
                                 // Resume the game
                                 paused = false;
+                            }));
+                        })
+                },
+                // Default solution
+                new Solution("", () -> {
+                    // TODO: This should fire when anything else than the solution above is provided
+                    gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
+                        gui.removeComponent();
+                        paused = false;
+                    }));
+                }),
+                30
+        );
+
+        wallPuzzle = new Puzzle(
+                "This does nothing...",
+                new String[]{"key", "cannon", "hammer", "mug", "lightning"},
+                new Solution[]{
+                        new Solution( "key", () -> { //@TODO: change to hammer
+                            gui.setComponent(new ScrollingPopup("You break down the wall with the hammer!", () -> {
+                                gui.setComponent(new ScrollingPopup("There seems to be a tunnel here!", () -> {
+                                    gui.removeComponent();
+                                    // Remove the wall
+                                    try {
+                                        wall.setMesh(floorMesh);
+                                        wall.setSolid(false);
+                                    } catch (Exception e){}
+                                    // @TODO: set exit point level
+                                    // Remove indicators
+                                    puzzle1Indicator6.remove(() -> entitiesToRemove.add(puzzle1Indicator6));
+                                    // Remove triggers
+                                    puzzleTile6.removeTag("trigger");
+                                    // Resume the game
+                                    paused = false;
+                                }));
                             }));
                         })
                 },
@@ -534,6 +576,10 @@ public class PrisonEscapeLevel extends Level{
                 }
                 if (currentPlayerTile.hasTag("door_5_puzzle")) {
                     gui.setComponent(new PuzzleGUI(doorPuzzle5));
+                    paused = true;
+                }
+                if (currentPlayerTile.hasTag("wall_puzzle")) {
+                    gui.setComponent(new PuzzleGUI(wallPuzzle));
                     paused = true;
                 }
             }
