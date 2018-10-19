@@ -19,4 +19,13 @@ public class SceneLight {
         this.ambientLight = new AmbientLight();
         this.directionalLight = null;
     }
+
+    /**
+     * Cleanup all the lights
+     */
+    public void cleanup() {
+        pointLights.forEach(PointLight::cleanup);
+        spotLights.forEach(SpotLight::cleanup);
+        directionalLight.cleanup();
+    }
 }

@@ -368,6 +368,6 @@ public class MurderMysteryLevel extends Level {
 
     @Override
     public void terminate() {
+        sceneLight.cleanup();
     }
-
 }

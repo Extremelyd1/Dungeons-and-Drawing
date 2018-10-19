@@ -153,4 +153,12 @@ public class SpotLight {
 
         lightSpaceMatrix = projection.mul(lightViewMatrix);
     }
+
+    /**
+     * Cleanup memory
+     */
+    public void cleanup() {
+        staticShadowMap.cleanup();
+        dynamicShadowMap.cleanup();
+    }
 }

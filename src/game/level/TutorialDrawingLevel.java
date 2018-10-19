@@ -375,5 +375,6 @@ public class TutorialDrawingLevel extends Level {
 
     @Override
     public void terminate() {
+        sceneLight.cleanup();
     }
 }

@@ -152,4 +152,12 @@ public class DirectionalLight {
     public void setShadowEnable(boolean shadowEnable) {
         this.shadowEnable = shadowEnable;
     }
+
+    /**
+     * Cleanup memory
+     */
+    public void cleanup() {
+        staticShadowMap.cleanup();
+        dynamicShadowMap.cleanup();
+    }
 }
