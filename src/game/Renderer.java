@@ -4,6 +4,7 @@ import engine.camera.Camera;
 import engine.entities.Entity;
 import engine.GameWindow;
 import engine.Transformation;
+import engine.gui.NanoVG;
 import engine.lights.SceneLight;
 import game.map.Map;
 import game.map.tile.Tile;
@@ -105,6 +106,7 @@ public class Renderer {
                 window.setWindowHeight(height);
                 window.setWindowWidth(width);
                 glViewport(0, 0, width, height); //Update the Viewport with new width and height
+                NanoVG.reload();
             }
         });
 

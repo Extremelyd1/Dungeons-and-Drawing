@@ -77,10 +77,10 @@ public class DrawingList extends Popup {
             if (timeLeft == 0 || mouse.isRightButtonPressed()) {
                 BufferedImage image = canvas.getImage();
                 if (image == null) {
-                    puzzle.getDefaultSolution().getAction().execute();
+                    puzzle.getDefaultSolution().getAction().execute("bamboozled");
                 } else {
-                    String networkGuess = NeuralNetwork.getBestGuess(canvas.getImage(), options);
-                    puzzle.evaluate(networkGuess).execute();
+                    String networkGuess = NeuralNetwork.getBestGuess(canvas.getImage());
+                    puzzle.evaluate(networkGuess).execute(networkGuess);
                 }
                 isRunning = false;
             }
