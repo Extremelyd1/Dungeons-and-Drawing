@@ -60,11 +60,6 @@ public class DarknessLevel extends Level {
     /**
      *
      */
-    private Snake snake1, snake2;
-
-    /**
-     *
-     */
     private ScrollingPopup text1, text2;
 
     /**
@@ -80,7 +75,7 @@ public class DarknessLevel extends Level {
     /**
      *  Light sources used for the game
      */
-    private SpotLight flashLight;
+    private PointLight flashLight;
     private Vector3f previousPosition;
 
     public DarknessLevel(LevelController levelController) {
@@ -181,14 +176,12 @@ public class DarknessLevel extends Level {
         );
 
         // Flashlight
-        flashLight = new SpotLight(
+        flashLight = new PointLight(
                 new Vector3f(1f, 1f, 1f),
                 new Vector3f(player.getPosition().x + 1f, 2f, player.getPosition().z),
-                2f,
-                new Vector3f(1f, -1f, 0f),
-                (float) Math.cos(Math.toRadians(20f)),
-                (float) Math.cos(Math.toRadians(40f)),
-                new Vector2f(0.05f, 1000f)
+                0.5f,
+                new PointLight.Attenuation(0f, 0.3f, 0f),
+                new Vector2f(0.1f, 100f)
         );
         flashLight.setToDynamicOnly();
 
@@ -243,7 +236,8 @@ public class DarknessLevel extends Level {
                         // Flashlight
                         new Solution("flashlight", (s) -> {
                             gui.setComponent(new ScrollingPopup("A bit boring, but sure. Let there be a flashlight!", () -> {
-                                sceneLight.spotLights.add(flashLight);
+                                flashLight.setPosition(new Vector3f(player.getPosition().x + 1f, 2f, player.getPosition().z));
+                                sceneLight.pointLights.add(flashLight);
                                 renderer.resetShadowMap();
                                 pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
                                 pencilTile1.removeTag("trigger");
@@ -337,14 +331,13 @@ public class DarknessLevel extends Level {
                 Math.round(player.getPosition().z)
         );
 
-        if (sceneLight.spotLights.contains(flashLight)) {
+        if (sceneLight.pointLights.contains(flashLight)) {
             float signX = Math.signum(player.getPosition().x - previousPosition.x);
             float signZ = Math.signum(player.getPosition().z - previousPosition.z);
 
             if (signX != 0 || signZ != 0) {
                 flashLight.setPosition(new Vector3f(player.getPosition().x + signX,
                         2f, player.getPosition().z + signZ));
-                flashLight.setConeDirection(new Vector3f(signX, -1f, signZ));
             }
         }
 

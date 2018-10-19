@@ -18,11 +18,11 @@ public class LevelController implements IGameLogic {
 
     public LevelController() {
         this.levels = new ArrayList<>(Arrays.asList(
-                new DarknessLevel(this),
                 new TutorialDrawingLevel(this),
                 new MobEscape(this),
                 new MainRoomLevel(this),
-                new MurderMysteryLevel(this)
+                new MurderMysteryLevel(this),
+                new DarknessLevel(this)
         ));
         this.active = 0;
         this.timer = new Timer();
