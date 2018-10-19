@@ -4,6 +4,7 @@ import engine.MouseInput;
 import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
+import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
 import engine.entities.Player;
@@ -35,6 +36,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 public class DarknessLevel extends Level {
 
@@ -52,7 +54,18 @@ public class DarknessLevel extends Level {
     /**
      *
      */
+    private boolean lightningEnabled = false;
+    private int deltaUpdates = 0;
+
+    /**
+     *
+     */
     private Snake snake1, snake2;
+
+    /**
+     *
+     */
+    private ScrollingPopup text1, text2;
 
     /**
      * Puzzles
@@ -99,12 +112,22 @@ public class DarknessLevel extends Level {
         Mesh snakeMesh = PLYLoader.loadMesh("/models/entities/snake.ply");
         snakeMesh.setMaterial(new Material(0.0f));
         snakeMesh.setIsStatic(false);
+
         snake1 = new Snake(snakeMesh, map);
         snake1.setScale(0.08f);
-        snake1.setPosition(14, 0.49f, 1);
+        Vector2i snake_spawn_left = map.getTile("snake_left").getPosition();
+        snake1.setPosition(snake_spawn_left.x, 0.5f, snake_spawn_left.y);
         snake1.setSpeed(2.5f);
         snake1.setTarget(player);
         snake1.followOnSightOnly(false);
+
+        snake2 = new Snake(snakeMesh, map);
+        snake2.setScale(0.08f);
+        Vector2i snake_spawn_right = map.getTile("snake_right").getPosition();
+        snake2.setPosition(snake_spawn_right.x, 0.5f, snake_spawn_right.y);
+        snake2.setSpeed(2.5f);
+        snake2.setTarget(player);
+        snake2.followOnSightOnly(false);
 
         // Setup camera
         camera = new FollowCamera(
@@ -123,13 +146,28 @@ public class DarknessLevel extends Level {
         pencilMesh.setMaterial(new Material(0f));
         pencilMesh.setIsStatic(false);
 
+        // Load mesh for door
+        Mesh doorMesh = AssetStore.getMesh("entities", "wooden_door");
+        doorMesh.setMaterial(new Material(0f));
+        doorMesh.setIsStatic(false);
+
         // Create interactive tiles
-        Tile pencilTile1 = map.getTile("puzzle_trigger");
+        Tile pencilTile1 = map.getTile("light_puzzle_trigger");
         IndicatorEntity pencilIndicator = new IndicatorEntity(
                 pencilMesh,
                 new Vector3f(pencilTile1.getPosition().x, 1f, pencilTile1.getPosition().y),
                 pencilTile1
         );
+
+        Tile doorTile = map.getTile("door");
+        DoorEntity door = new DoorEntity(
+                doorMesh,
+                new Vector3f(doorTile.getPosition().x - 0.5f, 0f, doorTile.getPosition().y),
+                new Vector3f(0f),
+                0.5f,
+                doorTile
+        );
+        doorTile.setSolid(true);
 
         // Setup lights
         sceneLight = new SceneLight();
@@ -144,11 +182,22 @@ public class DarknessLevel extends Level {
 
         sceneLight.ambientLight = new AmbientLight(new Vector3f(0));
 
-        Vector2i initialLightPosition = map.getTile("light").getPosition();
+        Vector2i initialLightPosition = map.getTile("init_light").getPosition();
         sceneLight.pointLights.add(
                 new PointLight(
                         new Vector3f(0.8f, 0.3f, 0.2f),
                         new Vector3f(initialLightPosition.x - 0.5f, 2f, initialLightPosition.y + 0.5f),
+                        1f,
+                        new PointLight.Attenuation(0f, 0.3f, 0f),
+                        new Vector2f(0.01f, 100f)
+                )
+        );
+
+        Vector2i shrineLightPosition = map.getTile("shrine_light").getPosition();
+        sceneLight.pointLights.add(
+                new PointLight(
+                        new Vector3f(0.8f, 0.3f, 0.2f),
+                        new Vector3f(shrineLightPosition.x + 0.5f, 0.5f, shrineLightPosition.y + 0.5f),
                         1f,
                         new PointLight.Attenuation(0f, 0.3f, 0f),
                         new Vector2f(0.01f, 100f)
@@ -182,6 +231,19 @@ public class DarknessLevel extends Level {
         gui = new GUI();
         gui.initialize();
 
+        // Create dialogue
+        text1 = new ScrollingPopup("Well, someone forgot to turn on the light.", () -> {
+            gui.setComponent(new ScrollingPopup("This room makes me think of a joke I heard a long time ago. Want to hear it?", () -> {
+                gui.setComponent(new ScrollingPopup("No? Too bad. I'm going to tell you anyway", () -> {
+                    gui.setComponent(new ScrollingPopup("\"Dark humor is like food. Not everyone gets it.\" Hahahaha, classic!", () -> {
+                       gui.setComponent(new ScrollingPopup("So where were we? Ah right. We got gems to collect", () -> {
+                           gui.removeComponent();
+                           paused = false;
+                       }));
+                    }));
+                }));
+            }));
+        });
 
         // Create puzzle(s)
         puzzle1 = new Puzzle(
@@ -200,7 +262,7 @@ public class DarknessLevel extends Level {
                                 sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
                                 renderer.resetShadowMap();
                                 pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
-                                pencilTile1.removeTag("puzzle_trigger");
+                                pencilTile1.removeTag("light_puzzle_trigger");
                                 paused = false;
                             }));
                         }),
@@ -209,8 +271,9 @@ public class DarknessLevel extends Level {
                         new Solution("lightning", (s) -> {
                             gui.setComponent(new ScrollingPopup("Mwhuahahaha! It's alive... IT'S ALIVE!", () -> {
                                 gui.setComponent(new ScrollingPopup("Ahem... Sorry you had to see that... But you simply cannot have lightning without an evil laugh", () -> {
+                                    lightningEnabled = true;
                                     pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
-                                    pencilTile1.removeTag("puzzle_trigger");
+                                    pencilTile1.removeTag("light_puzzle_trigger");
                                     paused = false;
                                 }));
                             }));
@@ -227,7 +290,7 @@ public class DarknessLevel extends Level {
                                         false
                                 );
                                 pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
-                                pencilTile1.removeTag("puzzle_trigger");
+                                pencilTile1.removeTag("light_puzzle_trigger");
                                 paused = false;
                             }));
                         }),
@@ -238,7 +301,7 @@ public class DarknessLevel extends Level {
                                     sourceBack.play();
                                     sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
                                     pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
-                                    pencilTile1.removeTag("puzzle_trigger");
+                                    pencilTile1.removeTag("light_puzzle_trigger");
                                     paused = false;
                                 }));
                             }));
@@ -246,7 +309,7 @@ public class DarknessLevel extends Level {
 
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("Hm, the only way we could use a " + s + ", is if we light it on fire... I'm not sure if that is such a bright idea.", () -> {
+                    gui.setComponent(new ScrollingPopup("Hm, the only way we could use a " + s.replace('_', ' ') + ", is if we light it on fire... I'm not sure if that is such a bright idea.", () -> {
                         gui.setComponent(new PuzzleGUI(puzzle1));
                     }));
                 }),
@@ -258,11 +321,13 @@ public class DarknessLevel extends Level {
         entities = new ArrayList<>(Arrays.asList(
                 player,
                 snake1,
+                snake2,
+                door,
                 pencilIndicator
         ));
 
-        paused = false;
-
+        gui.setComponent(text1);
+        paused = true;
     }
 
     @Override
@@ -301,7 +366,24 @@ public class DarknessLevel extends Level {
             }
         }
 
-        if (currentPlayerTile.hasTag("puzzle_trigger")) {
+        if (lightningEnabled) {
+            Random rd = new Random();
+
+            if (deltaUpdates >= 30) {
+                float amount = sceneLight.ambientLight.getLight().x / 2.0f;
+                sceneLight.ambientLight = new AmbientLight(new Vector3f(amount));
+                deltaUpdates++;
+            } else if (rd.nextInt(100) < 5) {
+                float amount = rd.nextFloat() / 2 + 0.5f;
+                sceneLight.ambientLight = new AmbientLight(new Vector3f(amount));
+                deltaUpdates = 0;
+            } else {
+                sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
+                deltaUpdates = 0;
+            }
+        }
+
+        if (currentPlayerTile.hasTag("light_puzzle_trigger")) {
             if (!gui.hasComponent()) {
                 gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
             }
@@ -336,4 +418,5 @@ public class DarknessLevel extends Level {
     public void terminate() {
         soundManager.terminate();
     }
+
 }
