@@ -64,7 +64,8 @@ public class NeuralNetwork {
                 bestGuess = new Pair<>(labels[i], output.getFloat(i));
             }
         }
-        return bestGuess.getKey();
+
+        return bestGuess == null ? "bamboozled" : bestGuess.getKey();
     }
 
     /**
