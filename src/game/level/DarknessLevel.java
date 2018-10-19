@@ -108,27 +108,6 @@ public class DarknessLevel extends Level {
         Vector2i spawn = map.getTile("spawn").getPosition();
         player.setPosition(spawn.x, 0.5f, spawn.y);
 
-        // Setup snakes
-        Mesh snakeMesh = PLYLoader.loadMesh("/models/entities/snake.ply");
-        snakeMesh.setMaterial(new Material(0.0f));
-        snakeMesh.setIsStatic(false);
-
-        snake1 = new Snake(snakeMesh, map);
-        snake1.setScale(0.08f);
-        Vector2i snake_spawn_left = map.getTile("snake_left").getPosition();
-        snake1.setPosition(snake_spawn_left.x, 0.5f, snake_spawn_left.y);
-        snake1.setSpeed(2.5f);
-        snake1.setTarget(player);
-        snake1.followOnSightOnly(false);
-
-        snake2 = new Snake(snakeMesh, map);
-        snake2.setScale(0.08f);
-        Vector2i snake_spawn_right = map.getTile("snake_right").getPosition();
-        snake2.setPosition(snake_spawn_right.x, 0.5f, snake_spawn_right.y);
-        snake2.setSpeed(2.5f);
-        snake2.setTarget(player);
-        snake2.followOnSightOnly(false);
-
         // Setup camera
         camera = new FollowCamera(
                 player,
@@ -159,15 +138,12 @@ public class DarknessLevel extends Level {
                 pencilTile1
         );
 
-        Tile doorTile = map.getTile("door");
-        DoorEntity door = new DoorEntity(
-                doorMesh,
-                new Vector3f(doorTile.getPosition().x - 0.5f, 0f, doorTile.getPosition().y),
-                new Vector3f(0f),
-                0.5f,
-                doorTile
+        Tile textTile1 = map.getTile("welcome_text");
+        IndicatorEntity textIndicator1 = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(textTile1.getPosition().x, 1f, textTile1.getPosition().y),
+                textTile1
         );
-        doorTile.setSolid(true);
 
         // Setup lights
         sceneLight = new SceneLight();
@@ -180,7 +156,7 @@ public class DarknessLevel extends Level {
                 false
         );
 
-        sceneLight.ambientLight = new AmbientLight(new Vector3f(0));
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0f));
 
         Vector2i initialLightPosition = map.getTile("init_light").getPosition();
         sceneLight.pointLights.add(
@@ -222,9 +198,14 @@ public class DarknessLevel extends Level {
 
         SoundBuffer buffDarkness = new SoundBuffer("/sound/darkness.ogg");
         soundManager.addSoundBuffer(buffDarkness);
+        SoundBuffer buffThunder = new SoundBuffer("/sound/thunder.ogg");
+        soundManager.addSoundBuffer(buffThunder);
         SoundSource sourceBack = new SoundSource(false, true);
         sourceBack.setBuffer(buffDarkness.getBufferId());
+        SoundSource sourceThunder = new SoundSource(false, true);
+        sourceThunder.setBuffer(buffThunder.getBufferId());
         soundManager.addSoundSource("helloDarkness", sourceBack);
+        soundManager.addSoundSource("thunder", sourceThunder);
         soundManager.setListener(SoundListener.getSoundListener());
 
         // Setup gui
@@ -232,18 +213,22 @@ public class DarknessLevel extends Level {
         gui.initialize();
 
         // Create dialogue
-        text1 = new ScrollingPopup("Well, someone forgot to turn on the light.", () -> {
+        text1 = new ScrollingPopup("Wow. So dark. Hope it's just a phase.", () -> {
             gui.setComponent(new ScrollingPopup("This room makes me think of a joke I heard a long time ago. Want to hear it?", () -> {
                 gui.setComponent(new ScrollingPopup("No? Too bad. I'm going to tell you anyway", () -> {
                     gui.setComponent(new ScrollingPopup("\"Dark humor is like food. Not everyone gets it.\" Hahahaha, classic!", () -> {
                        gui.setComponent(new ScrollingPopup("So where were we? Ah right. We got gems to collect", () -> {
-                           gui.removeComponent();
+                           textIndicator1.remove(() -> entitiesToRemove.add(textIndicator1));
+                           textTile1.removeTag("trigger");
                            paused = false;
+                           gui.removeComponent();
                        }));
                     }));
                 }));
             }));
         });
+
+
 
         // Create puzzle(s)
         puzzle1 = new Puzzle(
@@ -251,7 +236,7 @@ public class DarknessLevel extends Level {
                 // Options
                 new String[]{
                         // flashlight, sun, lightning, lighthouse, harp
-                        "flashlight", "lightning", "apple", "palm_tree", "panda" // Temporary list
+                        "flashlight", "lightning", "apple", "panda" // Temporary list
                 },
                 // Solutions
                 new Solution[]{
@@ -259,21 +244,22 @@ public class DarknessLevel extends Level {
                         new Solution("flashlight", (s) -> {
                             gui.setComponent(new ScrollingPopup("A bit boring, but sure. Let there be a flashlight!", () -> {
                                 sceneLight.spotLights.add(flashLight);
-                                sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
                                 renderer.resetShadowMap();
                                 pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
-                                pencilTile1.removeTag("light_puzzle_trigger");
+                                pencilTile1.removeTag("trigger");
                                 paused = false;
+                                gui.removeComponent();
                             }));
                         }),
 
                         // Lightning
                         new Solution("lightning", (s) -> {
+                            sourceThunder.play();
                             gui.setComponent(new ScrollingPopup("Mwhuahahaha! It's alive... IT'S ALIVE!", () -> {
                                 gui.setComponent(new ScrollingPopup("Ahem... Sorry you had to see that... But you simply cannot have lightning without an evil laugh", () -> {
                                     lightningEnabled = true;
                                     pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
-                                    pencilTile1.removeTag("light_puzzle_trigger");
+                                    pencilTile1.removeTag("trigger");
                                     paused = false;
                                 }));
                             }));
@@ -290,7 +276,7 @@ public class DarknessLevel extends Level {
                                         false
                                 );
                                 pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
-                                pencilTile1.removeTag("light_puzzle_trigger");
+                                pencilTile1.removeTag("trigger");
                                 paused = false;
                             }));
                         }),
@@ -299,9 +285,8 @@ public class DarknessLevel extends Level {
                             gui.setComponent(new ScrollingPopup("You prefer music over some proper light source? Oh, you think darkness is your ally? But you merely adopted the dark. I was born in it! Molded by it!", () -> {
                                 gui.setComponent(new ScrollingPopup("Oh, right, music. I know something that fits this situation.", () -> {
                                     sourceBack.play();
-                                    sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
                                     pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
-                                    pencilTile1.removeTag("light_puzzle_trigger");
+                                    pencilTile1.removeTag("trigger");
                                     paused = false;
                                 }));
                             }));
@@ -320,14 +305,11 @@ public class DarknessLevel extends Level {
         entitiesToRemove = new ArrayList<>();
         entities = new ArrayList<>(Arrays.asList(
                 player,
-                snake1,
-                snake2,
-                door,
+                textIndicator1,
                 pencilIndicator
         ));
 
-        gui.setComponent(text1);
-        paused = true;
+        paused = false;
     }
 
     @Override
@@ -370,26 +352,33 @@ public class DarknessLevel extends Level {
             Random rd = new Random();
 
             if (deltaUpdates >= 30) {
-                float amount = sceneLight.ambientLight.getLight().x / 2.0f;
+                float amount = sceneLight.ambientLight.getLight().x;
                 sceneLight.ambientLight = new AmbientLight(new Vector3f(amount));
-                deltaUpdates++;
-            } else if (rd.nextInt(100) < 5) {
-                float amount = rd.nextFloat() / 2 + 0.5f;
+                deltaUpdates--;
+            } else if (rd.nextInt(100) <= 1) {
+                float amount = rd.nextFloat() / 4 + 0.75f;
                 sceneLight.ambientLight = new AmbientLight(new Vector3f(amount));
-                deltaUpdates = 0;
+                deltaUpdates = 30;
             } else {
                 sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
                 deltaUpdates = 0;
             }
         }
 
-        if (currentPlayerTile.hasTag("light_puzzle_trigger")) {
+        if (currentPlayerTile.hasTag("trigger")) {
             if (!gui.hasComponent()) {
                 gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
             }
 
             if (KeyBinding.isInteractPressed()) {
-                gui.setComponent(new PuzzleGUI(puzzle1));
+                if (currentPlayerTile.hasTag("welcome_text")) {
+                    gui.setComponent(text1);
+                } else if (currentPlayerTile.hasTag("hint_trigger")) {
+                    gui.setComponent(text2);
+                } else if (currentPlayerTile.hasTag("light_puzzle_trigger")) {
+                    gui.setComponent(new PuzzleGUI(puzzle1));
+                }
+
                 paused = true;
             }
         } else if (gui.hasComponent()) {
