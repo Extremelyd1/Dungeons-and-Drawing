@@ -24,6 +24,7 @@ import game.Renderer;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
 import game.map.tile.Tile;
+import game.mobs.Snake;
 import game.puzzle.Puzzle;
 import game.puzzle.Solution;
 import graphics.Material;
@@ -49,9 +50,9 @@ public class DarknessLevel extends Level {
     private ArrayList<Entity> entitiesToRemove;
 
     /**
-     * Dialog in the game
+     *
      */
-    private ScrollingPopup text1;
+    private Snake snake1, snake2;
 
     /**
      * Puzzles
@@ -94,6 +95,17 @@ public class DarknessLevel extends Level {
         Vector2i spawn = map.getTile("spawn").getPosition();
         player.setPosition(spawn.x, 0.5f, spawn.y);
 
+        // Setup snakes
+        Mesh snakeMesh = PLYLoader.loadMesh("/models/entities/snake.ply");
+        snakeMesh.setMaterial(new Material(0.0f));
+        snakeMesh.setIsStatic(false);
+        snake1 = new Snake(snakeMesh, map);
+        snake1.setScale(0.08f);
+        snake1.setPosition(14, 0.49f, 1);
+        snake1.setSpeed(2.5f);
+        snake1.setTarget(player);
+        snake1.followOnSightOnly(false);
+
         // Setup camera
         camera = new FollowCamera(
                 player,
@@ -130,7 +142,7 @@ public class DarknessLevel extends Level {
                 false
         );
 
-        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0));
 
         Vector2i initialLightPosition = map.getTile("light").getPosition();
         sceneLight.pointLights.add(
@@ -151,8 +163,9 @@ public class DarknessLevel extends Level {
                 new Vector3f(1f, -1f, 0f),
                 (float) Math.cos(Math.toRadians(20f)),
                 (float) Math.cos(Math.toRadians(40f)),
-                new Vector2f(0.05f, 300f)
+                new Vector2f(0.05f, 1000f)
         );
+        flashLight.setToDynamicOnly();
 
         // Setup sound
         soundManager = new SoundManager();
@@ -169,6 +182,7 @@ public class DarknessLevel extends Level {
         gui = new GUI();
         gui.initialize();
 
+
         // Create puzzle(s)
         puzzle1 = new Puzzle(
                 "This description does nothing",
@@ -179,58 +193,71 @@ public class DarknessLevel extends Level {
                 },
                 // Solutions
                 new Solution[]{
-                        new Solution("flashlight", () -> {
-                            gui.setComponent(new ScrollingPopup("Let there be light!", () -> {
+                        // Flashlight
+                        new Solution("flashlight", (s) -> {
+                            gui.setComponent(new ScrollingPopup("A bit boring, but sure. Let there be a flashlight!", () -> {
                                 sceneLight.spotLights.add(flashLight);
+                                sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
                                 renderer.resetShadowMap();
                                 pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
                                 pencilTile1.removeTag("puzzle_trigger");
                                 paused = false;
                             }));
                         }),
-                        new Solution("lightning", () -> {
-                            gui.setComponent(new ScrollingPopup("Let there be light", () -> {
+
+                        // Lightning
+                        new Solution("lightning", (s) -> {
+                            gui.setComponent(new ScrollingPopup("Mwhuahahaha! It's alive... IT'S ALIVE!", () -> {
+                                gui.setComponent(new ScrollingPopup("Ahem... Sorry you had to see that... But you simply cannot have lightning without an evil laugh", () -> {
+                                    pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
+                                    pencilTile1.removeTag("puzzle_trigger");
+                                    paused = false;
+                                }));
+                            }));
+                        }),
+                        // Sun
+                        new Solution("apple", (s) -> {
+                            gui.setComponent(new ScrollingPopup("A sun seems like a highly impracticable light source to use inside of a dungeon. But who am I to judge? You do you!", () -> {
+                                sceneLight.directionalLight = new DirectionalLight(
+                                        new Vector3f(0.0f, 7.0f, 0.0f),       // position
+                                        new Vector3f(0.9f, 0.85f, 0.4f),       // color
+                                        new Vector3f(-0.4f, 1.0f, 0),       // direction
+                                        10f,                                // intensity
+                                        new Vector2f(1.0f, 10.0f),              // near-far plane
+                                        false
+                                );
                                 pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
                                 pencilTile1.removeTag("puzzle_trigger");
                                 paused = false;
                             }));
                         }),
-                        new Solution("apple", () -> {
-                            gui.setComponent(new ScrollingPopup("Let the be light", () -> {
-                                pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
-                                pencilTile1.removeTag("puzzle_trigger");
-                                paused = false;
+
+                        new Solution("panda", (s) -> {
+                            gui.setComponent(new ScrollingPopup("You prefer music over some proper light source? Oh, you think darkness is your ally? But you merely adopted the dark. I was born in it! Molded by it!", () -> {
+                                gui.setComponent(new ScrollingPopup("Oh, right, music. I know something that fits this situation.", () -> {
+                                    sourceBack.play();
+                                    sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
+                                    pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
+                                    pencilTile1.removeTag("puzzle_trigger");
+                                    paused = false;
+                                }));
                             }));
-                        }),
-                        new Solution("palm_tree", () -> {
-                            gui.setComponent(new ScrollingPopup("Let there be light", () -> {
-                                pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
-                                pencilTile1.removeTag("puzzle_trigger");
-                                paused = false;
-                            }));
-                        }),
-                        new Solution("panda", () -> {
-                            gui.setComponent(new ScrollingPopup("Let there be music", () -> {
-                                sourceBack.play();
-                                pencilIndicator.remove(() -> entitiesToRemove.add(pencilIndicator));
-                                pencilTile1.removeTag("puzzle_trigger");
-                                paused = false;
-                            }));
-                        })
-                },
+                        })},
+
                 // Default solution
-                new Solution("", () -> {
-                    gui.setComponent(new ScrollingPopup("Hm, the only way we could use that, is if we light it on fire...", () -> {
+                new Solution("", (s) -> {
+                    gui.setComponent(new ScrollingPopup("Hm, the only way we could use a " + s + ", is if we light it on fire... I'm not sure if that is such a bright idea.", () -> {
                         gui.setComponent(new PuzzleGUI(puzzle1));
                     }));
                 }),
-                60
+                20
         );
 
         // Setup entities
         entitiesToRemove = new ArrayList<>();
         entities = new ArrayList<>(Arrays.asList(
                 player,
+                snake1,
                 pencilIndicator
         ));
 
