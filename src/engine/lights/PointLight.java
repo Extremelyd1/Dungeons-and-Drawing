@@ -19,7 +19,7 @@ public class PointLight {
     private ShadowMap staticShadowMap, dynamicShadowMap;
     private Vector2f plane;
     private Matrix4f[] views = new Matrix4f[6];
-    
+
     public PointLight(Vector3f color, Vector3f position, float intensity, Vector2f plane) {
         try {
             staticShadowMap = new ShadowMap(2048);
@@ -182,5 +182,17 @@ public class PointLight {
 
     public void setPlane(Vector2f plane) {
         this.plane = plane;
+    }
+
+    /**
+     * Cleanup memory
+     */
+    public void cleanup() {
+        if (isDynamicOnly()) {
+            dynamicShadowMap.cleanup();
+        } else {
+            staticShadowMap.cleanup();
+            dynamicShadowMap.cleanup();
+        }
     }
 }

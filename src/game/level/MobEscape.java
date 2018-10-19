@@ -261,6 +261,6 @@ public class MobEscape extends Level {
     public void terminate() {
         mob = null;
         camera = null;
-        //gui.terminate(); DO NOT TERMINATE
+        sceneLight.cleanup();
     }
 }

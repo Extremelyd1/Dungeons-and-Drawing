@@ -293,5 +293,6 @@ public class MainRoomLevel extends Level {
 
     @Override
     public void terminate() {
+        sceneLight.cleanup();
     }
 }
