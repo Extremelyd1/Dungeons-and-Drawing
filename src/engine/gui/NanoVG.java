@@ -40,6 +40,9 @@ public class NanoVG {
     public static final float FONT_SIZE_HINT = 36f;
     public static final float FONT_SIZE_TITLE = 96.0f;
 
+    public static void reload() {
+        nanoVG = new NanoVG();
+    }
 
     /**
      * Singleton constructor
