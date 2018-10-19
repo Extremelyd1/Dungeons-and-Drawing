@@ -228,10 +228,9 @@ public class MurderMysteryLevel extends Level {
 
         // Create puzzle
         puzzle1 = new Puzzle(
-                "This does nothing...",
+                "What's the murdering weapon?",
                 // Options
-                new String[]{"key", "lighting", "mug"}, // TODO: Temporary options
-//                new String[]{}, // These are the real options...
+                new String[]{"saw", "frying pan", "syringe", "knife", "fork", "gun", "pencil", "axe", "sword"},
                 // Solutions
                 new Solution[]{
                         new Solution("key", (s) -> { // TODO: Update to the real solution value
@@ -261,7 +260,7 @@ public class MurderMysteryLevel extends Level {
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("I don't think " + s + " killed me...", () -> {
+                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " killed me...", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));

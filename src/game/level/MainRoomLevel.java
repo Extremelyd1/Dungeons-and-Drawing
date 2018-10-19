@@ -4,10 +4,7 @@ import engine.MouseInput;
 import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
-import engine.entities.DoorEntity;
-import engine.entities.Entity;
-import engine.entities.IndicatorEntity;
-import engine.entities.Player;
+import engine.entities.*;
 import engine.gui.FloatingScrollText;
 import engine.gui.ScrollingPopup;
 import engine.input.KeyBinding;
@@ -23,12 +20,12 @@ import game.Renderer;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
 import game.map.tile.Tile;
-import game.puzzle.Puzzle;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,14 +47,9 @@ public class MainRoomLevel extends Level {
      */
     private ScrollingPopup text1;
     /**
-     * Puzzles in the level
-     */
-    private Puzzle puzzle1;
-    /**
      * Flags that indicate whether the levels has been completed. These do NOT reset when the level reloads
      */
     private boolean level1Completed, level2Completed, level3Completed, level4Completed;
-
     /**
      * Flag whether the game is paused (because of gui)
      */
@@ -103,7 +95,7 @@ public class MainRoomLevel extends Level {
         camera = new FollowCamera(
                 player,
                 new Vector3f(75f, -10f, 0f),
-                new Vector3f(3, 11, 3)
+                new Vector3f(2, 11, 3)
         );
 
         // Load mesh for question mark
@@ -132,28 +124,28 @@ public class MainRoomLevel extends Level {
         map.getTile("silver_door_right").setSolid(true);
         map.getTile("silver_door_center").setSolid(true);
 
-        Vector2i silverDoorLeftPos = map.getTile("silver_door_left").getPosition();
-        Vector2i silverDoorRightPos = map.getTile("silver_door_right").getPosition();
-        Vector2i silverDoorCenterPos = map.getTile("silver_door_center").getPosition();
+        Tile silverDoorLeftTile = map.getTile("silver_door_left");
+        Tile silverDoorRightTile = map.getTile("silver_door_right");
+        Tile silverDoorCenterTile = map.getTile("silver_door_center");
 
         DoorEntity silverDoorLeft = new DoorEntity(
                 silverDoorMesh,
-                new Vector3f(silverDoorLeftPos.x, 0.5f, silverDoorLeftPos.y - 0.42f),
+                new Vector3f(silverDoorLeftTile.getPosition().x, 0.5f, silverDoorLeftTile.getPosition().y - 0.42f),
                 new Vector3f(0f),
                 new Vector3f(0.6f, 0.7f, 0.55f),
                 null
         );
         DoorEntity silverDoorRight = new DoorEntity(
                 silverDoorMeshMirror,
-                new Vector3f(silverDoorRightPos.x, 0.5f, silverDoorRightPos.y + 0.42f),
+                new Vector3f(silverDoorRightTile.getPosition().x, 0.5f, silverDoorRightTile.getPosition().y + 0.42f),
                 new Vector3f(0f, 0f, 0f),
                 new Vector3f(0.6f, 0.7f, 0.55f),
                 null,
                 true
         );
-        Entity lock = new Entity(
+        LockEntity lock = new LockEntity(
                 lockMesh,
-                new Vector3f(silverDoorCenterPos.x - 0.3f, 2.5f, silverDoorCenterPos.y),
+                new Vector3f(silverDoorCenterTile.getPosition().x - 0.3f, 2.5f, silverDoorCenterTile.getPosition().y),
                 new Vector3f(0f),
                 new Vector3f(1f)
         );
@@ -231,6 +223,24 @@ public class MainRoomLevel extends Level {
         ));
 
         paused = false;
+
+        // Only execute the following if the game has finished
+        if (isGameFinished()) {
+            Vector2i spawn = map.getTile("spawn_end").getPosition();
+            player.setPosition(spawn.x, 0.5f, spawn.y);
+
+            gui.setComponent(new ScrollingPopup("What's that... All gems are in place! What are all these moving sounds I hear?", () -> {
+                lock.remove(() -> {
+                    silverDoorLeft.open();
+                    silverDoorRight.open();
+                    silverDoorLeftTile.setSolid(false);
+                    silverDoorCenterTile.setSolid(false);
+                    silverDoorRightTile.setSolid(false);
+                });
+                paused = false;
+            }));
+            paused = true;
+        }
     }
 
     private void loadGems() {
@@ -299,6 +309,11 @@ public class MainRoomLevel extends Level {
     public void input(MouseInput mouseInput) {
         if (camera instanceof FreeCamera) {
             ((FreeCamera) camera).handleInput(mouseInput);
+        }
+
+        // Hack to complete the level
+        if (KeyBinding.isKeyPressed(GLFW.GLFW_KEY_F5)) {
+            finishLevel();
         }
     }
 
@@ -417,6 +432,25 @@ public class MainRoomLevel extends Level {
                 this.level4Completed = true;
                 break;
         }
+    }
+
+    /**
+     * @return True if the game is completed, false otherwise
+     */
+    private boolean isGameFinished() {
+        return level1Completed && level2Completed && level3Completed && level4Completed;
+    }
+
+    /**
+     * Hack to instantly finish the game
+     */
+    private void finishLevel() {
+        level1Completed = true;
+        level2Completed = true;
+        level3Completed = true;
+        level4Completed = true;
+
+        levelController.restart();
     }
 
     public enum MAIN_ROOM_SPAWN {

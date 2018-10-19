@@ -199,8 +199,7 @@ public class TutorialDrawingLevel extends Level {
                 "This description does nothing",
                 // Options
                 new String[]{
-                        "cannon", "giraffe", "guitar", "key", "axe" // This is the actual list, but the network is not trained yet
-//                        "key", "mailbox", "mug" // Temporary list
+                        "cannon", "giraffe", "guitar", "key", "axe"
                 },
                 // Solutions
                 new Solution[]{
@@ -208,7 +207,7 @@ public class TutorialDrawingLevel extends Level {
                             gui.setComponent(new ScrollingPopup("Good job! A key was indeed the key to the puzzle!", () -> {
                                 // Open the doors
                                 doorLeft.open();
-                                doorRight.open(); // TODO: Currently broken :(
+                                doorRight.open();
                                 doorTileLeft.setSolid(false);
                                 doorTileRight.setSolid(false);
 
