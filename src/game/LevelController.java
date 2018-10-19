@@ -123,6 +123,7 @@ public class LevelController implements IGameLogic {
      */
     public void restart() {
         try {
+            levels.get(active).terminate();
             levels.get(active).init();
         } catch (Exception e) {
             System.err.println("Could not load level " + active);
