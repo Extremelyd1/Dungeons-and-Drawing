@@ -82,6 +82,16 @@ public class SpotLight {
         setPlane(plane); //update LightSpaceMatrix
     }
 
+    public void setToDynamicOnly() {
+        staticShadowMap.cleanup();
+        staticShadowMap = dynamicShadowMap;
+    }
+
+    public boolean isDynamicOnly() {
+        if (staticShadowMap == dynamicShadowMap) return true;
+        else return false;
+    }
+
     public float getIntensity() {
         return intensity;
     }
