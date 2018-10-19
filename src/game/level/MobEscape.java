@@ -30,6 +30,7 @@ import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.lwjgl.system.CallbackI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,11 +49,13 @@ public class MobEscape extends Level {
 
     private List<Entity> entitiesToRemove;
 
-    private ScrollingPopup text1, text2;
+    private ScrollingPopup text1, text2, text3;
 
     private boolean paused = false;
 
     private Mesh snakeMesh;
+
+    private boolean puzzleSolved;
 
     public MobEscape(LevelController levelController) {
         super(levelController);
@@ -122,6 +125,7 @@ public class MobEscape extends Level {
         gui.initialize();
 
         // Setup puzzle
+        puzzleSolved = false;
         arcCollapsePuzzle = new Puzzle(
                 "To collapse the arc you draw:",
                 // Possible guesses
@@ -144,13 +148,16 @@ public class MobEscape extends Level {
                     puzzle1Inicator.remove(() -> {
                         entitiesToRemove.add(puzzle1Inicator);
                     });
+                    puzzleSolved = true;
                     // Remove the snake
                     entitiesToRemove.add(snake);
-                })}, new Solution("", (s) -> {
-            gui.removeComponent();
-            paused = false;
-        })
-                , 10
+                })},
+                new Solution("", (s) -> {
+                    gui.setComponent(new ScrollingPopup("A " + s + " will probably not work. Quick, try again!", () -> {
+                        paused = false;
+                    }));
+                }),
+                10
         );
 
         // Setup Player spawn
@@ -184,9 +191,21 @@ public class MobEscape extends Level {
         snake.setTarget(player);
         snake.followOnSightOnly(false);
 
-        text1 = new ScrollingPopup("Text 1", () -> {
-            gui.removeComponent();
+        text1 = new ScrollingPopup("Welcome inside the dungeon, traveller. Please, make yourself at home.", () -> {
+            gui.setComponent(new ScrollingPopup("Please, be aware of our... pets. Some won't hurt you, but others try to chase you.", () -> {
+                gui.setComponent(new ScrollingPopup("The latter you can't fight, so you must find other ways of keeping them away.", () -> {
+                    gui.removeComponent();
+                    paused = false;
+                }));
+            }));
+        });
+
+        text2 = new ScrollingPopup("Oh no! The house snake Snaky the Snek has awoken. He doesn't like visitors that much. Quick, try to find a way of escaping.", () -> {
             paused = false;
+        });
+
+        text3 = new ScrollingPopup("See that arc? We might be able to blow it up and stop Snaky that way...", () -> {
+            gui.setComponent(new PuzzleGUI(arcCollapsePuzzle));
         });
 
         // Setup Map Lights
@@ -219,6 +238,7 @@ public class MobEscape extends Level {
         entitiesToRemove = new ArrayList<>();
         entities = new ArrayList<>(Arrays.asList(
                 player,
+                text1Indicator,
                 puzzle1Inicator
         ));
     }
@@ -254,6 +274,10 @@ public class MobEscape extends Level {
         );
 
         if (currentPlayerTile.hasTag("mob_trigger")) {
+
+            gui.setComponent(text2);
+            paused = true;
+
             map.getTiles("mob_trigger").forEach(t -> t.removeTag("mob_trigger"));
             snake = new Snake(snakeMesh, map);
             snake.setScale(0.08f);
@@ -263,17 +287,33 @@ public class MobEscape extends Level {
             snake.setTarget(player);
             snake.followOnSightOnly(false);
             entities.add(snake);
+
+            // Skip the update loop this time so we actually pause the loop
+            return;
         }
 
         // Snake
         if (snake != null) {
             if (snake.isCollidingWithTarget()) {
-                levelController.restart();
+                gui.setComponent(new ScrollingPopup("Snaky the Snek got you :c Try again.", () -> {
+                    levelController.restart();
+                }));
             }
         }
 
         if (currentPlayerTile.hasTag("end")) {
-            levelController.next();
+            if (!puzzleSolved) {
+                gui.setComponent(new ScrollingPopup("We must first get rid of the snake.", () -> {
+                    Vector2i arcPos = map.getTile("arc").getPosition();
+                    player.setPosition(arcPos.x, 0.5f, arcPos.y);
+                    paused = false;
+                }));
+                paused = true;
+
+                return;
+            } else {
+                levelController.next();
+            }
         }
 
         // Check for tiles that have a trigger
@@ -289,7 +329,7 @@ public class MobEscape extends Level {
                     paused = true;
                 }
                 if (currentPlayerTile.hasTag("puzzle_1")) {
-                    gui.setComponent(new PuzzleGUI(arcCollapsePuzzle));
+                    gui.setComponent(text3);
                     paused = true;
                 }
             }
