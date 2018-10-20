@@ -24,6 +24,7 @@ import game.Renderer;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
 import game.map.tile.Tile;
+import game.mobs.SimpleMob;
 import game.mobs.Snake;
 import game.puzzle.Puzzle;
 import game.puzzle.Solution;
@@ -61,10 +62,9 @@ public class PrisonEscapeLevel extends Level{
      */
     private boolean paused;
 
-    private Snake[] mob;
+    private SimpleMob[] mob;
     private int spawnedMobs = 0;
     /**
-     * @TODO: replace snake with ghost and edit speed
      * @TODO: spawn wall and cracked wall
      * @TODO: spawn wall beds and skeletons in cell when opened
      * @TODO: have story and questions riddle
@@ -76,7 +76,7 @@ public class PrisonEscapeLevel extends Level{
     @Override
     public void init() throws Exception {
         entities = new ArrayList<>();
-        mob = new Snake[4];
+        mob = new SimpleMob[4];
         // Load map
         map = new MapFileLoader("/levels/prisonEscapeLevel.lvl").load();
 
@@ -238,20 +238,7 @@ public class PrisonEscapeLevel extends Level{
                                 door1Left.setSolid(false);
                                 door1Right.setSolid(false);
                                 // Spawn mob
-                                try {
-                                    Mesh mobMesh = PLYLoader.loadMesh("/models/entities/snake.ply");
-                                    mobMesh.setMaterial(new Material(0.0f));
-                                    mobMesh.setIsStatic(false);
-                                    mob[spawnedMobs] = new Snake(mobMesh, map);
-                                    mob[spawnedMobs].setScale(0.08f);
-                                    mob[spawnedMobs].setPosition( map.getTile("ghost1spawn").getPosition().x,
-                                            map.getTile("ghost1spawn").getPosition().y, 0f);
-                                    mob[spawnedMobs].setSpeed(2.5f);
-                                    mob[spawnedMobs].setTarget(player);
-                                    mob[spawnedMobs].followOnSightOnly(false);
-                                    entities.add(mob[spawnedMobs]);
-                                    spawnedMobs++;
-                                } catch(Exception e) {}
+                                spawnMob("ghost1spawn");
                                 // Remove indicators
                                 puzzle1Indicator1.remove(() -> entitiesToRemove.add(puzzle1Indicator1));
                                 // Remove triggers
@@ -263,7 +250,6 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    // TODO: This should fire when anything else than the solution above is provided
                     gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
                         gui.removeComponent();
                         paused = false;
@@ -283,20 +269,7 @@ public class PrisonEscapeLevel extends Level{
                                 door2Left.setSolid(false);
                                 door2Right.setSolid(false);
                                 // Spawn mob
-                                try {
-                                    Mesh mobMesh = PLYLoader.loadMesh("/models/entities/snake.ply");
-                                    mobMesh.setMaterial(new Material(0.0f));
-                                    mobMesh.setIsStatic(false);
-                                    mob[spawnedMobs] = new Snake(mobMesh, map);
-                                    mob[spawnedMobs].setScale(0.08f);
-                                    mob[spawnedMobs].setPosition( map.getTile("ghost1spawn").getPosition().x,
-                                            map.getTile("ghost1spawn").getPosition().y, 0f);
-                                    mob[spawnedMobs].setSpeed(2.5f);
-                                    mob[spawnedMobs].setTarget(player);
-                                    mob[spawnedMobs].followOnSightOnly(false);
-                                    entities.add(mob[spawnedMobs]);
-                                    spawnedMobs++;
-                                } catch(Exception e) {}
+                                spawnMob("ghost2spawn");
                                 // Remove indicators
                                 puzzle1Indicator2.remove(() -> entitiesToRemove.add(puzzle1Indicator2));
                                 // Remove triggers
@@ -308,7 +281,6 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    // TODO: This should fire when anything else than the solution above is provided
                     gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
                         gui.removeComponent();
                         paused = false;
@@ -338,7 +310,6 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    // TODO: This should fire when anything else than the solution above is provided
                     gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
                         gui.removeComponent();
                         paused = false;
@@ -358,20 +329,7 @@ public class PrisonEscapeLevel extends Level{
                                 door4Left.setSolid(false);
                                 door4Right.setSolid(false);
                                 // Spawn mob
-                                try {
-                                    Mesh mobMesh = PLYLoader.loadMesh("/models/entities/snake.ply");
-                                    mobMesh.setMaterial(new Material(0.0f));
-                                    mobMesh.setIsStatic(false);
-                                    mob[spawnedMobs] = new Snake(mobMesh, map);
-                                    mob[spawnedMobs].setScale(0.08f);
-                                    mob[spawnedMobs].setPosition( map.getTile("ghost1spawn").getPosition().x,
-                                            map.getTile("ghost1spawn").getPosition().y, 0f);
-                                    mob[spawnedMobs].setSpeed(2.5f);
-                                    mob[spawnedMobs].setTarget(player);
-                                    mob[spawnedMobs].followOnSightOnly(false);
-                                    entities.add(mob[spawnedMobs]);
-                                    spawnedMobs++;
-                                } catch(Exception e) {}//@TODO: spawn mob
+                                spawnMob("ghost4spawn");
                                 // Remove indicators
                                 puzzle1Indicator4.remove(() -> entitiesToRemove.add(puzzle1Indicator4));
                                 // Remove triggers
@@ -383,7 +341,6 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    // TODO: This should fire when anything else than the solution above is provided
                     gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
                         gui.removeComponent();
                         paused = false;
@@ -409,7 +366,6 @@ public class PrisonEscapeLevel extends Level{
                                     crackedWall.setIsStatic(false);
                                     wall.setMesh(crackedWall);//@TODO: replace with cracked wall
                                 } catch (Exception e){}
-                                //@TODO: spawn new puzzle
                                 entities.add(puzzle1Indicator6);
                                 // Remove indicators
                                 puzzle1Indicator5.remove(() -> entitiesToRemove.add(puzzle1Indicator5));
@@ -422,7 +378,6 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    // TODO: This should fire when anything else than the solution above is provided
                     gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
                         gui.removeComponent();
                         paused = false;
@@ -444,7 +399,6 @@ public class PrisonEscapeLevel extends Level{
                                         wall.setMesh(floorMesh);
                                         wall.setSolid(false);
                                     } catch (Exception e){}
-                                    // @TODO: set exit point level
                                     // Remove indicators
                                     puzzle1Indicator6.remove(() -> entitiesToRemove.add(puzzle1Indicator6));
                                     // Remove triggers
@@ -457,7 +411,6 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    // TODO: This should fire when anything else than the solution above is provided
                     gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
                         gui.removeComponent();
                         paused = false;
@@ -583,6 +536,9 @@ public class PrisonEscapeLevel extends Level{
                     paused = true;
                 }
             }
+            if (currentPlayerTile.hasTag("enter_tunnel")) {
+                // TODO: Move player to next level
+            }
         } else if (gui.hasComponent()) {
             gui.removeComponent();
         }
@@ -607,5 +563,22 @@ public class PrisonEscapeLevel extends Level{
     @Override
     public void terminate() {
 
+    }
+
+    private void spawnMob(String tag) {
+        try {
+            Mesh mobMesh = PLYLoader.loadMesh("/models/entities/ghost.ply");
+            mobMesh.setMaterial(new Material(0.0f));
+            mobMesh.setIsStatic(false);
+            mob[spawnedMobs] = new SimpleMob(mobMesh, map);
+            mob[spawnedMobs].setScale(0.08f);
+            mob[spawnedMobs].setPosition( map.getTile(tag).getPosition().x,
+                    map.getTile(tag).getPosition().y, 0f);
+            mob[spawnedMobs].setSpeed(1f);
+            mob[spawnedMobs].setTarget(player);
+            mob[spawnedMobs].followOnSightOnly(false);
+            entities.add(mob[spawnedMobs]);
+            spawnedMobs++;
+        } catch(Exception e) {}
     }
 }

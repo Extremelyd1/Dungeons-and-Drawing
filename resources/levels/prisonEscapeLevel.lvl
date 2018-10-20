@@ -22,7 +22,7 @@ corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
-stone_floor 0 0 cracked_wall:enter_tunnel:
+stone_floor 0 0 cracked_wall:enter_tunnel:trigger
 corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1

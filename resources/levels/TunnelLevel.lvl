@@ -20,7 +20,7 @@ corner_wall 0 1
 air 0 1
 air 0 1
 corner_wall 0 1
-stone_floor 0 0 gem
+stone_floor 0 0 gem:trigger
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -37,7 +37,7 @@ stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0 trigger:puzzle_ghost
 stone_floor 0 0 spawnghost
-ladder_up 0 0 exit
+ladder_up 0 0 exit:trigger
 corner_wall 0 1
 corner_wall 0 1
 stone_floor 0 0

@@ -47,7 +47,7 @@ public class TunnelLevel extends Level {
     /**
      * Texts in the level
      */
-    private ScrollingPopup text1, puzzleText;
+    private ScrollingPopup text1, puzzleText, gemText;
     /**
      * Puzzles in the level
      */
@@ -102,6 +102,23 @@ public class TunnelLevel extends Level {
          questionMarkMesh.setMaterial(new Material(0f));
          questionMarkMesh.setIsStatic(false);
 
+         // Load ghost mesh
+         Mesh ghostMesh = AssetStore.getMesh("entities", "ghost");
+         ghostMesh.setMaterial(new Material(0f));
+
+         // Load gem
+         Mesh blueGemMesh = AssetStore.getMesh("entities", "gem_blue");
+         blueGemMesh.setMaterial(new Material(0f));
+         blueGemMesh.setIsStatic(false);
+
+         Vector2i gemPosition = map.getTile("gem").getPosition();
+         IndicatorEntity blueGem = new IndicatorEntity(
+                 blueGemMesh,
+                 new Vector3f(gemPosition.x, 1.5f, gemPosition.y),
+                 new Vector3f(45f, 90f, 45f),
+                 null
+         );
+
          //Indicator Entities
          Tile puzzleTile = map.getTile("puzzle_ghost");
          IndicatorEntity puzzleIndicator = new IndicatorEntity(
@@ -119,7 +136,9 @@ public class TunnelLevel extends Level {
          text1 = new ScrollingPopup("As you walk through the small tunnel, you find a large room at the end of it.", () -> {
              gui.setComponent(new ScrollingPopup("As you enter the room you see a lot of skeletons laying on the ground, " +
                      "this place looks dangerous!", () -> {
-                 gui.setComponent(new ScrollingPopup("In the corner of the room you see a precious gem, maybe you should pick it up?", () -> {}));
+                 gui.setComponent(new ScrollingPopup("In the corner of the room you see a precious gem, maybe you should pick it up?", () -> {
+                     paused = false;
+                 }));
              }));
          });
 
@@ -137,40 +156,51 @@ public class TunnelLevel extends Level {
              }));
          });
 
+         gemText = new ScrollingPopup("I have found a blue gem! Maybe I can find more of these!", () -> {
+             gui.removeComponent();
+             blueGem.remove(() -> entitiesToRemove.add(blueGem));
+            map.getTile("gem").removeTag("trigger");
+            paused = false;
+         });
+
+         // Spawning Ghost
+         Vector2i puzzleGhostPos = map.getTile("spawnghost").getPosition();
+         Entity puzzleGhost = new Entity(
+                 ghostMesh,
+                 new Vector3f(puzzleGhostPos.x, 2f, puzzleGhostPos.y),
+                 new Vector3f(0f, 90f, 0f)
+         );
+         Tile ghostTile = map.getTile("spawnghost");
+         ghostTile.setSolid(true);
+
          //Puzzles
          ghostPuzzle = new Puzzle(
                  "This does nothing...",
-                 new String[]{"key", "cannon", "hammer", "mug", "lightning"},
+                 new String[]{},
                  new Solution[]{
-                         new Solution( "key", (s) -> { //@TODO: change to hammer
-                             gui.setComponent(new ScrollingPopup("You break down the wall with the hammer!", () -> {
-                                 gui.setComponent(new ScrollingPopup("There seems to be a tunnel here!", () -> {
-                                     gui.removeComponent();
-                                     // Remove the wall
-                                     // @TODO: set exit point level
-                                     // Remove indicators
-                                     puzzleIndicator.remove(() -> entitiesToRemove.add(puzzleIndicator));
-                                     // Remove triggers
-                                     puzzleTile.removeTag("trigger");
-                                     // Resume the game
-                                     paused = false;
-                                 }));
+                         new Solution( "key", (s) -> { //@TODO: change to answer riddle
+                             gui.setComponent(new ScrollingPopup("Well played adventurer, I will let you through!", () -> {
+                                 gui.removeComponent();
+                                 ghostTile.setSolid(false);
+                                 entitiesToRemove.add(puzzleGhost);
+                                 // Remove indicators
+                                 puzzleIndicator.remove(() -> entitiesToRemove.add(puzzleIndicator));
+                                 // Remove triggers
+                                 puzzleTile.removeTag("trigger");
+                                 // Resume the game
+                                 paused = false;
                              }));
                          })
                  },
                  // Default solution
                  new Solution("", (s) -> {
-                     // TODO: This should fire when anything else than the solution above is provided
-                     gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
+                     gui.setComponent(new ScrollingPopup("Try again adventurer!", () -> {
                          gui.removeComponent();
                          paused = false;
                      }));
                  }),
                  30
          );
-
-         //Spawning ghost
-         //@TODO: spawn ghost
 
         // Lighting
          sceneLight = new SceneLight();
@@ -216,7 +246,9 @@ public class TunnelLevel extends Level {
          entities.addAll(Arrays.asList(
                  player,
                  puzzleIndicator,
-                 textIndicator
+                 textIndicator,
+                 puzzleGhost,
+                 blueGem
          ));
     }
 
@@ -247,12 +279,21 @@ public class TunnelLevel extends Level {
             }
             if (KeyBinding.isInteractPressed()) {
                 if (currentPlayerTile.hasTag("text1")) {
-
+                    gui.setComponent(text1);
+                    paused = true;
                 }
                 if (currentPlayerTile.hasTag("puzzle_ghost")) {
                     gui.setComponent(puzzleText);
                     paused = true;
                 }
+                if (currentPlayerTile.hasTag("gem")) {
+                    gui.setComponent(gemText);
+                    levelController.setGemFound(LevelController.GEM.BLUE);
+                    paused = true;
+                }
+            }
+            if (currentPlayerTile.hasTag("exit")) {
+                // TODO: move player to main room
             }
         } else if (gui.hasComponent()) {
             gui.removeComponent();
