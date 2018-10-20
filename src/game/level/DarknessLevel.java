@@ -427,6 +427,8 @@ public class DarknessLevel extends Level {
     @Override
     public void terminate() {
         soundManager.terminate();
+        sceneLight.cleanup();
+        lightningEnabled = false; 
     }
 
 }
