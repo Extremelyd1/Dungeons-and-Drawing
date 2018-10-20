@@ -76,7 +76,6 @@ public class DarknessLevel extends Level {
      *  Light sources used for the game
      */
     private PointLight flashLight;
-    private Vector3f previousPosition;
 
     public DarknessLevel(LevelController levelController) {
         super(levelController);
@@ -155,11 +154,12 @@ public class DarknessLevel extends Level {
 
         // Setup lights
         sceneLight = new SceneLight();
+
         sceneLight.directionalLight = new DirectionalLight(
                 new Vector3f(0.0f, 7.0f, 0.0f),       // position
-                new Vector3f(0.2f, 0.4f, 0.8f),       // color
+                new Vector3f(1f, 1f, 1f),       // color
                 new Vector3f(0.0f, 1.0f, 0.4f),       // direction
-                0.2f,                                // intensity
+                0.1f,                                // intensity
                 new Vector2f(1.0f, 10.0f),              // near-far plane
                 false
         );
@@ -343,7 +343,7 @@ public class DarknessLevel extends Level {
             return;
         }
 
-        previousPosition = new Vector3f(player.getPosition());
+        Vector3f previousPosition = new Vector3f(player.getPosition());
 
         entities.forEach(e -> e.update(interval));
         entitiesToRemove.forEach(e -> entities.remove(e));
@@ -363,19 +363,19 @@ public class DarknessLevel extends Level {
             }
         }
 
+        sceneLight.directionalLight.setIntensity(0f);
         if (lightningEnabled) {
             Random rd = new Random();
 
-            if (deltaUpdates >= 30) {
-                float amount = sceneLight.ambientLight.getLight().x;
-                sceneLight.ambientLight = new AmbientLight(new Vector3f(amount));
+            if (deltaUpdates >= 50) {
                 deltaUpdates--;
             } else if (rd.nextInt(100) <= 1) {
                 float amount = rd.nextFloat() / 4 + 0.75f;
                 sceneLight.ambientLight = new AmbientLight(new Vector3f(amount));
+                sceneLight.directionalLight.setIntensity(0.1f);
                 deltaUpdates = 30;
             } else {
-                sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
+                sceneLight.ambientLight = new AmbientLight(new Vector3f(0f));
                 deltaUpdates = 0;
             }
         }
@@ -408,8 +408,10 @@ public class DarknessLevel extends Level {
 
         camera.update();
         player.update(interval);
-        sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
 
+        if (sceneLight.directionalLight != null) {
+            sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
+        }
         soundManager.updateListenerPosition(camera);
     }
 
