@@ -49,7 +49,7 @@ public class MurderMysteryLevel extends Level {
     /**
      * Texts in the level
      */
-    private ScrollingPopup text1, hintText1, hintText2, hintText3;
+    private ScrollingPopup text1, hintText1, hintText2, hintText3, gemText;
     /**
      * Puzzles in the level
      */
@@ -114,8 +114,7 @@ public class MurderMysteryLevel extends Level {
         greenGemMesh.setIsStatic(false);
 
         Vector2i shrinePos = map.getTile("shrine").getPosition();
-
-        Entity greenGem = new IndicatorEntity(
+        IndicatorEntity greenGem = new IndicatorEntity(
                 greenGemMesh,
                 new Vector3f(shrinePos.x, 1.5f, shrinePos.y),
                 new Vector3f(45f, 90f, 45f),
@@ -125,6 +124,37 @@ public class MurderMysteryLevel extends Level {
         // Load normal floor mesh
         Mesh floorMesh = AssetStore.getTileMesh("stone_floor");
         floorMesh.setMaterial(new Material(0f));
+
+        // Load ghost mesh
+        Mesh ghostMesh = AssetStore.getMesh("entities", "ghost");
+        ghostMesh.setMaterial(new Material(0f));
+
+        // Create ghosts
+        Vector2i ghost1Pos = map.getTile("ghost_1").getPosition();
+        Vector2i ghost2Pos = map.getTile("ghost_2").getPosition();
+        Vector2i ghost3Pos = map.getTile("ghost_3").getPosition();
+        Vector2i puzzleGhostPos = map.getTile("puzzle_ghost").getPosition();
+
+        Entity ghost1 = new Entity(
+                ghostMesh,
+                new Vector3f(ghost1Pos.x, 1.5f, ghost1Pos.y),
+                new Vector3f(0f, 0f, 0f)
+        );
+        Entity ghost2 = new Entity(
+                ghostMesh,
+                new Vector3f(ghost2Pos.x, 1.5f, ghost2Pos.y),
+                new Vector3f(0f, 90f, 0f)
+        );
+        Entity ghost3 = new Entity(
+                ghostMesh,
+                new Vector3f(ghost3Pos.x, 1.5f, ghost3Pos.y),
+                new Vector3f(0f, 90f, 0f)
+        );
+        Entity puzzleGhost = new Entity(
+                ghostMesh,
+                new Vector3f(puzzleGhostPos.x, 2f, puzzleGhostPos.y),
+                new Vector3f(0f, 90f, 0f)
+        );
 
         // Create interactive tiles
         Tile textTile1 = map.getTile("murder_mystery_text_1");
@@ -189,12 +219,18 @@ public class MurderMysteryLevel extends Level {
             paused = false;
         });
 
+        gemText = new ScrollingPopup("You found the green gem! Go back to the main room to find more gems.", () -> {
+            gui.removeComponent();
+            greenGem.remove(() -> entitiesToRemove.add(greenGem));
+            map.getTile("gem_pickup").removeTag("trigger");
+            paused = false;
+        });
+
         // Create puzzle
         puzzle1 = new Puzzle(
-                "This does nothing...",
+                "What's the murdering weapon?",
                 // Options
-                new String[]{"key", "lighting", "mug"}, // TODO: Temporary options
-//                new String[]{}, // These are the real options...
+                new String[]{"saw", "frying pan", "syringe", "knife", "fork", "gun", "pencil", "axe", "sword"},
                 // Solutions
                 new Solution[]{
                         new Solution("key", (s) -> { // TODO: Update to the real solution value
@@ -224,7 +260,7 @@ public class MurderMysteryLevel extends Level {
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("I don't think " + s + " killed me...", () -> {
+                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " killed me...", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
@@ -248,35 +284,33 @@ public class MurderMysteryLevel extends Level {
             sceneLight.pointLights.add(
                     new PointLight(
                             new Vector3f(0.968f, 0.788f, 0.390f),
-                            new Vector3f(t.getPosition().x, 4.5f, t.getPosition().y),
+                            new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
                             0.2f,
-                            new PointLight.Attenuation(0f, 1f, 0f),
-                            new Vector2f(1f, 100f)
-                    )
-            );
-        });
-        map.getTiles("lantern_floor").forEach(t -> {
-            sceneLight.pointLights.add(
-                    new PointLight(
-                            new Vector3f(0.968f, 0.588f, 0.290f),
-                            new Vector3f(t.getPosition().x, 1f, t.getPosition().y),
-                            0.4f,
-                            new PointLight.Attenuation(0f, 1f, 0f),
-                            new Vector2f(1f, 100f)
+                            new PointLight.Attenuation(0f, 0f, 0f),
+                            new Vector2f(0.1f, 100f)
                     )
             );
         });
         map.getTiles("lantern_crate").forEach(t -> {
             sceneLight.pointLights.add(
                     new PointLight(
-                            new Vector3f(0.768f, 0.688f, 0.290f),
+                            new Vector3f(0.701f, 0.439f, 0f),
                             new Vector3f(t.getPosition().x, 2.5f, t.getPosition().y),
-                            0.45f,
-                            new PointLight.Attenuation(0f, 1f, 0f),
-                            new Vector2f(1f, 100f)
+                            0.6f,
+                            new PointLight.Attenuation(0f, 0f, 0f),
+                            new Vector2f(0.1f, 100f)
                     )
             );
         });
+        sceneLight.pointLights.add(
+                new PointLight(
+                        new Vector3f(0.105f, 0.701f, 0f),
+                        new Vector3f(shrinePos.x, 3.5f, shrinePos.y),
+                        0.6f,
+                        new PointLight.Attenuation(0f, 0f, 0f),
+                        new Vector2f(0.1f, 100f)
+                )
+        );
 
         // Setup gui
         gui = new GUI();
@@ -291,7 +325,11 @@ public class MurderMysteryLevel extends Level {
                 hintIndicator1,
                 hintIndicator2,
                 hintIndicator3,
-                puzzle1Indicator
+                puzzle1Indicator,
+                ghost1,
+                ghost2,
+                ghost3,
+                puzzleGhost
         ));
 
         paused = false;
@@ -344,6 +382,14 @@ public class MurderMysteryLevel extends Level {
                 if (currentPlayerTile.hasTag("murder_mystery_puzzle_1")) {
                     gui.setComponent(new PuzzleGUI(puzzle1));
                     paused = true;
+                }
+                if (currentPlayerTile.hasTag("gem_pickup")) {
+                    gui.setComponent(gemText);
+                    levelController.setGemFound(LevelController.GEM.GREEN);
+                    paused = true;
+                }
+                if (currentPlayerTile.hasTag("ladder")) {
+                    levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_3);
                 }
             }
         } else if (gui.hasComponent()) {

@@ -157,7 +157,7 @@ public class ShadowsManager {
                         if (frustrum == -2 || frustrum == -1) {
                             Mesh mesh = entity.getMesh();
                             if ((new Vector3f(pointLight.getPosition()).sub(new Vector3f(entity.getPosition()))).length() <= pointLight.getPlane().y) {
-                                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || (sceneLight.directionalLight != null && sceneLight.directionalLight.isDynamicOnly())) {
+                                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || (pointLight.isDynamicOnly())) {
                                     model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
                                     shaderManager.updateDepthCubeMapShader(model);
                                     if (entity instanceof Snake) {
@@ -180,7 +180,7 @@ public class ShadowsManager {
         for (int i = 0; i < numLights; i++) {
             if (sceneLight.spotLights.get(i).getIntensity() > 0) {
                 SpotLight spotLight = sceneLight.spotLights.get(i);
-                if (isDynamic) {
+                if (isDynamic || spotLight.isDynamicOnly()) {
                     shadowMap = spotLight.getDynamicShadowMap();
                 } else {
                     shadowMap = spotLight.getStaticShadowMap();
@@ -204,7 +204,7 @@ public class ShadowsManager {
                             // Calculate the Model matrix in World coordinates
                             if (frustrum == -2 || frustrum == -1) {
                                 Mesh mesh = tile.getMesh();
-                                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || spotLight.isDynamicOnly()) {
                                     model = transformation.getWorldMatrix(
                                             new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
                                             tile.getRotation(),
@@ -223,7 +223,7 @@ public class ShadowsManager {
                     int frustrum = frustumIntersection.intersectAab(new Vector3f(entity.getPosition()).sub(1.0f, 1.1f, 1.0f), new Vector3f(entity.getPosition()).add(1.0f,3.0f, 1.0f));
                     if (frustrum == -2 || frustrum == -1) {
                         Mesh mesh = entity.getMesh();
-                        if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                        if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || (spotLight.isDynamicOnly())) {
                             model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
                             // Set model view matrix for this item
                             shaderManager.updateDepthShader(model);

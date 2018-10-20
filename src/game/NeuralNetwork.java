@@ -15,6 +15,8 @@ public class NeuralNetwork {
 
     private static MultiLayerNetwork model;
 
+    private static float threshold = 0.6f;
+
     private static String[] labels = new String[]{
             "airplane",
             "alarm_clock",
@@ -51,6 +53,7 @@ public class NeuralNetwork {
 
     /**
      * Return the best guess for the given image
+     *
      * @param image the image to base the guess on
      * @return the label for the best guess
      */
@@ -70,7 +73,8 @@ public class NeuralNetwork {
 
     /**
      * Return the best guess for the given image from the given options
-     * @param image the image to base the guess on
+     *
+     * @param image   the image to base the guess on
      * @param options the available options to choose from
      * @return the label for the best guess
      */
@@ -80,24 +84,31 @@ public class NeuralNetwork {
 
     /**
      * Return the best guess for the given image from the given options
-     * @param image the image to base the guess on
+     *
+     * @param image   the image to base the guess on
      * @param options the available option set to choose from
      * @return the label for the best guess
      */
     public static String getBestGuess(BufferedImage image, Set<String> options) {
         INDArray output = getOutput(image);
-
-        Pair<String, Float> bestGuess = null;
+        Pair<String, Float> setBest = null;
+        Pair<String, Float> globalBest = null;
 
         for (int i = 0; i < output.length(); i++) {
-            if (!options.contains(labels[i])) {
-                continue;
+            if (globalBest == null || output.getFloat(i) > globalBest.getValue()) {
+                globalBest = new Pair<>(labels[i], output.getFloat(i));
             }
-            if (bestGuess == null || output.getFloat(i) > bestGuess.getValue()) {
-                bestGuess = new Pair<>(labels[i], output.getFloat(i));
+
+            if (options.contains(labels[i])) {
+                if (output.getFloat(i) > threshold) {
+                    if (setBest == null || output.getFloat(i) > setBest.getValue()) {
+                        setBest = new Pair<>(labels[i], output.getFloat(i));
+                    }
+                }
             }
         }
-        return bestGuess.getKey();
+
+        return setBest == null ? globalBest.getKey() : setBest.getKey();
     }
 
     /**

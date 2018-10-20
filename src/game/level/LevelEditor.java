@@ -34,8 +34,8 @@ public class LevelEditor extends Level implements GLFWKeyCallbackI {
     private Renderer renderer;
     private Camera camera;
 
-    // Map related
-    private int width = 50, height = 50;
+    // Map related vars
+    private int width = 100, height = 100;
     private Tile[][] tiles = new Tile[width][height];
 
     // Movement related
@@ -103,7 +103,7 @@ public class LevelEditor extends Level implements GLFWKeyCallbackI {
 
 
         //Set up ambient light of the scene
-        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f, 0.1f, 0.1f));
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.4f, 0.4f, 0.4f));
 
         entities = new ArrayList<>();
 
@@ -316,7 +316,7 @@ public class LevelEditor extends Level implements GLFWKeyCallbackI {
                         mesh.setMaterial(new Material(0.0f));
                         tiles[Math.round(currentEntity.getPosition().x)][Math.round(currentEntity.getPosition().z)] = new Tile(
                                 new Vector2i(Math.round(currentEntity.getPosition().x), Math.round(currentEntity.getPosition().z)),
-                                currentEntity.getRotation(),
+                                new Vector3f(currentEntity.getRotation()),
                                 mesh,
                                 true);
                         renderer.resetShadowMap();
