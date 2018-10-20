@@ -370,6 +370,8 @@ public class DarknessLevel extends Level {
                     gui.setComponent(text2);
                 } else if (currentPlayerTile.hasTag("light_puzzle_trigger")) {
                     gui.setComponent(new PuzzleGUI(puzzle1));
+                } else if (currentPlayerTile.hasTag("ladder")) {
+                    levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_1);
                 }
 
                 paused = true;

@@ -69,7 +69,7 @@ air 0 1
 air 0 1
 air 0 1
 corner_wall 0 1
-ladder_up 2 0 spawn
+ladder_up 2 0 spawn:trigger:ladder
 stone_floor 0 0
 stone_floor 0 0 welcome_text:trigger
 stone_floor 0 0
@@ -479,7 +479,7 @@ air 0 1
 air 0 1
 corner_wall 0 1
 stone_floor 0 0
-stone_floor 0 0
+ladder_up 0 0
 stone_floor 0 0
 corner_wall 0 1
 air 0 1
@@ -851,7 +851,7 @@ air 0 1
 air 0 1
 corner_wall 0 1
 stone_floor 0 0
-ladder_up 3 0
+ladder_up 3 0 ladder:trigger
 stone_floor 0 0
 corner_wall 0 1
 air 0 1
