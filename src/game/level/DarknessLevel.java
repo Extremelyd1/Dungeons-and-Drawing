@@ -60,7 +60,7 @@ public class DarknessLevel extends Level {
     /**
      *
      */
-    private ScrollingPopup text1, text2;
+    private ScrollingPopup text1, gemText;
 
     /**
      * Puzzles
@@ -125,6 +125,19 @@ public class DarknessLevel extends Level {
         doorMesh.setMaterial(new Material(0f));
         doorMesh.setIsStatic(false);
 
+        // Load gem
+        Mesh redGemMesh = AssetStore.getMesh("entities", "gem_red");
+        redGemMesh.setMaterial(new Material(0f));
+        redGemMesh.setIsStatic(false);
+
+        Vector2i shrinePos = map.getTile("shrine").getPosition();
+        IndicatorEntity redGem = new IndicatorEntity(
+                redGemMesh,
+                new Vector3f(shrinePos.x, 1.5f, shrinePos.y),
+                new Vector3f(45f, 90f, 45f),
+                null
+        );
+
         // Create interactive tiles
         Tile pencilTile1 = map.getTile("light_puzzle_trigger");
         IndicatorEntity pencilIndicator = new IndicatorEntity(
@@ -168,8 +181,8 @@ public class DarknessLevel extends Level {
         sceneLight.pointLights.add(
                 new PointLight(
                         new Vector3f(0.8f, 0.3f, 0.2f),
-                        new Vector3f(shrineLightPosition.x + 0.5f, 0.5f, shrineLightPosition.y + 0.5f),
-                        1f,
+                        new Vector3f(shrineLightPosition.x, 3f, shrineLightPosition.y),
+                        2f,
                         new PointLight.Attenuation(0f, 0.3f, 0f),
                         new Vector2f(0.01f, 100f)
                 )
@@ -206,6 +219,14 @@ public class DarknessLevel extends Level {
         gui.initialize();
 
         // Create dialogue
+
+        gemText = new ScrollingPopup("You found the red gem! Go back to the main room to find more gems.", () -> {
+            gui.removeComponent();
+            redGem.remove(() -> entitiesToRemove.add(redGem));
+            map.getTiles("gem_pickup").forEach(t -> t.removeTag("trigger"));
+            paused = false;
+        });
+
         text1 = new ScrollingPopup("Wow. So dark. Hope it's just a phase.", () -> {
             gui.setComponent(new ScrollingPopup("This room makes me think of a joke I heard a long time ago. Want to hear it?", () -> {
                 gui.setComponent(new ScrollingPopup("No? Too bad. I'm going to tell you anyway", () -> {
@@ -299,6 +320,7 @@ public class DarknessLevel extends Level {
         entitiesToRemove = new ArrayList<>();
         entities = new ArrayList<>(Arrays.asList(
                 player,
+                redGem,
                 textIndicator1,
                 pencilIndicator
         ));
@@ -366,12 +388,16 @@ public class DarknessLevel extends Level {
             if (KeyBinding.isInteractPressed()) {
                 if (currentPlayerTile.hasTag("welcome_text")) {
                     gui.setComponent(text1);
-                } else if (currentPlayerTile.hasTag("hint_trigger")) {
-                    gui.setComponent(text2);
                 } else if (currentPlayerTile.hasTag("light_puzzle_trigger")) {
                     gui.setComponent(new PuzzleGUI(puzzle1));
                 } else if (currentPlayerTile.hasTag("ladder")) {
                     levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_1);
+                }
+
+                if (currentPlayerTile.hasTag("gem_pickup")) {
+                    gui.setComponent(gemText);
+                    levelController.setGemFound(LevelController.GEM.RED);
+                    paused = true;
                 }
 
                 paused = true;

@@ -140,7 +140,7 @@ corner_wall 0 1
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
+corner_wall 0 1
 air 0 1
 air 0 1
 air 0 1
@@ -313,7 +313,7 @@ corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
-stone_floor 0 0 null
+stone_floor 0 0
 corner_wall 0 1
 corner_wall 0 1
 stone_floor 0 0
@@ -324,7 +324,7 @@ corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
 stone_floor 0 0
-stone_floor 0 0 null
+stone_floor 0 0
 corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
@@ -479,7 +479,7 @@ air 0 1
 air 0 1
 corner_wall 0 1
 stone_floor 0 0
-ladder_up 0 0
+stone_floor 0 0
 stone_floor 0 0
 corner_wall 0 1
 air 0 1
@@ -510,7 +510,7 @@ corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
 prison_bars 0 1
-stone_floor 0 0 null
+stone_floor 0 0
 prison_bars 0 1
 corner_wall 0 1
 corner_wall 0 1
@@ -538,7 +538,7 @@ air 0 1
 air 0 1
 air 0 1
 corner_wall 0 1
-lantern_on_floor 0 0 shrine_light
+stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -603,38 +603,7 @@ corner_wall 0 1
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
-stone_floor 0 0
-stone_floor 0 0
-stone_floor 0 0
-corner_wall 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-air 0 1
-corner_wall 0 1
-stone_floor 0 0
-stone_floor 0 0
-stone_floor 0 0
-shrine 0 1
+stone_floor 0 0 gem_pickup:trigger
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -664,8 +633,39 @@ air 0 1
 corner_wall 0 1
 stone_floor 0 0
 stone_floor 0 0
+stone_floor 0 0 gem_pickup:trigger
+shrine 0 1 shrine_light:shrine
+stone_floor 0 0 gem_pickup:trigger
 stone_floor 0 0
 stone_floor 0 0
+corner_wall 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+air 0 1
+corner_wall 0 1
+stone_floor 0 0
+stone_floor 0 0
+stone_floor 0 0
+stone_floor 0 0 gem_pickup:trigger
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
