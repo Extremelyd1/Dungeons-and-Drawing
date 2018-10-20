@@ -4,6 +4,7 @@ import engine.animation.JointTransform;
 import engine.animation.ModelAnimation;
 import engine.animation.Quaternion;
 import engine.animation.keyframe.ModelKeyFrame;
+import engine.entities.animatedModel.AnimatedModel;
 import engine.entities.animatedModel.Joint;
 import engine.loader.animatedModelLoader.colladaLoader.ColladaLoader;
 import engine.loader.animatedModelLoader.dataStructures.AnimationData;
@@ -16,6 +17,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,30 +33,27 @@ public class AnimationLoader {
      * Loads up a collada animation file, and returns and animation created from
      * the extracted animation data from the file.
      *
-     * @param colladaFile
-     *            - the collada file containing data about the desired
-     *            animation.
      * @return The animation made from the data in the file.
      */
-    public static ModelAnimation loadAnimation(String colladaFile) {
-        AnimationData animationData = ColladaLoader.loadColladaAnimation(colladaFile);
+    public static ModelAnimation loadAnimation(AnimatedModel model) {
+        List<Joint> jointList = createJointsList(model.getRootJoint(), new ArrayList<>());
         ModelKeyFrame[] frames = new ModelKeyFrame[3];
-        Map<String, JointTransform> map = new HashMap<>();
-        for (JointTransformData jointData : animationData.keyFrames[0].jointTransforms) {
-            map.put(jointData.jointNameId, createCustomTransform(jointData));
+        for (int i = 0; i < 3; i++) {
+            Map<String, JointTransform> map = new HashMap<>();
+            for (Joint joint : jointList) {
+                map.put(joint.name, createCustomTransform(joint.name));
+            }
+            frames[i] = new ModelKeyFrame(i, map);
         }
-        frames[0] = new ModelKeyFrame(0f, map);
-        map = new HashMap<>();
-        for (JointTransformData jointData : animationData.keyFrames[0].jointTransforms) {
-            map.put(jointData.jointNameId, createCustomTransform(jointData));
-        }
-        frames[1] = new ModelKeyFrame(1f, map);
-        map = new HashMap<>();
-        for (JointTransformData jointData : animationData.keyFrames[0].jointTransforms) {
-            map.put(jointData.jointNameId, createCustomTransform(jointData));
-        }
-        frames[2] = new ModelKeyFrame(2f, map);
         return new ModelAnimation(2f, frames);
+    }
+
+    private static List<Joint> createJointsList(Joint root, List<Joint> currentList) {
+        currentList.add(root);
+        for (Joint child : root.children) {
+            currentList = createJointsList(child, currentList);
+        }
+        return currentList;
     }
 
     /**
@@ -89,12 +88,12 @@ public class AnimationLoader {
 
     private static boolean firstReturn = false;
 
-    private static JointTransform createCustomTransform(JointTransformData data) {
-        if (data.jointNameId.equals("Upper_Arm_R")) {
+    private static JointTransform createCustomTransform(String jointName) {
+        if (jointName.equals("Upper_Arm_R")) {
             Quaternion rotation = new Quaternion((float) Math.sin(Math.PI / 4), 0, 0, (float) Math.cos(Math.PI / 4));
 
             return new JointTransform(rotation);
-        } else if (data.jointNameId.equals("Lower_Arm_R")) {
+        } else if (jointName.equals("Lower_Arm_R")) {
             Quaternion rotationUp = new Quaternion((float) Math.sin(Math.PI / 4), 0, 0, (float) Math.cos(Math.PI / 4));
             Quaternion rotationSide;
             if (firstReturn) {

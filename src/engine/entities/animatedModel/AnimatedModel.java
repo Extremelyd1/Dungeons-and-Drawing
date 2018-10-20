@@ -2,8 +2,7 @@ package engine.entities.animatedModel;
 
 import engine.animation.ModelAnimation;
 import engine.animation.ModelAnimator;
-import engine.entities.animatedModel.textures.AMTexture;
-import engine.loader.data.Vao;
+import graphics.AnimatedMesh;
 import org.joml.Matrix4f;
 
 /**
@@ -21,8 +20,7 @@ import org.joml.Matrix4f;
 public class AnimatedModel {
 
     // skin
-    private final Vao vao;
-    private final AMTexture texture;
+    private final AnimatedMesh mesh;
 
     // skeleton
     private final Joint rootJoint;
@@ -37,7 +35,7 @@ public class AnimatedModel {
      * the model's origin (model-space). The inverse bind transform is simply
      * that but inverted.
      *
-     * @param vao
+     * @param mesh
      *            - the mesh object containing the mesh data for this entity.
      * @param rootJoint
      *            - the root joint of the joint hierarchy which makes up the
@@ -47,9 +45,8 @@ public class AnimatedModel {
      *            this entity.
      *
      */
-    public AnimatedModel(Vao vao, AMTexture texture, Joint rootJoint, int jointCount) {
-        this.vao = vao;
-        this.texture = texture;
+    public AnimatedModel(AnimatedMesh mesh, Joint rootJoint, int jointCount) {
+        this.mesh = mesh;
         this.rootJoint = rootJoint;
         this.jointCount = jointCount;
         this.animator = new ModelAnimator(this);
@@ -59,15 +56,8 @@ public class AnimatedModel {
     /**
      * @return The mesh object containing all the mesh data for this entity.
      */
-    public Vao getVao() {
-        return vao;
-    }
-
-    /**
-     * @return The diffuse texture for this entity.
-     */
-    public AMTexture getTexture() {
-        return texture;
+    public AnimatedMesh getMesh() {
+        return mesh;
     }
 
     /**
@@ -83,8 +73,8 @@ public class AnimatedModel {
      * Deletes the OpenGL objects associated with this entity, namely the model
      * (VAO) and texture.
      */
-    public void delete() {
-        vao.delete();
+    public void terminate() {
+        mesh.terminate();
     }
 
     /**

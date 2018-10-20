@@ -11,16 +11,16 @@ public class MeshData {
 	private static final int DIMENSIONS = 3;
 
 	private float[] vertices;
-	private float[] textureCoords;
+	private float[] colors;
 	private float[] normals;
 	private int[] indices;
 	private int[] jointIds;
 	private float[] vertexWeights;
 
-	public MeshData(float[] vertices, float[] textureCoords, float[] normals, int[] indices,
+	public MeshData(float[] vertices, float[] colors, float[] normals, int[] indices,
 			int[] jointIds, float[] vertexWeights) {
 		this.vertices = vertices;
-		this.textureCoords = textureCoords;
+		this.colors = colors;
 		this.normals = normals;
 		this.indices = indices;
 		this.jointIds = jointIds;
@@ -39,8 +39,8 @@ public class MeshData {
 		return vertices;
 	}
 
-	public float[] getTextureCoords() {
-		return textureCoords;
+	public float[] getColors() {
+		return colors;
 	}
 
 	public float[] getNormals() {
@@ -49,10 +49,6 @@ public class MeshData {
 
 	public int[] getIndices() {
 		return indices;
-	}
-
-	public int getVertexCount() {
-		return vertices.length / DIMENSIONS;
 	}
 
 }

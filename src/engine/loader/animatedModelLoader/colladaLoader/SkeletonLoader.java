@@ -9,6 +9,7 @@ import engine.loader.animatedModelLoader.xmlParser.XmlNode;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.system.CallbackI;
 
 public class SkeletonLoader {
 
@@ -41,6 +42,12 @@ public class SkeletonLoader {
 	
 	private JointData extractMainJointData(XmlNode jointNode, boolean isRoot){
 		String nameId = jointNode.getAttribute("id");
+		nameId = nameId.replace("Armature_", "");
+//        System.out.println("Name: "+ nameId);
+//        System.out.println("Bones:");
+//        for (String bone : boneOrder) {
+//            System.out.println("  " + bone);
+//        }
 		int index = boneOrder.indexOf(nameId);
 		String[] matrixData = jointNode.getChild("matrix").getData().split(" ");
 		Matrix4f matrix = new Matrix4f();

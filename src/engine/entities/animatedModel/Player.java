@@ -80,12 +80,12 @@ public class Player extends LivingEntity {
                 xChange = (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2));
                 zChange = (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2));
 
-                this.getRotation().set(0, 315, 0);
+                this.getRotation().set(0, 45, 0);
             } else if (right) {
                 xChange = (float) (delta * this.getSpeed() * 1 / Math.sqrt(2));
                 zChange = (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2));
 
-                this.getRotation().set(0, 45, 0);
+                this.getRotation().set(0, 315, 0);
             } else {
                 zChange = -delta * this.getSpeed();
 
@@ -96,12 +96,12 @@ public class Player extends LivingEntity {
                 xChange = (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2));
                 zChange = (float) (delta * this.getSpeed() * 1 / Math.sqrt(2));
 
-                this.getRotation().set(0, 225, 0);
+                this.getRotation().set(0, 135, 0);
             } else if (right) {
                 xChange = (float) (delta * this.getSpeed() * 1 / Math.sqrt(2));
                 zChange = (float) (delta * this.getSpeed() * 1 / Math.sqrt(2));
 
-                this.getRotation().set(0, 135, 0);
+                this.getRotation().set(0, 225, 0);
             } else {
                 zChange = delta * this.getSpeed();
 
@@ -110,11 +110,11 @@ public class Player extends LivingEntity {
         } else if (left) {
             xChange = -delta * this.getSpeed();
 
-            this.getRotation().set(0,270, 0);
+            this.getRotation().set(0,90, 0);
         } else if (right) {
             xChange = delta * this.getSpeed();
 
-            this.getRotation().set(0, 90, 0);
+            this.getRotation().set(0, 270, 0);
         }
 
         if (xChange == 0 && zChange == 0) {
@@ -147,16 +147,7 @@ public class Player extends LivingEntity {
 
     @Override
     public void render() {
-        // Draw the mesh
-
-        animatedModel.getTexture().bindToUnit(0);
-
-        animatedModel.getVao().bind(0, 1, 2, 3, 4);
-
-        glDrawElements(GL_TRIANGLES, animatedModel.getVao().getIndexCount(), GL_UNSIGNED_INT, 0);
-
-        // Restore state
-        animatedModel.getVao().unbind(0, 1, 2, 3, 4);
+        animatedModel.getMesh().render();
     }
 
     public AnimatedModel getAnimatedModel() {

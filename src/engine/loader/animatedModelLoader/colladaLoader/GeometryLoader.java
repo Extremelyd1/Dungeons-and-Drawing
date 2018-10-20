@@ -27,15 +27,15 @@ public class GeometryLoader {
 
     private float[] verticesArray;
     private float[] normalsArray;
-    private float[] texturesArray;
+    private float[] colorsArray;
     private int[] indicesArray;
     private int[] jointIdsArray;
     private float[] weightsArray;
 
-    List<Vertex> vertices = new ArrayList<>();
-    List<Vector2f> textures = new ArrayList<>();
-    List<Vector3f> normals = new ArrayList<>();
-    List<Integer> indices = new ArrayList<>();
+    private List<Vertex> vertices = new ArrayList<>();
+    private List<Vector3f> colors = new ArrayList<>();
+    private List<Vector3f> normals = new ArrayList<>();
+    private List<Integer> indices = new ArrayList<>();
 
     public GeometryLoader(XmlNode geometryNode, List<VertexSkinData> vertexWeights) {
         this.vertexWeights = vertexWeights;
@@ -49,13 +49,13 @@ public class GeometryLoader {
         initArrays();
         convertDataToArrays();
         convertIndicesListToArray();
-        return new MeshData(verticesArray, texturesArray, normalsArray, indicesArray, jointIdsArray, weightsArray);
+        return new MeshData(verticesArray, colorsArray, normalsArray, indicesArray, jointIdsArray, weightsArray);
     }
 
     private void readRawData() {
         readPositions();
         readNormals();
-        readTextureCoords();
+        readColors();
     }
 
     private void readPositions() {
@@ -63,7 +63,7 @@ public class GeometryLoader {
         XmlNode positionsData = meshData.getChildWithAttribute("source", "id", positionsId).getChild("float_array");
         int count = Integer.parseInt(positionsData.getAttribute("count"));
         String[] posData = positionsData.getData().split(" ");
-        for (int i = 0; i < count/3; i++) {
+        for (int i = 0; i < count / 3; i++) {
             float x = Float.parseFloat(posData[i * 3]);
             float y = Float.parseFloat(posData[i * 3 + 1]);
             float z = Float.parseFloat(posData[i * 3 + 2]);
@@ -81,7 +81,7 @@ public class GeometryLoader {
         XmlNode normalsData = meshData.getChildWithAttribute("source", "id", normalsId).getChild("float_array");
         int count = Integer.parseInt(normalsData.getAttribute("count"));
         String[] normData = normalsData.getData().split(" ");
-        for (int i = 0; i < count/3; i++) {
+        for (int i = 0; i < count / 3; i++) {
             float x = Float.parseFloat(normData[i * 3]);
             float y = Float.parseFloat(normData[i * 3 + 1]);
             float z = Float.parseFloat(normData[i * 3 + 2]);
@@ -93,16 +93,18 @@ public class GeometryLoader {
         }
     }
 
-    private void readTextureCoords() {
-        String texCoordsId = meshData.getChild("polylist").getChildWithAttribute("input", "semantic", "TEXCOORD")
+    private void readColors() {
+        String colorsId = meshData.getChild("polylist").getChildWithAttribute("input", "semantic", "COLOR")
                 .getAttribute("source").substring(1);
-        XmlNode texCoordsData = meshData.getChildWithAttribute("source", "id", texCoordsId).getChild("float_array");
-        int count = Integer.parseInt(texCoordsData.getAttribute("count"));
-        String[] texData = texCoordsData.getData().split(" ");
-        for (int i = 0; i < count/2; i++) {
-            float s = Float.parseFloat(texData[i * 2]);
-            float t = Float.parseFloat(texData[i * 2 + 1]);
-            textures.add(new Vector2f(s, t));
+        XmlNode colorsData = meshData.getChildWithAttribute("source", "id", colorsId).getChild("float_array");
+        int count = Integer.parseInt(colorsData.getAttribute("count"));
+        String[] colData = colorsData.getData().split(" ");
+        for (int i = 0; i < count/3; i++) {
+            float r = Float.parseFloat(colData[i * 3]);
+            float g = Float.parseFloat(colData[i * 3 + 1]);
+            float b = Float.parseFloat(colData[i * 3 + 2]);
+            colors.add(new Vector3f(r, g, b));
+            // Still correct
         }
     }
 
@@ -110,24 +112,25 @@ public class GeometryLoader {
         XmlNode poly = meshData.getChild("polylist");
         int typeCount = poly.getChildren("input").size();
         String[] indexData = poly.getChild("p").getData().split(" ");
-        for(int i=0;i<indexData.length/typeCount;i++){
+        for(int i = 0; i < indexData.length / typeCount; i++){
             int positionIndex = Integer.parseInt(indexData[i * typeCount]);
             int normalIndex = Integer.parseInt(indexData[i * typeCount + 1]);
-            int texCoordIndex = Integer.parseInt(indexData[i * typeCount + 2]);
-            processVertex(positionIndex, normalIndex, texCoordIndex);
+            int colorIndex = Integer.parseInt(indexData[i * typeCount + 3]);
+            processVertex(positionIndex, normalIndex, colorIndex);
         }
+
     }
 
 
-    private Vertex processVertex(int posIndex, int normIndex, int texIndex) {
+    private Vertex processVertex(int posIndex, int normIndex, int colIndex) {
         Vertex currentVertex = vertices.get(posIndex);
         if (!currentVertex.isSet()) {
-            currentVertex.setTextureIndex(texIndex);
+            currentVertex.setColorIndex(colIndex);
             currentVertex.setNormalIndex(normIndex);
             indices.add(posIndex);
             return currentVertex;
         } else {
-            return dealWithAlreadyProcessedVertex(currentVertex, texIndex, normIndex);
+            return dealWithAlreadyProcessedVertex(currentVertex, colIndex, normIndex);
         }
     }
 
@@ -147,13 +150,14 @@ public class GeometryLoader {
                 furthestPoint = currentVertex.getLength();
             }
             Vector3f position = currentVertex.getPosition();
-            Vector2f textureCoord = textures.get(currentVertex.getTextureIndex());
+            Vector3f color = colors.get(currentVertex.getColorIndex());
             Vector3f normalVector = normals.get(currentVertex.getNormalIndex());
             verticesArray[i * 3] = position.x;
             verticesArray[i * 3 + 1] = position.y;
             verticesArray[i * 3 + 2] = position.z;
-            texturesArray[i * 2] = textureCoord.x;
-            texturesArray[i * 2 + 1] = 1 - textureCoord.y;
+            colorsArray[i * 3] = color.x;
+            colorsArray[i * 3 + 1] = color.y;
+            colorsArray[i * 3 + 2] = color.z;
             normalsArray[i * 3] = normalVector.x;
             normalsArray[i * 3 + 1] = normalVector.y;
             normalsArray[i * 3 + 2] = normalVector.z;
@@ -169,17 +173,17 @@ public class GeometryLoader {
         return furthestPoint;
     }
 
-    private Vertex dealWithAlreadyProcessedVertex(Vertex previousVertex, int newTextureIndex, int newNormalIndex) {
-        if (previousVertex.hasSameTextureAndNormal(newTextureIndex, newNormalIndex)) {
+    private Vertex dealWithAlreadyProcessedVertex(Vertex previousVertex, int newColorIndex, int newNormalIndex) {
+        if (previousVertex.hasSameColorAndNormal(newColorIndex, newNormalIndex)) {
             indices.add(previousVertex.getIndex());
             return previousVertex;
         } else {
             Vertex anotherVertex = previousVertex.getDuplicateVertex();
             if (anotherVertex != null) {
-                return dealWithAlreadyProcessedVertex(anotherVertex, newTextureIndex, newNormalIndex);
+                return dealWithAlreadyProcessedVertex(anotherVertex, newColorIndex, newNormalIndex);
             } else {
                 Vertex duplicateVertex = new Vertex(vertices.size(), previousVertex.getPosition(), previousVertex.getWeightsData());
-                duplicateVertex.setTextureIndex(newTextureIndex);
+                duplicateVertex.setColorIndex(newColorIndex);
                 duplicateVertex.setNormalIndex(newNormalIndex);
                 previousVertex.setDuplicateVertex(duplicateVertex);
                 vertices.add(duplicateVertex);
@@ -192,7 +196,7 @@ public class GeometryLoader {
 
     private void initArrays(){
         this.verticesArray = new float[vertices.size() * 3];
-        this.texturesArray = new float[vertices.size() * 2];
+        this.colorsArray = new float[vertices.size() * 3];
         this.normalsArray = new float[vertices.size() * 3];
         this.jointIdsArray = new int[vertices.size() * 3];
         this.weightsArray = new float[vertices.size() * 3];
@@ -202,7 +206,7 @@ public class GeometryLoader {
         for (Vertex vertex : vertices) {
             vertex.averageTangents();
             if (!vertex.isSet()) {
-                vertex.setTextureIndex(0);
+                vertex.setColorIndex(0);
                 vertex.setNormalIndex(0);
             }
         }
