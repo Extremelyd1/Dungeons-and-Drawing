@@ -1,16 +1,15 @@
 package game;
 
-import engine.animation.JointTransform;
-import engine.animation.Quaternion;
 import engine.camera.Camera;
 import engine.entities.Entity;
 import engine.GameWindow;
 import engine.Transformation;
-import engine.entities.animatedModel.AnimatedModel;
 import engine.entities.animatedModel.Player;
+import engine.gui.NanoVG;
 import engine.lights.SceneLight;
 import game.map.Map;
 import game.map.tile.Tile;
+import game.mobs.Snake;
 import graphics.HDR;
 import graphics.Mesh;
 import graphics.ShadowsManager;
@@ -63,7 +62,6 @@ public class Renderer {
         shaderManager.setupSceneShader();
         shaderManager.setupDepthShader();
         shaderManager.setupHDRShader();
-        shaderManager.setupAnimatedModelShader();
 
         // Permanently Enable Back Face Culling
         glEnable(GL_CULL_FACE);
@@ -78,19 +76,11 @@ public class Renderer {
     }
 
     public void render(Camera camera, Entity[] entities, SceneLight sceneLight, Map map) {
-        render(camera, entities, sceneLight, null, map);
-    }
-
-    public void render(Camera camera, List<Entity> entities, SceneLight sceneLight, Map map) {
-        render(camera, entities, sceneLight, null, map);
-    }
-
-    public void render(Camera camera, Entity[] entities, SceneLight sceneLight, Player player, Map map) {
         List<Entity> entityList = new ArrayList<>();
         for (Entity entity : entities) {
             entityList.add(entity);
         }
-        render(camera, entityList, sceneLight, player, map);
+        render(camera, entityList, sceneLight, map);
     }
 
     /**
@@ -104,7 +94,6 @@ public class Renderer {
             Camera camera,
             List<Entity>  entities,
             SceneLight sceneLight,
-            Player player,
             Map map
     ) {
         clear();
@@ -118,6 +107,7 @@ public class Renderer {
                 window.setWindowHeight(height);
                 window.setWindowWidth(width);
                 glViewport(0, 0, width, height); //Update the Viewport with new width and height
+                NanoVG.reload();
             }
         });
 
@@ -141,7 +131,7 @@ public class Renderer {
         glBindRenderbuffer(GL_RENDERBUFFER, hdrManager.getRender());
         glBindFramebuffer(GL_FRAMEBUFFER, hdrManager.getHdrFBO());
         clear();
-        renderScene(camera, entities, sceneLight, player, map);
+        renderScene(camera, entities, sceneLight, map);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
@@ -157,7 +147,6 @@ public class Renderer {
     public void renderScene(Camera camera,
                             List<Entity> entities,
                             SceneLight sceneLight,
-                            Player player,
                             Map map) {
         // Compute necessary matrices
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(
@@ -197,6 +186,7 @@ public class Renderer {
                                 0.5f);
                         shaderManager.updateSceneShader(model, projectionAndView, mesh.getMaterial());
                         shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
+                        shaderManager.setSceneShaderModeDefault();
                         // Render the mesh
                         mesh.render();
                     }
@@ -213,21 +203,17 @@ public class Renderer {
                 shaderManager.updateSceneShader(model, projectionAndView, mesh.getMaterial());
                 shaderManager.allocateTextureUnitsToSceneShader(null, sceneLight);
                 // Render the mesh
+                if (entity instanceof Snake) {
+                    shaderManager.setSceneShaderMode0(((Snake) entity).getMorph(), new Vector3f(entity.getPosition()).add(1,0,0));
+                } else if (entity instanceof Player) {
+                    shaderManager.setSceneShaderMode1(((Player) entity).getAnimatedModel().getJointTransforms());
+                } else {
+                    shaderManager.setSceneShaderModeDefault();
+                }
                 mesh.render();
             }
         }
         shaderManager.unbindSceneShader();
-
-        shaderManager.bindAnimatedModelShader();
-
-        model = transformation.getWorldMatrix(new Vector3f(player.getPosition()), player.getRotation(), new Vector3f(0.25f));
-
-        shaderManager.initializeAnimatedModelShader(model, projectionAndView, player.getAnimatedModel().getJointTransforms());
-
-        player.render();
-
-        shaderManager.unbindAnimatedModelShader();
-
     }
   
     public void terminate() {

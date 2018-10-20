@@ -5,6 +5,7 @@ import engine.entities.LivingEntity;
 import engine.input.KeyBinding;
 import engine.util.Timer;
 import game.map.Map;
+import graphics.AnimatedMesh;
 import graphics.Mesh;
 import graphics.Texture;
 import org.joml.Vector3f;
@@ -143,6 +144,11 @@ public class Player extends LivingEntity {
                 , newPosition.z - collisionSize, newPosition.z + collisionSize)) {
             getPosition().add(0, 0, zChange);
         }
+    }
+
+    @Override
+    public Mesh getMesh() {
+        return animatedModel.getMesh();
     }
 
     @Override

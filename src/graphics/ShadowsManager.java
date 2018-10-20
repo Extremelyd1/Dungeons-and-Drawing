@@ -2,12 +2,14 @@ package graphics;
 
 import engine.Transformation;
 import engine.entities.Entity;
+import engine.entities.animatedModel.Player;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.lights.SpotLight;
 import game.ShaderManager;
 import game.map.Map;
 import game.map.tile.Tile;
+import game.mobs.Snake;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -73,6 +75,7 @@ public class ShadowsManager {
                                         0.5f);
                                 // Set model view matrix for this item
                                 shaderManager.updateDepthShader(model);
+                                shaderManager.setDepthShaderModeDefault();
                                 // Render the mesh
                                 mesh.render();
                             }
@@ -87,6 +90,11 @@ public class ShadowsManager {
                     if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || sceneLight.directionalLight.isDynamicOnly()) {
                         model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
                         shaderManager.updateDepthShader(model);
+                        if (entity instanceof Snake) {
+                            shaderManager.setDepthShaderMode0(((Snake) entity).getMorph(), new Vector3f(entity.getPosition()).add(1,0,0));
+                        } else {
+                            shaderManager.setDepthShaderModeDefault();
+                        }
                         // Render the mesh
                         mesh.render();
                     }
@@ -136,6 +144,7 @@ public class ShadowsManager {
                                                     0.5f);
                                             // Set model view matrix for this item
                                             shaderManager.updateDepthCubeMapShader(model);
+                                            shaderManager.setDepthShaderCubeModeDefault();
                                             // Render the mesh
                                             mesh.render();
                                         }
@@ -149,9 +158,16 @@ public class ShadowsManager {
                         if (frustrum == -2 || frustrum == -1) {
                             Mesh mesh = entity.getMesh();
                             if ((new Vector3f(pointLight.getPosition()).sub(new Vector3f(entity.getPosition()))).length() <= pointLight.getPlane().y) {
-                                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || (sceneLight.directionalLight != null && sceneLight.directionalLight.isDynamicOnly())) {
+                                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || (pointLight.isDynamicOnly())) {
                                     model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
                                     shaderManager.updateDepthCubeMapShader(model);
+                                    if (entity instanceof Snake) {
+                                        shaderManager.setDepthShaderCubeMode0(((Snake) entity).getMorph(), new Vector3f(entity.getPosition()).add(1, 0, 0));
+                                    } else if (entity instanceof Player) {
+                                        shaderManager.setDepthShaderCubeMode1(((Player) entity).getAnimatedModel().getJointTransforms());
+                                    } else {
+                                        shaderManager.setDepthShaderCubeModeDefault();
+                                    }
                                     mesh.render();
                                 }
                             }
@@ -167,7 +183,7 @@ public class ShadowsManager {
         for (int i = 0; i < numLights; i++) {
             if (sceneLight.spotLights.get(i).getIntensity() > 0) {
                 SpotLight spotLight = sceneLight.spotLights.get(i);
-                if (isDynamic) {
+                if (isDynamic || spotLight.isDynamicOnly()) {
                     shadowMap = spotLight.getDynamicShadowMap();
                 } else {
                     shadowMap = spotLight.getStaticShadowMap();
@@ -191,13 +207,14 @@ public class ShadowsManager {
                             // Calculate the Model matrix in World coordinates
                             if (frustrum == -2 || frustrum == -1) {
                                 Mesh mesh = tile.getMesh();
-                                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                                if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || spotLight.isDynamicOnly()) {
                                     model = transformation.getWorldMatrix(
                                             new Vector3f(tile.getPosition().x, 0, tile.getPosition().y),
                                             tile.getRotation(),
                                             0.5f);
                                     // Set model view matrix for this item
                                     shaderManager.updateDepthShader(model);
+                                    shaderManager.setDepthShaderModeDefault();
                                     // Render the mesh
                                     mesh.render();
                                 }
@@ -209,10 +226,15 @@ public class ShadowsManager {
                     int frustrum = frustumIntersection.intersectAab(new Vector3f(entity.getPosition()).sub(1.0f, 1.1f, 1.0f), new Vector3f(entity.getPosition()).add(1.0f,3.0f, 1.0f));
                     if (frustrum == -2 || frustrum == -1) {
                         Mesh mesh = entity.getMesh();
-                        if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic())) {
+                        if ((isDynamic && !mesh.isStatic()) || (!isDynamic && mesh.isStatic()) || (spotLight.isDynamicOnly())) {
                             model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
                             // Set model view matrix for this item
                             shaderManager.updateDepthShader(model);
+                            if (entity instanceof Snake) {
+                                shaderManager.setDepthShaderMode0(((Snake) entity).getMorph(), new Vector3f(entity.getPosition()).add(1,0,0));
+                            } else {
+                                shaderManager.setDepthShaderModeDefault();
+                            }
                             // Render the mesh
                             mesh.render();
                         }

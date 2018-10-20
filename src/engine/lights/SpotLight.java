@@ -82,6 +82,16 @@ public class SpotLight {
         setPlane(plane); //update LightSpaceMatrix
     }
 
+    public void setToDynamicOnly() {
+        staticShadowMap.cleanup();
+        staticShadowMap = dynamicShadowMap;
+    }
+
+    public boolean isDynamicOnly() {
+        if (staticShadowMap == dynamicShadowMap) return true;
+        else return false;
+    }
+
     public float getIntensity() {
         return intensity;
     }
@@ -152,5 +162,13 @@ public class SpotLight {
                 new Vector3f(0.0f, 1.0f, 0.0f));
 
         lightSpaceMatrix = projection.mul(lightViewMatrix);
+    }
+
+    /**
+     * Cleanup memory
+     */
+    public void cleanup() {
+        staticShadowMap.cleanup();
+        dynamicShadowMap.cleanup();
     }
 }

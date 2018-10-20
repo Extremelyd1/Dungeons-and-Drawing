@@ -81,13 +81,13 @@ public class FullLevel1 extends Level {
         playerModel.doAnimation(playerAnimation);
         player = new Player(playerModel, map);
         player.setSpeed(5);
-        //player.setScale(new Vector3f(1, 2, 1));
+        player.setScale(new Vector3f(1, 2, 1));
         player.setPosition(2, 0.55f, 3);
 
         //Vector2i spawn = map.getTile("spawn").getPosition();
         //player.setPosition(spawn.x, 0.5f, spawn.y);
 
-        //entities.add(player);
+        entities.add(player);
 
         // Setup camera
         camera = new FollowCamera(
@@ -124,7 +124,8 @@ public class FullLevel1 extends Level {
                 t -> sceneLight.pointLights.add(new PointLight(
                                 new Vector3f(1f, 1f, 1f),
                                 new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
-                                0.4f,
+                                1.6f,
+                                new PointLight.Attenuation(0.0f,0.0f,0.05f),
                                 new Vector2f(1f, 100f)
                         )
                 )
@@ -134,14 +135,14 @@ public class FullLevel1 extends Level {
                 new Vector3f(0.0f, 7.0f, 0.0f),       // position
                 new Vector3f(0.8f, 0.8f, 0.8f),     // color
                 new Vector3f(0.0f, 1.0f, 0.4f),     // direction
-                0.2f,                                // intensity
+                0.15f,                                // intensity
                 new Vector2f(1.0f, 10.0f),             // near-far plane
                 false);
 
         // Setup gui
         gui = new GUI();
         gui.initialize();
-        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f));
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
 
         // Load mesh for door
         Mesh doorMesh = AssetStore.getMesh("entities", "wooden_door");
@@ -177,7 +178,7 @@ public class FullLevel1 extends Level {
                 // Possible guesses
                 new String[]{"key", "cactus", "hat"},
                 // Solutions and their corresponding actions
-                new Solution[]{new Solution("key", () -> {
+                new Solution[]{new Solution("key", (s) -> {
                     gui.setComponent(new ScrollingPopup("Indeed! A key opens the door", () ->
                             paused = false
                     ));
@@ -185,7 +186,7 @@ public class FullLevel1 extends Level {
                     trigger1Entity.remove(() -> entitiesToRemove.add(trigger1Entity));
                     trigger1Entity.getTile().removeTag("trigger");
                     // Default solution and its action
-                })}, new Solution("", () -> {
+                })}, new Solution("", (s) -> {
             gui.removeComponent();
             paused = false;
         })
@@ -263,7 +264,6 @@ public class FullLevel1 extends Level {
                 camera,
                 entities,
                 sceneLight,
-                player,
                 map
         );
         gui.render();
@@ -271,7 +271,7 @@ public class FullLevel1 extends Level {
 
     @Override
     public void terminate() {
-        gui.terminate();
-        soundManager.cleanup();
+        //gui.terminate(); DO NOT TERMINATE
+        soundManager.terminate();
     }
 }

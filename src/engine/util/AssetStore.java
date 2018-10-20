@@ -106,6 +106,7 @@ public class AssetStore {
         try {
             mesh = PLYLoader.loadMesh(filePath);
         } catch (Exception e) {
+            System.err.println("Failed to load: " + filePath);
             e.printStackTrace();
             return null;
         }
@@ -132,9 +133,11 @@ public class AssetStore {
             return new LinearAnimator(animation, true, true);
         } else if (name.equals("indicatorMovement")) {
             return new TrigonometricAnimator(animation, true, true);
-        } else if (name.equals("indicatorRemove")) {
-            return new LinearAnimator(animation, false, false);
         } else if (name.equals("linear1sec")) {
+            return new LinearAnimator(animation, false, true);
+        } else if (name.equals("rotatingLock")) {
+            return new TrigonometricAnimator(animation, false, true);
+        } else if (name.equals("flyingLock")) {
             return new LinearAnimator(animation, false, true);
         }
 
@@ -169,18 +172,11 @@ public class AssetStore {
             loadedAnimations.put(name, animation);
         } else if (name.equals("indicatorMovement")) {
             KeyFrame[] keyFrames = new KeyFrame[3];
-            keyFrames[0] = new KeyFrame(0f, 1f);
-            keyFrames[1] = new KeyFrame(1f, 2f);
-            keyFrames[2] = new KeyFrame(2f, 1f);
+            keyFrames[0] = new KeyFrame(0f, 0f);
+            keyFrames[1] = new KeyFrame(1f, 1f);
+            keyFrames[2] = new KeyFrame(2f, 0f);
 
             animation = new Animation(2f, keyFrames);
-            loadedAnimations.put(name, animation);
-        } else if (name.equals("indicatorRemove")) {
-            KeyFrame[] keyFrames = new KeyFrame[2];
-            keyFrames[0] = new KeyFrame(0f, 1f);
-            keyFrames[1] = new KeyFrame(3f, -1f);
-
-            animation = new Animation(3f, keyFrames);
             loadedAnimations.put(name, animation);
         } else if (name.equals("linear1sec")) {
             KeyFrame[] keyFrames = new KeyFrame[2];
@@ -188,6 +184,21 @@ public class AssetStore {
             keyFrames[1] = new KeyFrame(1f, 1f);
 
             animation = new Animation(1f, keyFrames);
+            loadedAnimations.put(name, animation);
+        } else if (name.equals("rotatingLock")) {
+            KeyFrame[] keyFrames = new KeyFrame[2];
+            keyFrames[0] = new KeyFrame(0f, 0f);
+            keyFrames[1] = new KeyFrame(5f, 180f);
+
+            animation = new Animation(5f, keyFrames);
+            loadedAnimations.put(name, animation);
+        } else if (name.equals("flyingLock")) {
+            KeyFrame[] keyFrames = new KeyFrame[3];
+            keyFrames[0] = new KeyFrame(0f, 0f);
+            keyFrames[1] = new KeyFrame(1f, 0f);
+            keyFrames[2] = new KeyFrame(6f, 5f);
+
+            animation = new Animation(6f, keyFrames);
             loadedAnimations.put(name, animation);
         }
 

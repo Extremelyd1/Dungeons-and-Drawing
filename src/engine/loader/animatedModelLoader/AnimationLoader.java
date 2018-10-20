@@ -111,5 +111,4 @@ public class AnimationLoader {
             return new JointTransform(rotation);
         }
     }
-
 }

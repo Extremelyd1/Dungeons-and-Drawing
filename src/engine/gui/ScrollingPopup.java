@@ -2,6 +2,7 @@ package engine.gui;
 
 import engine.MouseInput;
 import engine.animation.Animator;
+import engine.input.KeyBinding;
 import engine.util.AssetStore;
 import game.action.Action;
 
@@ -57,7 +58,7 @@ public class ScrollingPopup extends Popup {
             setComponentHeight(Math.max(textHeight + 70, POPUP_MINIMUM_HEIGHT));
         }
 
-        if (mouse.isLeftButtonPressed() && action != null) {
+        if (KeyBinding.isLeftMousePressed() && action != null) {
             action.execute();
         }
 

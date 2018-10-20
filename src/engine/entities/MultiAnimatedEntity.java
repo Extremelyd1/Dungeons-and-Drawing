@@ -18,4 +18,8 @@ public abstract class MultiAnimatedEntity extends Entity {
         this.animators = animators;
     }
 
+    public MultiAnimatedEntity(Mesh mesh, Vector3f position, Vector3f rotation, Vector3f scale, Animator[] animators) {
+        super(mesh, position, rotation, scale);
+        this.animators = animators;
+    }
 }

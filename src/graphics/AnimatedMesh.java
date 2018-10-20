@@ -48,13 +48,7 @@ import static org.lwjgl.opengl.GL30.*;
  *
  * @author Cas Wognum (TU/e, 1012585)
  */
-public class AnimatedMesh {
-
-    private final int vaoId; // Vertex Array Object (VAO)
-    private final List<Integer> vboIdList;
-    private final int vertexCount; // Amount of vertices we are rendering
-    private Material material;
-    private boolean isStatic = true;
+public class AnimatedMesh extends Mesh {
 
     /**
      * Construct a new mesh using PLY data.
@@ -62,6 +56,7 @@ public class AnimatedMesh {
      * @param meshData Data coming from a .dae file
      */
     public AnimatedMesh(MeshData meshData) {
+        super(meshData);
         List<Buffer> buffers = new ArrayList<>();
 
         try {
@@ -74,10 +69,10 @@ public class AnimatedMesh {
 
             // Create buffers
             buffers.add(createVBO(meshData.getVertices(), 0, 3));
-            buffers.add(createVBO(meshData.getColors(), 1, 3));
-            buffers.add(createVBO(meshData.getNormals(), 2, 3));
-            buffers.add(createIntVBO(meshData.getJointIds(), 3, 3));
-            buffers.add(createVBO(meshData.getVertexWeights(), 4, 3));
+            buffers.add(createVBO(meshData.getColors(), 2, 3));
+            buffers.add(createVBO(meshData.getNormals(), 3, 3));
+            buffers.add(createIntVBO(meshData.getJointIds(), 4, 3));
+            buffers.add(createVBO(meshData.getVertexWeights(), 5, 3));
             buffers.add(createVBO(meshData.getIndices()));
 
             // Bind the VAO
@@ -87,25 +82,6 @@ public class AnimatedMesh {
             // Remove off-heap memory since the garbage collector won't clean it up
             buffers.forEach(MemoryUtil::memFree);
         }
-    }
-
-    /**
-     * Creates a buffer object to transfer data to the GPU
-     *
-     * @param data  data to transfer
-     * @param index index of the VBO
-     * @param size  size of each attribute (so vec3f has size 3)
-     * @return handler for the FloatBuffer
-     */
-    private FloatBuffer createVBO(float[] data, int index, int size) {
-        int vboId = glGenBuffers();
-        vboIdList.add(vboId);
-        FloatBuffer buffer = MemoryUtil.memAllocFloat(data.length);
-        buffer.put(data).flip();
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-        glVertexAttribPointer(index, size, GL_FLOAT, false, 0, 0);
-        return buffer;
     }
 
     /**
@@ -128,40 +104,16 @@ public class AnimatedMesh {
     }
 
     /**
-     * Creates a buffer object to transfer data to the GPU
-     *
-     * @param data data to transfer
-     * @return handler for the IntBuffer
-     */
-    private IntBuffer createVBO(int[] data) {
-        int vboId = glGenBuffers();
-        vboIdList.add(vboId);
-        IntBuffer buffer = MemoryUtil.memAllocInt(data.length);
-        buffer.put(data).flip();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-        return buffer;
-    }
-
-    public Material getMaterial() {
-        return material;
-    }
-
-    public void setMaterial(Material material) {
-        this.material = material;
-    }
-
-    /**
      * Renders the mesh
      */
     public void initRender() {
         // Draw the mesh
         glBindVertexArray(getVaoId());
         glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
         glEnableVertexAttribArray(3);
         glEnableVertexAttribArray(4);
+        glEnableVertexAttribArray(5);
     }
 
     public void render() {
@@ -175,89 +127,11 @@ public class AnimatedMesh {
     public void endRender() {
         // Restore state
         glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
         glDisableVertexAttribArray(3);
         glDisableVertexAttribArray(4);
+        glDisableVertexAttribArray(5);
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-
-    /**
-     * Return the 'name' or identifier of the Vertex Array Object
-     *
-     * @return {@code vaoId}
-     */
-    public int getVaoId() {
-        return vaoId;
-    }
-
-    /**
-     * Return the amount of vertices in the mesh
-     *
-     * @return {@code vertexcount}
-     */
-    public int getVertexCount() {
-        return vertexCount;
-    }
-
-    /**
-     * Free up the resources
-     */
-    public void terminate() {
-        glDisableVertexAttribArray(0);
-
-        // Delete the VBOs
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        for (int vboId : vboIdList) {
-            glDeleteBuffers(vboId);
-        }
-
-        // Delete the texture
-        Texture texture = material.getTexture();
-        if (texture != null) {
-            texture.cleanup();
-        }
-
-        // Delete the VAO
-        glBindVertexArray(0);
-        glDeleteVertexArrays(vaoId);
-    }
-
-    public void deleteBuffers() {
-        glDisableVertexAttribArray(0);
-
-        // Delete the VBOs
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        for (int vboId : vboIdList) {
-            glDeleteBuffers(vboId);
-        }
-
-        // Delete the VAO
-        glBindVertexArray(0);
-        glDeleteVertexArrays(vaoId);
-    }
-
-    public boolean isStatic() {
-        return isStatic;
-    }
-
-    public void setIsStatic(boolean isStatic) {
-        this.isStatic = isStatic;
-    }
-
-    /**
-     * Needed for the level editor
-     */
-    private String name;
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 }

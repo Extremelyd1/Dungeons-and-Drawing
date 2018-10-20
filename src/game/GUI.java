@@ -19,11 +19,6 @@ public class GUI {
      * Can only be one component
      */
     private GUIComponent component;
-    private NanoVG nano;
-
-    public GUI() {
-
-    }
 
     /**
      * Gets the GUIComponent
@@ -60,7 +55,6 @@ public class GUI {
      * Initialises nano vg
      */
     public void initialize() {
-        nano = NanoVG.getInstance();
         mouse.init();
     }
 
@@ -82,6 +76,8 @@ public class GUI {
         if (component == null) {
             return;
         }
+        NanoVG nano = NanoVG.getInstance();
+
         nano.createFrame();
 
         component.render();
@@ -93,6 +89,6 @@ public class GUI {
      * Free resources
      */
     public void terminate() {
-        nano.terminateNanoVG();
+        NanoVG.getInstance().terminateNanoVG();
     }
 }

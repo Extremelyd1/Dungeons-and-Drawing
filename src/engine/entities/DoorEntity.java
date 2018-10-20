@@ -1,6 +1,5 @@
 package engine.entities;
 
-import engine.animation.Animation;
 import engine.util.AssetStore;
 import game.map.tile.Tile;
 import graphics.Mesh;
@@ -10,6 +9,7 @@ public class DoorEntity extends AnimatedEntity {
 
     private final Tile tile;
     private final boolean invertedRotation;
+    private final float startRotation;
 
     private boolean started = false;
     private boolean ended = false;
@@ -22,10 +22,22 @@ public class DoorEntity extends AnimatedEntity {
         this(mesh, position, rotation, scale, tile, false);
     }
 
+    public DoorEntity(Mesh mesh, Vector3f position, Vector3f rotation, Vector3f scale, Tile tile) {
+        this(mesh, position, rotation, scale, tile, false);
+    }
+
     public DoorEntity(Mesh mesh, Vector3f position, Vector3f rotation, float scale, Tile tile, boolean invertedRotation) {
         super(mesh, position, rotation, scale, AssetStore.getAnimator("door"));
         this.tile = tile;
         this.invertedRotation = invertedRotation;
+        this.startRotation = rotation.y;
+    }
+
+    public DoorEntity(Mesh mesh, Vector3f position, Vector3f rotation, Vector3f scale, Tile tile, boolean invertedRotation) {
+        super(mesh, position, rotation, scale, AssetStore.getAnimator("door"));
+        this.tile = tile;
+        this.invertedRotation = invertedRotation;
+        this.startRotation = rotation.y;
     }
 
     public void open() {
@@ -41,9 +53,11 @@ public class DoorEntity extends AnimatedEntity {
             return;
         }
         float value = animator.update(delta);
-        rotation.y = value * (invertedRotation ? 1 : -1);
+        rotation.y = startRotation + value * (invertedRotation ? 1 : -1);
         if (animator.hasEnded()) {
-            tile.setSolid(false);
+            if (tile != null) {
+                tile.setSolid(false);
+            }
             ended = true;
         }
     }

@@ -1,6 +1,7 @@
 package engine.gui;
 
 import engine.MouseInput;
+import engine.input.KeyBinding;
 import game.action.Action;
 import org.joml.Vector2f;
 
@@ -86,7 +87,7 @@ public class Popup extends GUIComponent {
             setComponentHeight(Math.max(textHeight + 70, POPUP_MINIMUM_HEIGHT));
         }
 
-        if (mouse.isLeftButtonPressed() && action != null) {
+        if (KeyBinding.isLeftMousePressed() && action != null) {
             action.execute();
         }
 

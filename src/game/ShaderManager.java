@@ -27,7 +27,6 @@ public class ShaderManager {
     private Shader depthShaderCube;
     private Shader depthShader;
     private Shader hdrShader;
-    private Shader animatedModelShader;
 
     /**
      * Initialize the main shader for the scene
@@ -56,9 +55,17 @@ public class ShaderManager {
         // Shadow mapping related uniforms
         sceneShader.createUniform("viewPos");
         sceneShader.createUniform("model");
-        //sceneShader.createUniform("view");
-        //sceneShader.createUniform("projection");
         sceneShader.createUniform("projectionViewModel");
+
+        // Mode switching
+        sceneShader.createUniform("mode");
+
+        // Mode 0 (Snake morphing)
+        sceneShader.createUniform("step");
+        sceneShader.createUniform("headPos");
+
+        // Mode 1 (Player animation)
+        sceneShader.createUniform("jointTransforms");
 
         GameWindow.getGameWindow().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
@@ -79,6 +86,14 @@ public class ShaderManager {
         depthShaderCube.createUniform("shadowMatrice");
         depthShaderCube.createUniform("lightPos");
         depthShaderCube.createUniform("far_plane");
+        // Mode switching
+        depthShaderCube.createUniform("mode");
+        // Mode 0 (Snake morphing)
+        depthShaderCube.createUniform("step");
+        depthShaderCube.createUniform("headPos");
+        // Mode 1 (Player animation)
+        depthShaderCube.createUniform("jointTransforms");
+
         // Create Depth Shader
         depthShader = new Shader();
         depthShader.createVertexShader(Utilities.loadResource("/shaders/depth_vertex.vs"));
@@ -87,6 +102,13 @@ public class ShaderManager {
         // Create Depth Shader variables
         depthShader.createUniform("lightSpaceMatrix");
         depthShader.createUniform("modelMatrix");
+        // Mode switching
+        depthShader.createUniform("mode");
+        // Mode 0 (Snake morphing)
+        depthShader.createUniform("step");
+        depthShader.createUniform("headPos");
+        // Mode 1 (Player animation)
+        depthShader.createUniform("jointTransforms");
     }
 
     /**
@@ -99,15 +121,6 @@ public class ShaderManager {
         hdrShader.link();
         // Create HDR Shader Variables
         hdrShader.createUniform("hdrTexture");
-    }
-
-    public void setupAnimatedModelShader() throws Exception {
-        animatedModelShader = new Shader();
-        animatedModelShader.createVertexShader(Utilities.loadResource("/shaders/animated_entity_vertex.vs"));
-        animatedModelShader.createFragmentShader(Utilities.loadResource("/shaders/animated_entity_fragment.fs"));
-        animatedModelShader.link();
-        animatedModelShader.createUniform("projectionViewMatrix");
-        animatedModelShader.createUniform("jointTransforms");
     }
 
     //
@@ -201,6 +214,18 @@ public class ShaderManager {
             glBindTexture(GL_TEXTURE_2D, sceneLight.directionalLight.getDynamicShadowMap().getDepthMap());
         }
     }
+    public void setSceneShaderMode0(float step, Vector3f headPos){
+        sceneShader.setUniform("mode", 0);
+        sceneShader.setUniform("step", step);
+        sceneShader.setUniform("headPos", headPos);
+    }
+    public void setSceneShaderMode1(Matrix4f[] jointTransforms) {
+        sceneShader.setUniform("mode", 1);
+        sceneShader.setUniform("jointTransforms", jointTransforms, jointTransforms.length);
+    }
+    public void setSceneShaderModeDefault(){
+        sceneShader.setUniform("mode", 99);
+    }
     public void unbindSceneShader(){
         glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -218,6 +243,14 @@ public class ShaderManager {
     }
     public void updateDepthShader(Matrix4f model) {
         depthShader.setUniform("modelMatrix", model);
+    }
+    public void setDepthShaderMode0(float step, Vector3f headPos){
+        depthShader.setUniform("mode", 0);
+        depthShader.setUniform("step", step);
+        depthShader.setUniform("headPos", headPos);
+    }
+    public void setDepthShaderModeDefault(){
+        depthShader.setUniform("mode", 99);
     }
     public void unbindDepthMapShader(){
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -238,6 +271,18 @@ public class ShaderManager {
     public void updateDepthCubeMapShader(Matrix4f model) {
         depthShaderCube.setUniform("modelMatrix", model);
     }
+    public void setDepthShaderCubeMode0(float step, Vector3f headPos){
+        depthShaderCube.setUniform("mode", 0);
+        depthShaderCube.setUniform("step", step);
+        depthShaderCube.setUniform("headPos", headPos);
+    }
+    public void setDepthShaderCubeMode1(Matrix4f[] jointTransforms) {
+        depthShaderCube.setUniform("mode", 1);
+        depthShaderCube.setUniform("jointTransforms", jointTransforms, jointTransforms.length);
+    }
+    public void setDepthShaderCubeModeDefault(){
+        depthShaderCube.setUniform("mode", 99);
+    }
     public void unbindDepthCubeMapShader(){
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         depthShaderCube.unbind();
@@ -256,19 +301,6 @@ public class ShaderManager {
     }
     public void unbindHDRShader(){
         hdrShader.unbind();
-    }
-
-    public void bindAnimatedModelShader() {
-        animatedModelShader.bind();
-    }
-    public void initializeAnimatedModelShader(Matrix4f model, Matrix4f projectionAndView, Matrix4f[] jointTransforms) {
-        Matrix4f projectionViewMatrix = new Matrix4f(projectionAndView);
-        projectionViewMatrix.mul(model);
-        animatedModelShader.setUniform("projectionViewMatrix", projectionViewMatrix);
-        animatedModelShader.setUniform("jointTransforms", jointTransforms, jointTransforms.length);
-    }
-    public void unbindAnimatedModelShader() {
-        animatedModelShader.unbind();
     }
 
     //
