@@ -108,7 +108,7 @@ public class NeuralNetwork {
             }
         }
 
-        return setBest == null ? globalBest.getKey() : setBest.getKey();
+        return (setBest == null ? globalBest.getKey() : setBest.getKey()).replace("_", " ");
     }
 
     /**
