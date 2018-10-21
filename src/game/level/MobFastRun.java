@@ -13,6 +13,7 @@ import engine.gui.PuzzleGUI;
 import engine.gui.ScrollingPopup;
 import engine.input.KeyBinding;
 import engine.lights.AmbientLight;
+import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
@@ -90,6 +91,15 @@ public class MobFastRun extends Level {
         // Setup Map Lights
         sceneLight = new SceneLight();
         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f, 0.2f, 0.2f));
+
+        sceneLight.directionalLight = new DirectionalLight(
+                new Vector3f(0.0f, 7.0f, 0.0f),       // position
+                new Vector3f(0.8f, 0.8f, 0.8f),     // color
+                new Vector3f(0.0f, 1.0f, 0.4f),     // direction
+                0.15f,                                // intensity
+                new Vector2f(1.0f, 10.0f),             // near-far plane
+                false);
+
         for (int i = 0; i < 10; i++) {
             sceneLight.pointLights.add(new PointLight(
                     new Vector3f(1f, 1f, 1f),
@@ -156,14 +166,13 @@ public class MobFastRun extends Level {
         shovelRockPuzzle = new Puzzle(
                 "To move the rock out of the way you use a:",
                 // Possible guesses
-                new String[]{"key", "shovel", "canon"},
+                new String[]{"shovel"},
                 // Solutions and their corresponding actions
-                new Solution[]{new Solution("key", (s) -> {
+                new Solution[]{new Solution("shovel", (s) -> {
                     gui.setComponent(new ScrollingPopup("Your shovel moves the rock out of the way however it snaps making a loud noise", () ->
-                            paused = false
-                    ));
-                    gui.setComponent(new ScrollingPopup("I hear a hissing noise in the distance... I better hurry up...", () ->
-                            paused = false
+                            gui.setComponent(new ScrollingPopup("I hear a hissing noise in the distance... I better hurry up...", () ->
+                                    paused = false
+                            ))
                     ));
                     // Remove the arc and replace the entire row with boulders to block the mob path
                     tiles[28][12] = new Tile(new Vector2i(28, 12), new Vector3f(tiles[28][12].getRotation()), AssetStore.getTileMesh("stone_floor"), true);
@@ -197,16 +206,16 @@ public class MobFastRun extends Level {
         leftCratePuzzle = new Puzzle(
                 "To open the crate you use a:",
                 // Possible guesses
-                new String[]{"key", "axe", "crowbar"},
+                new String[]{"axe", "saw"},
                 // Solutions and their corresponding actions
-                new Solution[]{new Solution("key", (s) -> {
+                new Solution[]{new Solution("axe", (s) -> {
                     if (toolUsed == 1) {
-                        gui.setComponent(new ScrollingPopup("Your key is broken. You miserably fail to open the crate with it", () ->
+                        gui.setComponent(new ScrollingPopup("Your axe is broken. You miserably fail to open the crate with it", () ->
                                 paused = false
                         ));
                         return;         // Axe already used
                     } else if (toolUsed == 0) {
-                        gui.setComponent(new ScrollingPopup("As you crack open the crate the crowbar suddenly snaps.", () ->
+                        gui.setComponent(new ScrollingPopup("As you slice open the crate the crowbar suddenly snaps.", () ->
                                 gui.setComponent(new ScrollingPopup("Guess I won't be able to use this anymore. Hope I won't need it again.", () ->
                                         gui.setComponent(new ScrollingPopup("At least it opened the box though and you find a mysterious artifact", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
@@ -217,7 +226,7 @@ public class MobFastRun extends Level {
                         ));
                         toolUsed = 1;
                     } else {
-                        gui.setComponent(new ScrollingPopup("You manage to crack open the crate and find another mysterious artifact. ", () ->
+                        gui.setComponent(new ScrollingPopup("You manage to slice open the crate and find another mysterious artifact. ", () ->
                                 gui.setComponent(new ScrollingPopup("Yes! This completes the other half I found earlier! ", () ->
                                         gui.setComponent(new ScrollingPopup("Wonder what I could do with this butterfly looking object...", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
@@ -236,14 +245,14 @@ public class MobFastRun extends Level {
                     tiles[Math.round(entities.get(1).getPosition().x)][Math.round(entities.get(1).getPosition().z)].removeTag("trigger2");
                     entities.remove(leftCrateQuestionMark);
                 }),
-                new Solution("hat", (s) -> {
+                new Solution("saw", (s) -> {
                     if (toolUsed == 2) {
-                        gui.setComponent(new ScrollingPopup("Your hat is broken. You miserably fail to open the crate with it", () ->
+                        gui.setComponent(new ScrollingPopup("Your saw is broken. You miserably fail to open the crate with it", () ->
                                 paused = false
                         ));
                         return;         // Axe already used
                     } else if (toolUsed == 0) {
-                        gui.setComponent(new ScrollingPopup("As you slice open the crate the axe head suddenly flies off.", () ->
+                        gui.setComponent(new ScrollingPopup("As you saw open the crate the axe head suddenly flies off.", () ->
                                 gui.setComponent(new ScrollingPopup("Guess I won't be able to use this anymore. Hope I won't need it again.", () ->
                                         gui.setComponent(new ScrollingPopup("At least it opened the box though and you find a mysterious artifact", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
@@ -254,7 +263,7 @@ public class MobFastRun extends Level {
                         ));
                         toolUsed = 2;
                     } else {
-                        gui.setComponent(new ScrollingPopup("You manage to crack open the crate and find another mysterious artifact. ", () ->
+                        gui.setComponent(new ScrollingPopup("You manage to saw open the crate and find another mysterious artifact. ", () ->
                                 gui.setComponent(new ScrollingPopup("Yes! This completes the other half I found earlier! ", () ->
                                         gui.setComponent(new ScrollingPopup("Wonder what I could do with this butterfly looking object...", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
@@ -286,16 +295,16 @@ public class MobFastRun extends Level {
         rightCratePuzzle = new Puzzle(
                 "To open the crate you use a:",
                 // Possible guesses
-                new String[]{"key", "hat", "axe", "crowbar"},
+                new String[]{"axe", "saw"},
                 // Solutions and their corresponding actions
-                new Solution[]{new Solution("key", (s) -> {
+                new Solution[]{new Solution("axe", (s) -> {
                     if (toolUsed == 1) {
-                        gui.setComponent(new ScrollingPopup("Your key is broken. You miserably fail to open the crate with it", () ->
+                        gui.setComponent(new ScrollingPopup("Your axe is broken. You miserably fail to open the crate with it", () ->
                                 paused = false
                         ));
                         return;         // Axe already used
                     } else if (toolUsed == 0) {
-                        gui.setComponent(new ScrollingPopup("As you crack open the crate the crowbar suddenly snaps.", () ->
+                        gui.setComponent(new ScrollingPopup("As you slice open the crate the axe head suddenly flies off.", () ->
                                 gui.setComponent(new ScrollingPopup("Guess I won't be able to use this anymore. Hope I won't need it again.", () ->
                                         gui.setComponent(new ScrollingPopup("At least it opened the box though and you find a mysterious artifact", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
@@ -306,7 +315,7 @@ public class MobFastRun extends Level {
                         ));
                         toolUsed = 1;
                     } else {
-                        gui.setComponent(new ScrollingPopup("You manage to crack open the crate and find another mysterious artifact. ", () ->
+                        gui.setComponent(new ScrollingPopup("You manage to slice open the crate and find another mysterious artifact. ", () ->
                                 gui.setComponent(new ScrollingPopup("Yes! This completes the other half I found earlier! ", () ->
                                         gui.setComponent(new ScrollingPopup("Wonder what I could do with this butterfly looking object...", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
@@ -325,16 +334,16 @@ public class MobFastRun extends Level {
                     tiles[Math.round(entities.get(2).getPosition().x)][Math.round(entities.get(2).getPosition().z)].removeTag("trigger3");
                     entities.remove(rightCrateQuestionMark);
                 }),
-                new Solution("hat", (s) -> {
+                new Solution("saw", (s) -> {
                     if (toolUsed == 2) {
-                        gui.setComponent(new ScrollingPopup("Your hat is broken. You miserably fail to open the crate with it", () ->
+                        gui.setComponent(new ScrollingPopup("Your saw is broken. You miserably fail to open the crate with it", () ->
                                 paused = false
                         ));
                         return;         // Axe already used
                     } else if (toolUsed == 0) {
-                        gui.setComponent(new ScrollingPopup("As you slice open the crate the axe head suddenly flies off.", () ->
+                        gui.setComponent(new ScrollingPopup("As you saw through the crate the handle suddenly breaks apart", () ->
                                 gui.setComponent(new ScrollingPopup("Guess I won't be able to use this anymore. Hope I won't need it again.", () ->
-                                        gui.setComponent(new ScrollingPopup("At least it opened the box though and you find a mysterious artifact", () ->
+                                        gui.setComponent(new ScrollingPopup("At least it opened the crate though and you find a mysterious artifact", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
                                                         paused = false
                                                 ))
@@ -343,7 +352,7 @@ public class MobFastRun extends Level {
                         ));
                         toolUsed = 2;
                     } else {
-                        gui.setComponent(new ScrollingPopup("You manage to crack open the crate and find another mysterious artifact. ", () ->
+                        gui.setComponent(new ScrollingPopup("You manage to saw open the crate and find another mysterious artifact. ", () ->
                                 gui.setComponent(new ScrollingPopup("Yes! This completes the other half I found earlier! ", () ->
                                         gui.setComponent(new ScrollingPopup("Wonder what I could do with this butterfly looking object...", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
@@ -378,13 +387,20 @@ public class MobFastRun extends Level {
                 new String[]{"key", "butterfly"},
                 // Solutions and their corresponding actions
                 new Solution[]{new Solution("key", (s) -> {
+                    gui.setComponent(new ScrollingPopup("I need some kind of weird object to open this door", () ->
+                            gui.setComponent(new ScrollingPopup("Perhaps I can find it somewhere around here...", () ->
+                                    paused = false
+                            ))
+                    ));
+                }),
+                new Solution("butterfly", (s) -> {
                     if (toolUsed == 3) {
                         mainDoor.open();
-                        gui.setComponent(new ScrollingPopup("The door opens.... Hurry up already before that snake catches up to me!", () ->
+                        gui.setComponent(new ScrollingPopup("The door opens.... Hurry up already before that snake catches up!", () ->
                                 paused = false
                         ));
                     } else {
-                        gui.setComponent(new ScrollingPopup("I need some kind of weird object to open this door", () ->
+                        gui.setComponent(new ScrollingPopup("Not sure what I can do with a butterfly...", () ->
                                 paused = false
                         ));
                     }
@@ -413,7 +429,7 @@ public class MobFastRun extends Level {
         if (!paused) {
             camera.update();
             player.update(interval);
-            //sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
+            sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
 
             for (Entity entity : entities) {
                 entity.update(interval);

@@ -117,9 +117,9 @@ public class MobEscape extends Level {
         arcCollapsePuzzle = new Puzzle(
                 "To collapse the arc you draw:",
                 // Possible guesses
-                new String[]{"key", "cactus", "hat"},
+                new String[]{"cannon"},
                 // Solutions and their corresponding actions
-                new Solution[]{new Solution("key", (s) -> {
+                new Solution[]{new Solution("cannon", (s) -> {
                     gui.setComponent(new ScrollingPopup("You hear a loud bang!", () ->
                             paused = false
                     ));
