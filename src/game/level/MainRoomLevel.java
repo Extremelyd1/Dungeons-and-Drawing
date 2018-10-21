@@ -296,13 +296,13 @@ public class MainRoomLevel extends Level {
             entities.add(redGem);
         }
         if (level2Completed) {
-            entities.add(yellowGem);
+            entities.add(blueGem);
         }
         if (level3Completed) {
             entities.add(greenGem);
         }
         if (level4Completed) {
-            entities.add(blueGem);
+            entities.add(yellowGem);
         }
     }
 
@@ -347,7 +347,7 @@ public class MainRoomLevel extends Level {
                     levelController.switchToLevel(3);
                 }
                 if (currentPlayerTile.hasTag("entrance_level_2")) {
-                    // TODO: Switch to level
+                    levelController.switchToLevel(5);
                 }
                 if (currentPlayerTile.hasTag("entrance_level_3")) {
                     levelController.switchToLevel(4);

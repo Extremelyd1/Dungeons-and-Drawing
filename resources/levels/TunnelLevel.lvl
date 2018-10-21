@@ -12,7 +12,7 @@ air 0 1
 corner_wall 0 1
 stone_floor 0 0 skeleton
 lantern_on_floor 0 0 lantern_floor
-stone_floor 0 0 trigger:text1
+stone_floor 0 0
 stone_floor 0 0
 crate 0 1
 three_crates_normal 0 1
@@ -37,7 +37,7 @@ stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0 trigger:puzzle_ghost
 stone_floor 0 0 spawnghost
-ladder_up 0 0 exit:trigger
+ladder_up 0 0 ladder:trigger
 corner_wall 0 1
 corner_wall 0 1
 stone_floor 0 0
@@ -73,7 +73,7 @@ air 0 1
 air 0 1
 air 0 1
 corner_wall 0 1
-stone_floor 0 0
+stone_floor 0 0 trigger:text1
 corner_wall 0 1
 air 0 1
 air 0 1

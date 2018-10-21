@@ -330,7 +330,7 @@ stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0 spawn
+ladder_up 0 0 spawn:trigger:ladder
 corner_wall 0 1
 air 0 1
 air 0 1

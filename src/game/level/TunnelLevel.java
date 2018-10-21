@@ -137,6 +137,9 @@ public class TunnelLevel extends Level {
              gui.setComponent(new ScrollingPopup("As you enter the room you see a lot of skeletons laying on the ground, " +
                      "this place looks dangerous!", () -> {
                  gui.setComponent(new ScrollingPopup("In the corner of the room you see a precious gem, maybe you should pick it up?", () -> {
+                     gui.removeComponent();
+                     textIndicator.remove(() -> entitiesToRemove.add(textIndicator));
+                     map.getTile("text1").removeTag("trigger");
                      paused = false;
                  }));
              }));
@@ -168,7 +171,7 @@ public class TunnelLevel extends Level {
          Entity puzzleGhost = new Entity(
                  ghostMesh,
                  new Vector3f(puzzleGhostPos.x, 2f, puzzleGhostPos.y),
-                 new Vector3f(0f, 90f, 0f)
+                 new Vector3f(0f, 0f, 0f)
          );
          Tile ghostTile = map.getTile("spawnghost");
          ghostTile.setSolid(true);
@@ -204,7 +207,7 @@ public class TunnelLevel extends Level {
 
         // Lighting
          sceneLight = new SceneLight();
-         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.5f));
+         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
          sceneLight.directionalLight = new DirectionalLight(
                  new Vector3f(0.0f, 7.0f, 0.0f),       // position
                  new Vector3f(0.2f, 0.4f, 0.8f),       // color
@@ -278,10 +281,6 @@ public class TunnelLevel extends Level {
                 gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
             }
             if (KeyBinding.isInteractPressed()) {
-                if (currentPlayerTile.hasTag("text1")) {
-                    gui.setComponent(text1);
-                    paused = true;
-                }
                 if (currentPlayerTile.hasTag("puzzle_ghost")) {
                     gui.setComponent(puzzleText);
                     paused = true;
@@ -291,9 +290,16 @@ public class TunnelLevel extends Level {
                     levelController.setGemFound(LevelController.GEM.BLUE);
                     paused = true;
                 }
+                if (currentPlayerTile.hasTag("ladder")) {
+                    levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_2);
+                }
             }
             if (currentPlayerTile.hasTag("exit")) {
-                levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_1); // TODO: change to correct level
+                levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_2); // TODO: change to correct level
+            }
+            if (currentPlayerTile.hasTag("text1")) {
+                gui.setComponent(text1);
+                paused = true;
             }
         } else if (gui.hasComponent()) {
             gui.removeComponent();

@@ -51,7 +51,7 @@ public class PrisonEscapeLevel extends Level{
     /**
      * Texts in the level
      */
-    private ScrollingPopup text1, hintText1, hintText2, hintText3;
+    private ScrollingPopup riddleText, text1;
     /**
      * Puzzles in the level
      */
@@ -64,10 +64,7 @@ public class PrisonEscapeLevel extends Level{
 
     private SimpleMob[] mob;
     private int spawnedMobs = 0;
-    /**
-     * @TODO: spawn wall beds and skeletons in cell when opened
-     * @TODO: have story and questions riddle
-     */
+
     public PrisonEscapeLevel(LevelController levelController) {
         super(levelController);
     }
@@ -155,6 +152,18 @@ public class PrisonEscapeLevel extends Level{
                 pencilMesh,
                 new Vector3f(puzzleTile6.getPosition().x, 1f, puzzleTile6.getPosition().y),
                 puzzleTile5
+        );
+        Tile riddleTile = map.getTile("riddle_text");
+        IndicatorEntity riddleIndicator = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(riddleTile.getPosition().x, 1f, riddleTile.getPosition().y),
+                riddleTile
+        );
+        Tile textTile = map.getTile("text1");
+        IndicatorEntity textIndicator = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(textTile.getPosition().x, 1f, textTile.getPosition().y),
+                textTile
         );
         // Spawn wall
         Tile wall = map.getTile("cracked_wall");
@@ -418,11 +427,14 @@ public class PrisonEscapeLevel extends Level{
                 }),
                 30
         );
+        // Text
+        riddleText = new ScrollingPopup("PLACEHOLDER", () -> {});
 
+        text1 = new ScrollingPopup("PLACEHOLDER", () -> {});
 
         // Set up ambient light
         sceneLight = new SceneLight();
-        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.5f));
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f));
         sceneLight.directionalLight = new DirectionalLight(
                 new Vector3f(0.0f, 7.0f, 0.0f),       // position
                 new Vector3f(0.2f, 0.4f, 0.8f),       // color
@@ -479,7 +491,8 @@ public class PrisonEscapeLevel extends Level{
                 door2, puzzle1Indicator2,
                 door3, puzzle1Indicator3,
                 door4, puzzle1Indicator4,
-                door5, puzzle1Indicator5
+                door5, puzzle1Indicator5,
+                textIndicator, riddleIndicator
         ));
     }
 
@@ -535,9 +548,18 @@ public class PrisonEscapeLevel extends Level{
                     gui.setComponent(new PuzzleGUI(wallPuzzle));
                     paused = true;
                 }
+                if (currentPlayerTile.hasTag("ladder")) {
+                    levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_2);
+                }
+                if (currentPlayerTile.hasTag("riddle_text")) {
+
+                }
+                if (currentPlayerTile.hasTag("text1")) {
+
+                }
             }
             if (currentPlayerTile.hasTag("enter_tunnel")) {
-                levelController.switchToLevel(0); //TODO: change to correct level index
+                levelController.next();
             }
         } else if (gui.hasComponent()) {
             gui.removeComponent();
@@ -571,7 +593,7 @@ public class PrisonEscapeLevel extends Level{
             mobMesh.setMaterial(new Material(0.0f));
             mobMesh.setIsStatic(false);
             mob[spawnedMobs] = new SimpleMob(mobMesh, map);
-            mob[spawnedMobs].setScale(0.08f);
+            mob[spawnedMobs].setScale(1f);
             mob[spawnedMobs].setPosition( map.getTile(tag).getPosition().x,
                     map.getTile(tag).getPosition().y, 0f);
             mob[spawnedMobs].setSpeed(1f);
