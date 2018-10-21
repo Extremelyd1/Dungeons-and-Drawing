@@ -65,7 +65,6 @@ public class PrisonEscapeLevel extends Level{
     private SimpleMob[] mob;
     private int spawnedMobs = 0;
     /**
-     * @TODO: spawn wall and cracked wall
      * @TODO: spawn wall beds and skeletons in cell when opened
      * @TODO: have story and questions riddle
      */
@@ -330,6 +329,7 @@ public class PrisonEscapeLevel extends Level{
                                 door4Right.setSolid(false);
                                 // Spawn mob
                                 spawnMob("ghost4spawn");
+                                spawnInterior("interior4");
                                 // Remove indicators
                                 puzzle1Indicator4.remove(() -> entitiesToRemove.add(puzzle1Indicator4));
                                 // Remove triggers
@@ -364,7 +364,7 @@ public class PrisonEscapeLevel extends Level{
                                     Mesh crackedWall = PLYLoader.loadMesh("/models/tiles/crate.ply");
                                     crackedWall.setMaterial(new Material(0f));
                                     crackedWall.setIsStatic(false);
-                                    wall.setMesh(crackedWall);//@TODO: replace with cracked wall
+                                    wall.setMesh(crackedWall);//TODO: replace with cracked model
                                 } catch (Exception e){}
                                 entities.add(puzzle1Indicator6);
                                 // Remove indicators
@@ -537,7 +537,7 @@ public class PrisonEscapeLevel extends Level{
                 }
             }
             if (currentPlayerTile.hasTag("enter_tunnel")) {
-                // TODO: Move player to next level
+                levelController.switchToLevel(0); //TODO: change to correct level index
             }
         } else if (gui.hasComponent()) {
             gui.removeComponent();
@@ -580,5 +580,11 @@ public class PrisonEscapeLevel extends Level{
             entities.add(mob[spawnedMobs]);
             spawnedMobs++;
         } catch(Exception e) {}
+    }
+
+    private void spawnInterior(String tag) {
+        map.getTiles(tag).forEach(t -> {
+            // TODO: spawn all the interior stuff.
+        });
     }
 }

@@ -148,7 +148,7 @@ public class TunnelLevel extends Level {
                  gui.setComponent(new ScrollingPopup("I tried to escape, and was so close!", () -> {
                      gui.setComponent(new ScrollingPopup("So now I have resorted to playing riddles with" +
                              " the occasional adventurer that passes through!", () -> {
-                         gui.setComponent(new ScrollingPopup("TODO: write a riddle", () -> {
+                         gui.setComponent(new ScrollingPopup("I have a face but no eyes, hands but no arms. What am I?", () -> {
                              gui.setComponent(new PuzzleGUI(ghostPuzzle));
                          }));
                      }));
@@ -293,7 +293,7 @@ public class TunnelLevel extends Level {
                 }
             }
             if (currentPlayerTile.hasTag("exit")) {
-                // TODO: move player to main room
+                levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_1); // TODO: change to correct level
             }
         } else if (gui.hasComponent()) {
             gui.removeComponent();

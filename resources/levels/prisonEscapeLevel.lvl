@@ -26,27 +26,27 @@ stone_floor 0 0 cracked_wall:enter_tunnel:trigger
 corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
-stone_floor 0 0 bed
+stone_floor 0 0 interior1:bed
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0 lantern_crate
 corner_wall 0 1
-stone_floor 0 0 bed
+stone_floor 0 0 interior2:bed
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 corner_wall 0 1
-stone_floor 0 0 bed
+stone_floor 0 0 interior3:bed
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 corner_wall 0 1
-stone_floor 0 0 bed
+stone_floor 0 0 interior4:bed
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 corner_wall 0 1
-stone_floor 0 0 bed
+stone_floor 0 0 interior5:bed
 stone_floor 0 0
 stone_floor 0 0 trigger:wall_puzzle
 stone_floor 0 0 lantern_crate
