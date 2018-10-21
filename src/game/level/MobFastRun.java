@@ -502,7 +502,7 @@ public class MobFastRun extends Level {
 
             // Check end of level
             if (Math.round(player.getPosition().x) == 23 && Math.round(player.getPosition().z) == 36) {
-                levelController.next();
+                levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_4);
             }
         }
 
