@@ -344,13 +344,13 @@ public class MainRoomLevel extends Level {
                     paused = true;
                 }
                 if (currentPlayerTile.hasTag("entrance_level_1")) {
-                    // TODO: Switch to level
+                    levelController.switchToLevel(3);
                 }
                 if (currentPlayerTile.hasTag("entrance_level_2")) {
                     // TODO: Switch to level
                 }
                 if (currentPlayerTile.hasTag("entrance_level_3")) {
-                    levelController.switchToLevel(3);
+                    levelController.switchToLevel(4);
                 }
                 if (currentPlayerTile.hasTag("entrance_level_4")) {
                     // TODO: Switch to level
