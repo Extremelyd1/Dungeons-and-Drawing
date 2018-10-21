@@ -178,8 +178,6 @@ public class MobEscape extends Level {
         Vector2i spawn = map.getTile("spawn").getPosition();
         player.setPosition(spawn.x, 0.5f, spawn.y);
 
-        entities.add(player);
-
         // Setup camera
         camera = new FollowCamera(
                 player,
