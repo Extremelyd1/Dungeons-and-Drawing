@@ -419,7 +419,12 @@ public class MobFastRun extends Level {
                 entity.update(interval);
             }
 
-            if (mob != null) mob.update(interval);
+            if (mob != null) {
+                mob.update(interval);
+                if (mob.isCollidingWithTarget()) {
+                    levelController.restart();
+                }
+            }
 
             // Check for tiles that have a trigger
             Tile currentPlayerTile = map.getTile(
@@ -477,6 +482,11 @@ public class MobFastRun extends Level {
                 // If not on any trigger anymore, remove floating text
             }else if (gui.hasComponent()) {
                 gui.removeComponent();
+            }
+
+            // Check end of level
+            if (Math.round(player.getPosition().x) == 23 && Math.round(player.getPosition().z) == 36) {
+                levelController.next();
             }
         }
 
