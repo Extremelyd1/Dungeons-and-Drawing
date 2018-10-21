@@ -156,14 +156,11 @@ public class Transformation {
         return viewCurr.mul(modelViewMatrix);
     }
 
-    private Matrix4f updateGenericViewMatrix(Vector3f position, Vector3f rotation, Matrix4f matrix) {
-        matrix.identity();
-        // Rotation
-        matrix.rotate((float)Math.toRadians(rotation.x), new Vector3f(1, 0, 0))
-                .rotate((float)Math.toRadians(rotation.y), new Vector3f(0, 1, 0));
-        // Translation
-        matrix.translate(-position.x, -position.y, -position.z);
-        return matrix;
+    public static Matrix4f updateGenericViewMatrix(Vector3f position, Vector3f rotation, Matrix4f matrix) {
+        // First do the rotation so camera rotates over its position
+        return matrix.rotationX((float)Math.toRadians(rotation.x))
+                .rotateY((float)Math.toRadians(rotation.y))
+                .translate(-position.x, -position.y, -position.z);
     }
 
     public Matrix4f getProjectionWithDirection(Vector3f location, Vector3f lookingDirection, Matrix4f perspective, Vector3f up) {

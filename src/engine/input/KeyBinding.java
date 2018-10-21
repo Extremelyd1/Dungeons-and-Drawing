@@ -12,6 +12,8 @@ import static org.lwjgl.glfw.GLFW.*;
 public class KeyBinding {
     private static long windowHandle = GameWindow.getGameWindow().getWindowHandle();
 
+    private static boolean leftMousePressed = false;
+
     public static boolean isForwardPressed() {
         return glfwGetKey(windowHandle, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(windowHandle, GLFW_KEY_UP) == GLFW_PRESS;
     }
@@ -54,5 +56,35 @@ public class KeyBinding {
 
     public static boolean isKeyPressed(int key) {
         return glfwGetKey(windowHandle, key) == GLFW_PRESS;
+    }
+
+    public static boolean isKeyReleased(int key) {
+        return glfwGetKey(windowHandle, key) == GLFW_RELEASE;
+    }
+
+    /**
+     * Checks whether the left mouse button was pressed only once. It resets when the mouse is released again.
+     *
+     * @return
+     */
+    public static boolean isLeftMousePressed() {
+        // Check if the flag should reset
+        if (glfwGetMouseButton(windowHandle, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+            leftMousePressed = false;
+        }
+
+        // If already pressed, return false
+        if (leftMousePressed) {
+            return false;
+        }
+
+        // Check current mouse state
+        if (glfwGetMouseButton(windowHandle, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            leftMousePressed = true;
+            return true;
+        }
+
+        // Default
+        return false;
     }
 }

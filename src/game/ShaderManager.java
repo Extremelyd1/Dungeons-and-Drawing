@@ -26,6 +26,7 @@ public class ShaderManager {
     private Shader sceneShader;
     private Shader depthShaderCube;
     private Shader depthShader;
+    private Shader hdrShader;
 
     /**
      * Initialize the main shader for the scene
@@ -54,9 +55,14 @@ public class ShaderManager {
         // Shadow mapping related uniforms
         sceneShader.createUniform("viewPos");
         sceneShader.createUniform("model");
-        //sceneShader.createUniform("view");
-        //sceneShader.createUniform("projection");
         sceneShader.createUniform("projectionViewModel");
+
+        // Mode switching
+        sceneShader.createUniform("mode");
+
+        // Mode 0 (Snake morphing)
+        sceneShader.createUniform("step");
+        sceneShader.createUniform("headPos");
 
         GameWindow.getGameWindow().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
@@ -69,14 +75,20 @@ public class ShaderManager {
         // Create Depth Cube Shader
         depthShaderCube = new Shader();
         depthShaderCube.createVertexShader(Utilities.loadResource("/shaders/depth_vertex_cube.vs"));
-        depthShaderCube.createGeometryShader(Utilities.loadResource("/shaders/depth_geometry_cube.gs"));
+        //depthShaderCube.createGeometryShader(Utilities.loadResource("/shaders/depth_geometry_cube.gs"));
         depthShaderCube.createFragmentShader(Utilities.loadResource("/shaders/depth_fragment_cube.fs"));
         depthShaderCube.link();
         // Create Depth Cube Shader variables
         depthShaderCube.createUniform("modelMatrix");
-        depthShaderCube.createUniform("shadowMatrices");
+        depthShaderCube.createUniform("shadowMatrice");
         depthShaderCube.createUniform("lightPos");
         depthShaderCube.createUniform("far_plane");
+        // Mode switching
+        depthShaderCube.createUniform("mode");
+        // Mode 0 (Snake morphing)
+        depthShaderCube.createUniform("step");
+        depthShaderCube.createUniform("headPos");
+
         // Create Depth Shader
         depthShader = new Shader();
         depthShader.createVertexShader(Utilities.loadResource("/shaders/depth_vertex.vs"));
@@ -85,6 +97,23 @@ public class ShaderManager {
         // Create Depth Shader variables
         depthShader.createUniform("lightSpaceMatrix");
         depthShader.createUniform("modelMatrix");
+        // Mode switching
+        depthShader.createUniform("mode");
+        // Mode 0 (Snake morphing)
+        depthShader.createUniform("step");
+        depthShader.createUniform("headPos");
+    }
+
+    /**
+     * Initialize the HDR shader
+     */
+    public void setupHDRShader() throws Exception {
+        hdrShader = new Shader();
+        hdrShader.createVertexShader(Utilities.loadResource("/shaders/hdr.vs"));
+        hdrShader.createFragmentShader(Utilities.loadResource("/shaders/hdr.fs"));
+        hdrShader.link();
+        // Create HDR Shader Variables
+        hdrShader.createUniform("hdrTexture");
     }
 
     //
@@ -94,6 +123,7 @@ public class ShaderManager {
         sceneShader.bind();
     }
     public void initializeSceneShader(Vector3f viewPos, boolean shadowEnable, SceneLight sceneLight, float specularPower){
+        if (sceneLight == null) return;
         int numPointLights = sceneLight.pointLights != null ? sceneLight.pointLights.size() : 0;
         int numSpotLights = sceneLight.spotLights != null ? sceneLight.spotLights.size() : 0;
 
@@ -147,8 +177,13 @@ public class ShaderManager {
 
         for (int i = 0; i < numPointLights; i++) {
             // Static Shadows
-            glActiveTexture(GL_TEXTURE1 + (i * 2));
-            glBindTexture(GL_TEXTURE_CUBE_MAP, sceneLight.pointLights.get(i).getStaticShadowMap().getDepthMap());
+            if (!sceneLight.pointLights.get(i).isDynamicOnly()) {
+                glActiveTexture(GL_TEXTURE1 + (i * 2));
+                glBindTexture(GL_TEXTURE_CUBE_MAP, sceneLight.pointLights.get(i).getStaticShadowMap().getDepthMap());
+            } else {
+                glActiveTexture(GL_TEXTURE1 + (i * 2));
+                glBindTexture(GL_TEXTURE_CUBE_MAP, sceneLight.pointLights.get(i).getDynamicShadowMap().getDepthMap());
+            }
             // Dynamic Shadows
             glActiveTexture(GL_TEXTURE1 + (i * 2) + 1);
             glBindTexture(GL_TEXTURE_CUBE_MAP, sceneLight.pointLights.get(i).getDynamicShadowMap().getDepthMap());
@@ -163,12 +198,22 @@ public class ShaderManager {
         }
         if (sceneLight.directionalLight != null) {
             // Static Shadows
-            glActiveTexture(GL_TEXTURE1 + numPointLights * 2 + numSpotLights * 2);
-            glBindTexture(GL_TEXTURE_2D, sceneLight.directionalLight.getStaticShadowMap().getDepthMap());
+            if (!sceneLight.directionalLight.isDynamicOnly()) {
+                glActiveTexture(GL_TEXTURE1 + numPointLights * 2 + numSpotLights * 2);
+                glBindTexture(GL_TEXTURE_2D, sceneLight.directionalLight.getStaticShadowMap().getDepthMap());
+            }
             // Dynamic Shadows
             glActiveTexture(GL_TEXTURE1 + numPointLights * 2 + numSpotLights * 2 + 1);
             glBindTexture(GL_TEXTURE_2D, sceneLight.directionalLight.getDynamicShadowMap().getDepthMap());
         }
+    }
+    public void setSceneShaderMode0(float step, Vector3f headPos){
+        sceneShader.setUniform("mode", 0);
+        sceneShader.setUniform("step", step);
+        sceneShader.setUniform("headPos", headPos);
+    }
+    public void setSceneShaderModeDefault(){
+        sceneShader.setUniform("mode", 99);
     }
     public void unbindSceneShader(){
         glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
@@ -188,6 +233,14 @@ public class ShaderManager {
     public void updateDepthShader(Matrix4f model) {
         depthShader.setUniform("modelMatrix", model);
     }
+    public void setDepthShaderMode0(float step, Vector3f headPos){
+        depthShader.setUniform("mode", 0);
+        depthShader.setUniform("step", step);
+        depthShader.setUniform("headPos", headPos);
+    }
+    public void setDepthShaderModeDefault(){
+        depthShader.setUniform("mode", 99);
+    }
     public void unbindDepthMapShader(){
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         depthShader.unbind();
@@ -199,54 +252,40 @@ public class ShaderManager {
     public void bindDepthCubeMapShader(){
         depthShaderCube.bind();
     }
-    public void initializeDepthCubeMapShader(Transformation transformation, Vector3f position, Vector2f plane) {
-        Matrix4f shadowProj = new Matrix4f();
-        shadowProj.setPerspective((float) Math.toRadians(90), 1.0f,
-                plane.x,
-                plane.y);
-        Matrix4f views[] = new Matrix4f[6];
-
-        views[0] = transformation.getProjectionWithDirection(
-                position,
-                new Vector3f(1.0f, 0.0f, 0.0f),
-                shadowProj,
-                new Vector3f(0.0f, -1.0f, 0.0f));
-        views[1] = transformation.getProjectionWithDirection(
-                position,
-                new Vector3f(-1.0f, 0.0f, 0.0f),
-                shadowProj,
-                new Vector3f(0.0f, -1.0f, 0.0f));
-        views[2] = transformation.getProjectionWithDirection(
-                position,
-                new Vector3f(0.0f, 1.0f, 0.0f),
-                shadowProj,
-                new Vector3f(0.0f, 0.0f, 1.0f));
-        views[3] = transformation.getProjectionWithDirection(
-                position,
-                new Vector3f(0.0f, -1.0f, 0.0f),
-                shadowProj,
-                new Vector3f(0.0f, 0.0f, -1.0f));
-        views[4] = transformation.getProjectionWithDirection(
-                position,
-                new Vector3f(0.0f, 0.0f, 1.0f),
-                shadowProj,
-                new Vector3f(0.0f, -1.0f, 0.0f));
-        views[5] = transformation.getProjectionWithDirection(
-                position,
-                new Vector3f(0.0f, 0.0f, -1.0f),
-                shadowProj,
-                new Vector3f(0.0f, -1.0f, 0.0f));
-
-        depthShaderCube.setUniform("shadowMatrices", views, 6);
-        depthShaderCube.setUniform("lightPos", position);
+    public void initializeDepthCubeMapShader(Matrix4f view, Vector3f pos, Vector2f plane) {
+        depthShaderCube.setUniform("shadowMatrice", view);
+        depthShaderCube.setUniform("lightPos", pos);
         depthShaderCube.setUniform("far_plane",plane.y);
     }
     public void updateDepthCubeMapShader(Matrix4f model) {
         depthShaderCube.setUniform("modelMatrix", model);
     }
+    public void setDepthShaderCubeMode0(float step, Vector3f headPos){
+        depthShaderCube.setUniform("mode", 0);
+        depthShaderCube.setUniform("step", step);
+        depthShaderCube.setUniform("headPos", headPos);
+    }
+    public void setDepthShaderCubeModeDefault(){
+        depthShaderCube.setUniform("mode", 99);
+    }
     public void unbindDepthCubeMapShader(){
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         depthShaderCube.unbind();
+    }
+
+    //
+    // HDR Shader management Functions
+    //
+    public void bindHDRShader(){
+        hdrShader.bind();
+    }
+    public void allocateTextureUnitsToHDRShader(int texture) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        hdrShader.setUniform("hdrTexture", 0);
+    }
+    public void unbindHDRShader(){
+        hdrShader.unbind();
     }
 
     //

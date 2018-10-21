@@ -4,6 +4,7 @@ import engine.GameWindow;
 import engine.MouseInput;
 import engine.camera.AnimatedCamera;
 import engine.camera.Camera;
+import engine.camera.FreeCamera;
 import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
@@ -49,35 +50,25 @@ public class TitleScreenLevel extends Level {
         entities = new ArrayList<>();
 
         // Load map
-        map = new MapFileLoader("/level4.lvl").load();
+        map = new MapFileLoader("/levels/titlescreen.lvl").load();
 
         // Setup rendering
         renderer = new Renderer();
         renderer.init();
 
         Vector3f[] cameraPoints = new Vector3f[]{
-                new Vector3f(7, 11, 3),
-                new Vector3f(10, 11, 2),
-                new Vector3f(11, 11, 3),
-                new Vector3f(13, 11, 5),
-                new Vector3f(16, 11, 4),
-                new Vector3f(19, 11, 3),
-                new Vector3f(19, 11, 6),
-                new Vector3f(19, 11, 8),
-                new Vector3f(17, 11, 9),
-                new Vector3f(15, 11, 10),
-                new Vector3f(16, 11, 12),
-                new Vector3f(18, 11, 16),
-                new Vector3f(15, 11, 18),
-                new Vector3f(12, 11, 20),
-                new Vector3f(10, 11, 17),
-                new Vector3f(8, 11, 14),
-                new Vector3f(6, 11, 13),
-                new Vector3f(4, 11, 12),
-                new Vector3f(5, 11, 10),
-                new Vector3f(6, 11, 8),
-                new Vector3f(5, 11, 6),
-                new Vector3f(4, 11, 4),
+                new Vector3f(10, 11, 10),
+                new Vector3f(15, 11, 15),
+                new Vector3f(20, 11, 10),
+                new Vector3f(40, 11, 20),
+                new Vector3f(40, 11, 40),
+                new Vector3f(40, 11, 45),
+                new Vector3f(35, 11, 40),
+                new Vector3f(30, 11, 40),
+                new Vector3f(25, 11, 35),
+                new Vector3f(20, 11, 20),
+                new Vector3f(20, 11, 15),
+                new Vector3f(10, 11, 15)
         };
 
         // Setup camera
@@ -87,10 +78,10 @@ public class TitleScreenLevel extends Level {
         // Setup lights
         sceneLight = new SceneLight();
 
-        map.getTiles("light").forEach(
+        map.getTiles("crate_light").forEach(
                 t -> sceneLight.pointLights.add(new PointLight(
                                 new Vector3f(1f, 1f, 1f),
-                                new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
+                                new Vector3f(t.getPosition().x, 2.2f, t.getPosition().y),
                                 0.4f,
                                 new Vector2f(1f, 100f)
                         )
@@ -118,30 +109,23 @@ public class TitleScreenLevel extends Level {
 
         // Define tile and door entity
         Tile puzzle1Tile = map.getTile("door1");
-        DoorEntity puzzle1Door = new DoorEntity(
-                doorMesh,
-                new Vector3f(puzzle1Tile.getPosition().x - 0.5f, 0f, puzzle1Tile.getPosition().y),
-                new Vector3f(puzzle1Tile.getRotation()),
-                0.5f,
-                puzzle1Tile
-        );
-        entities.add(puzzle1Door);
+        map.getTiles("door").forEach(t -> {
+            boolean inverted = t.hasTag("inverted");
+            DoorEntity door = new DoorEntity(
+                    doorMesh,
+                    new Vector3f(t.getPosition().x, 0f, t.getPosition().y + 0.5f),
+                    new Vector3f(t.getRotation()),
+                    0.5f,
+                    t,
+                    inverted
+            );
+            entities.add(door);
+        });
 
-        // Load mesh for question mark
-        Mesh question_mesh = AssetStore.getMesh("entities", "question_mark");
-        question_mesh.setMaterial(new Material(0f));
-
-        // Define tile and indicator entity
-        Tile trigger1Tile = map.getTile("trigger1");
-        IndicatorEntity trigger1Entity = new IndicatorEntity(
-                question_mesh,
-                new Vector3f(trigger1Tile.getPosition().x, 1f, trigger1Tile.getPosition().y),
-                trigger1Tile
-        );
-        entities.add(trigger1Entity);
     }
 
-    public void input(MouseInput mouseinput) {}
+    public void input(MouseInput mouseinput) {
+    }
 
     @Override
     public void update(float delta, MouseInput mouseInput) {

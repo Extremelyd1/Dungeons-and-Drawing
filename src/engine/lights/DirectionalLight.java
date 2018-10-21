@@ -53,6 +53,16 @@ public class DirectionalLight {
         }
     }
 
+    public void setToDynamicOnly() {
+        staticShadowMap.cleanup();
+        staticShadowMap = null;
+    }
+
+    public boolean isDynamicOnly() {
+        if (staticShadowMap == null) return true;
+        else return false;
+    }
+
     public Vector3f getPosition() {
         return position;
     }
@@ -141,5 +151,17 @@ public class DirectionalLight {
 
     public void setShadowEnable(boolean shadowEnable) {
         this.shadowEnable = shadowEnable;
+    }
+
+    /**
+     * Cleanup memory
+     */
+    public void cleanup() {
+        if (isDynamicOnly()) {
+            dynamicShadowMap.cleanup();
+        } else {
+            staticShadowMap.cleanup();
+            dynamicShadowMap.cleanup();
+        }
     }
 }

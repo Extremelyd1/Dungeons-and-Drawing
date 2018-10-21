@@ -12,11 +12,12 @@ import engine.gui.FloatingScrollText;
 import engine.gui.PuzzleGUI;
 import engine.gui.ScrollingPopup;
 import engine.input.KeyBinding;
-import engine.lights.AmbientLight;
-import engine.lights.DirectionalLight;
-import engine.lights.PointLight;
-import engine.lights.SceneLight;
+import engine.lights.*;
 import engine.loader.PLYLoader;
+import engine.sound.SoundBuffer;
+import engine.sound.SoundListener;
+import engine.sound.SoundManager;
+import engine.sound.SoundSource;
 import engine.util.AssetStore;
 import game.GUI;
 import game.LevelController;
@@ -47,6 +48,7 @@ public class FullLevel1 extends Level {
     private List<Entity> entitiesToRemove;
     private SceneLight sceneLight;
     private GUI gui;
+    private SoundManager soundManager;
 
     private Puzzle testPuzzle;
 
@@ -93,11 +95,32 @@ public class FullLevel1 extends Level {
         // Setup lights
         sceneLight = new SceneLight();
 
+        /*sceneLight.pointLights.add(new PointLight(
+                        new Vector3f(1f, 1f, 1f),
+                        new Vector3f(player.getPosition().x, player.getPosition().y + 0.5f, player.getPosition().z),
+                        0.7f,
+                        new Vector2f(0.5f, 5f)
+                ));
+        sceneLight.pointLights.get(0).setToDynamicOnly();*/
+
+        /*Vector3f lightPosition6 = new Vector3f(2.0f, 15.0f, 2.0f);
+        float lightIntensity6 = 0.1f;
+        PointLight.Attenuation att6 = new PointLight.Attenuation(0.0f, 0.0f, 0.5f);
+        Vector3f coneDir2 = new Vector3f(-1f, -0.5f, 0);
+        float cutoff2 = (float) Math.cos(Math.toRadians(6.5f));
+        float outerCutOff2 = (float) Math.cos(Math.toRadians(11.5f));
+        SpotLight spotLight2 = new SpotLight(new Vector3f(1.0f, 1.0f, 1.0f), lightPosition6,
+                lightIntensity6, coneDir2, cutoff2, outerCutOff2, att6, new Vector2f(1.0f, 50f));
+        sceneLight.spotLights.add(spotLight2);
+        Vector3f coneDir = new Vector3f(sceneLight.spotLights.get(0).getPosition()).sub(new Vector3f(player.getPosition())).mul(-1);
+        sceneLight.spotLights.get(0).setConeDirection(coneDir);*/
+
         map.getTiles("light").forEach(
                 t -> sceneLight.pointLights.add(new PointLight(
                                 new Vector3f(1f, 1f, 1f),
                                 new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
-                                0.4f,
+                                1.6f,
+                                new PointLight.Attenuation(0.0f,0.0f,0.05f),
                                 new Vector2f(1f, 100f)
                         )
                 )
@@ -107,14 +130,14 @@ public class FullLevel1 extends Level {
                 new Vector3f(0.0f, 7.0f, 0.0f),       // position
                 new Vector3f(0.8f, 0.8f, 0.8f),     // color
                 new Vector3f(0.0f, 1.0f, 0.4f),     // direction
-                0.2f,                                // intensity
+                0.15f,                                // intensity
                 new Vector2f(1.0f, 10.0f),             // near-far plane
                 false);
 
         // Setup gui
         gui = new GUI();
         gui.initialize();
-        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f));
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
 
         // Load mesh for door
         Mesh doorMesh = AssetStore.getMesh("entities", "wooden_door");
@@ -150,7 +173,7 @@ public class FullLevel1 extends Level {
                 // Possible guesses
                 new String[]{"key", "cactus", "hat"},
                 // Solutions and their corresponding actions
-                new Solution[]{new Solution("key", () -> {
+                new Solution[]{new Solution("key", (s) -> {
                     gui.setComponent(new ScrollingPopup("Indeed! A key opens the door", () ->
                             paused = false
                     ));
@@ -158,12 +181,24 @@ public class FullLevel1 extends Level {
                     trigger1Entity.remove(() -> entitiesToRemove.add(trigger1Entity));
                     trigger1Entity.getTile().removeTag("trigger");
                     // Default solution and its action
-                })}, new Solution("", () -> {
+                })}, new Solution("", (s) -> {
             gui.removeComponent();
             paused = false;
         })
                 , 20
         );
+
+        // Sound
+        soundManager = new SoundManager();
+        soundManager.init();
+
+        SoundBuffer buffBack = new SoundBuffer("/sound/impossible.ogg");
+        soundManager.addSoundBuffer(buffBack);
+        SoundSource sourceBack = new SoundSource(true, true);
+        sourceBack.setBuffer(buffBack.getBufferId());
+        soundManager.addSoundSource("music", sourceBack);
+        soundManager.setListener(SoundListener.getSoundListener());
+        sourceBack.play();
     }
 
     @Override
@@ -178,6 +213,7 @@ public class FullLevel1 extends Level {
         if (!paused) {
             camera.update(delta);
             player.update(delta);
+            //sceneLight.pointLights.get(0).setPosition(new Vector3f(player.getPosition().x, player.getPosition().y + 0.5f, player.getPosition().z + 1.5f));
             sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
 
             for (Entity entity : entities) {
@@ -212,6 +248,9 @@ public class FullLevel1 extends Level {
         }
 
         gui.update(delta);
+
+        // Sound
+        soundManager.updateListenerPosition(camera);
     }
 
     @Override
@@ -227,6 +266,7 @@ public class FullLevel1 extends Level {
 
     @Override
     public void terminate() {
-        gui.terminate();
+        //gui.terminate(); DO NOT TERMINATE
+        soundManager.terminate();
     }
 }

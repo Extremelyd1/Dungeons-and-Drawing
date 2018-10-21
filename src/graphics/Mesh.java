@@ -290,4 +290,17 @@ public class Mesh {
     public void setIsStatic(boolean isStatic) {
         this.isStatic = isStatic;
     }
+
+    /**
+     * Needed for the level editor
+     */
+    private String name;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

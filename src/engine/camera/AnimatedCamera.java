@@ -34,8 +34,19 @@ public class AnimatedCamera extends Camera {
      * @param speed    the speed of the camera movement
      */
     public AnimatedCamera(Vector3f[] points, Vector3f rotation, float speed) {
-        super(points[0], rotation);
-        this.points = points;
+        super(new Vector3f(points[0]).add(points[1]).mul(0.5f), rotation);
+
+        this.points = new Vector3f[points.length * 2];
+
+        for (int i = 0; i < points.length; i++) {
+            int j = i - 1;
+            if (j < 0) {
+                j += points.length;
+            }
+            this.points[i * 2] = new Vector3f(points[j]).add(points[i]).mul(0.5f);
+            this.points[i * 2 + 1] = new Vector3f(points[i]);
+        }
+
         this.speed = speed;
     }
 

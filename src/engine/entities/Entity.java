@@ -48,7 +48,15 @@ public class Entity {
         this.scale = new Vector3f(scale, scale, scale);
     }
 
-    public void update(float delta) {}
+    public Entity(Mesh mesh, Vector3f position, Vector3f rotation, Vector3f scale) {
+        this.mesh = mesh;
+        this.position = position;
+        this.rotation = rotation;
+        this.scale = scale;
+    }
+
+    public void update(float delta) {
+    }
 
     public void render() {
         mesh.render();
@@ -108,5 +116,9 @@ public class Entity {
 
     public Mesh getMesh() {
         return mesh;
+    }
+
+    public void setMesh(Mesh mesh) {
+        this.mesh = mesh;
     }
 }

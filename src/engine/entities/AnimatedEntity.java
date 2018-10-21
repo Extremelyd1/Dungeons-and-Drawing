@@ -1,6 +1,5 @@
 package engine.entities;
 
-import engine.animation.Animation;
 import engine.animation.Animator;
 import graphics.Mesh;
 import org.joml.Vector3f;
@@ -18,6 +17,11 @@ public abstract class AnimatedEntity extends Entity {
     }
 
     public AnimatedEntity(Mesh mesh, Vector3f position, Vector3f rotation, float scale, Animator animator) {
+        super(mesh, position, rotation, scale);
+        this.animator = animator;
+    }
+
+    public AnimatedEntity(Mesh mesh, Vector3f position, Vector3f rotation, Vector3f scale, Animator animator) {
         super(mesh, position, rotation, scale);
         this.animator = animator;
     }
