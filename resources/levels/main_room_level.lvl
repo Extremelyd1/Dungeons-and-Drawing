@@ -229,7 +229,7 @@ corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
 stone_floor 0 0
-arc 0 0
+arc_vines 0 0
 stone_floor 0 0
 corner_wall 0 1
 air 0 1
@@ -667,7 +667,7 @@ air 0 1
 air 0 1
 corner_wall 0 1
 stone_floor 0 0
-arc 0 0
+arc_vines 0 0
 stone_floor 0 0
 corner_wall 0 1
 corner_wall 0 1
