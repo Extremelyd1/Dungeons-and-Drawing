@@ -11,6 +11,8 @@ public abstract class Animator {
     protected boolean running;
     protected float animationTime;
 
+    protected boolean halfWay;
+
     public Animator(Animation animation) {
         this(animation, true);
     }
@@ -24,6 +26,7 @@ public abstract class Animator {
         this.loop = loop;
         this.running = start;
         this.animationTime = 0;
+        this.halfWay = false;
     }
 
     /**
@@ -45,6 +48,15 @@ public abstract class Animator {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Checks whether the animation is halfway
+     *
+     * @return Whether the animation is halfway
+     */
+    public boolean isHalfway() {
+        return halfWay;
     }
 
     /**

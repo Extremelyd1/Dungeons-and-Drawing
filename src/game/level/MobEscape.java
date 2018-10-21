@@ -22,7 +22,6 @@ import game.Renderer;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
 import game.map.tile.Tile;
-import game.mobs.SimpleMob;
 import game.mobs.Snake;
 import game.puzzle.Puzzle;
 import game.puzzle.Solution;
@@ -31,9 +30,10 @@ import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import sun.security.ssl.Debug;
+import org.lwjgl.system.CallbackI;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MobEscape extends Level {
@@ -45,9 +45,17 @@ public class MobEscape extends Level {
     private SceneLight sceneLight;
     private GUI gui;
     private Puzzle arcCollapsePuzzle;
-    private Snake mob = null;
+    private Snake snake = null;
+
+    private List<Entity> entitiesToRemove;
+
+    private ScrollingPopup text1, text2, text3;
 
     private boolean paused = false;
+
+    private Mesh snakeMesh;
+
+    private boolean puzzleSolved;
 
     public MobEscape(LevelController levelController) {
         super(levelController);
@@ -55,108 +63,114 @@ public class MobEscape extends Level {
 
     /**
      * Level Infos
-     *
+     * <p>
      * Tile 27/17 arc to delete	                                                    Done
-     *
+     * <p>
      * Tile 26/17, 27/17, 28/17 to replace with boulders to  block the mob path	    Done
-     *
+     * <p>
      * Tile 27/22 end of the level                                                  Done
-     *
+     * <p>
      * Tile 14/1 mob spawn                                                          Done
-     *
+     * <p>
      * Tile 13/5, 13/4, 13/6 mob spawn trigger                                      Done
-     *
+     * <p>
      * Tile 2/5 player spawn	                                                    Done
      */
 
     @Override
     public void init() throws Exception {
-        // Load Map tiles
-        MapFileLoader mapFileLoader = new MapFileLoader("/levels/mobEscape/generatedEditorLevel_tiles.lvl");
-        map = mapFileLoader.load();
-        final Tile tiles[][] = map.getTiles();
-        tiles[26][17].getMesh().setIsStatic(false);
-        tiles[27][17].getMesh().setIsStatic(false);
-        tiles[28][17].getMesh().setIsStatic(false);
+        // Load Map
+        map = new MapFileLoader("/levels/mob_escape_level.lvl").load();
+
+        // Make sure the shadows update
+        map.getTile("stone_1").getMesh().setIsStatic(false);
+        map.getTile("arc").getMesh().setIsStatic(false);
+        map.getTile("stone_2").getMesh().setIsStatic(false);
 
         // Setup rendering
         renderer = new Renderer();
         renderer.init();
 
-        // Setup Map Lights
-        sceneLight = new SceneLight();
-        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f, 0.2f, 0.2f));
-        for (int i = 0; i < 10; i++) {
-            sceneLight.pointLights.add(new PointLight(
-                    new Vector3f(1f, 1f, 1f),
-                    new Vector3f(2, 2, 2),
-                    0.0f,
-                    new Vector2f(0.1f, 60f)
-            ));
-            sceneLight.pointLights.get(i).setAttenuation(new PointLight.Attenuation(0.0f, 0.00f,0.2f));
-        }
-        LevelEditor.loadLights("/resources/levels/mobEscape/", "generatedEditorLevel_lights.lvl", sceneLight);
+        // Set stone meshes
+        Mesh stone1Mesh = AssetStore.getTileMesh("stone_1");
+        Mesh stone2Mesh = AssetStore.getTileMesh("stone_2");
 
-        // Setup map Entities
-        entities = new ArrayList<>();
-        LevelEditor.loadEntities("/resources/levels/mobEscape", "generatedEditorLevel_entities.lvl", entities);
-        entities.get(0).getMesh().setIsStatic(false);
+        // Load mesh for question mark
+        Mesh questionMarkMesh = AssetStore.getMesh("entities", "question_mark");
+        questionMarkMesh.setMaterial(new Material(0f));
+        questionMarkMesh.setIsStatic(false);
 
-        IndicatorEntity trigger1Entity = new IndicatorEntity(
-                entities.get(0).getMesh(),
-                new Vector3f(entities.get(0).getPosition().x, 1f, entities.get(0).getPosition().z),
-                tiles[Math.round(entities.get(0).getPosition().x)][Math.round(entities.get(0).getPosition().z)]
+        // Load mesh for pencil
+        Mesh pencilMesh = AssetStore.getMesh("entities", "pencil");
+        pencilMesh.setMaterial(new Material(0f));
+        pencilMesh.setIsStatic(false);
+
+        // Get indicator tiles
+        Tile puzzle1Tile = map.getTile("puzzle_1");
+        IndicatorEntity puzzle1Inicator = new IndicatorEntity(
+                pencilMesh,
+                new Vector3f(puzzle1Tile.getPosition().x, 0.5f, puzzle1Tile.getPosition().y),
+                puzzle1Tile
         );
-        entities.set(0, trigger1Entity);
+
+        Tile text1Tile = map.getTile("text_1");
+        IndicatorEntity text1Indicator = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(text1Tile.getPosition().x, 0.5f, text1Tile.getPosition().y),
+                text1Tile
+        );
 
         // Setup gui
         gui = new GUI();
         gui.initialize();
 
         // Setup puzzle
+        puzzleSolved = false;
         arcCollapsePuzzle = new Puzzle(
                 "To collapse the arc you draw:",
                 // Possible guesses
-                new String[]{"cannon"},
+                new String[]{"key", "cactus", "hat"}, // TODO: Change values
                 // Solutions and their corresponding actions
-                new Solution[]{new Solution("cannon", (s) -> {
+                new Solution[]{new Solution("key", (s) -> { // TODO: Change the value
                     gui.setComponent(new ScrollingPopup("You hear a loud bang!", () ->
                             paused = false
                     ));
                     // Remove the arc and replace the entire row with boulders to block the mob path
-                    tiles[26][17] = new Tile(new Vector2i(26, 17), new Vector3f(tiles[26][5].getRotation()), AssetStore.getTileMesh("stone_1"), true);
-                    tiles[27][17] = new Tile(new Vector2i(27, 17), new Vector3f(tiles[27][5].getRotation()), AssetStore.getTileMesh("stone_2"), true);
-                    tiles[28][17] = new Tile(new Vector2i(28, 17), new Vector3f(tiles[28][5].getRotation()), AssetStore.getTileMesh("stone_1"), true);
-                    tiles[26][17].getMesh().setIsStatic(false);
-                    tiles[27][17].getMesh().setIsStatic(false);
-                    tiles[28][17].getMesh().setIsStatic(false);
-                    tiles[Math.round(entities.get(0).getPosition().x)][Math.round(entities.get(0).getPosition().z)].removeTag("trigger");
-                    entities.remove(0);     // Remove Question Mark
-                    Vector2i mobTile = new Vector2i(Math.round(mob.getPosition().x), Math.round(mob.getPosition().z));
-                    if (mobTile.y == 17 && mobTile.x >= 26 && mobTile.x <= 28) {
-                        entities.remove(mob);
-                        mob = null;
-                    } else {
-                        mob.setMap(map);              // Update mob map
-                        mob.followOnSightOnly(true);
-                    }
-                })}, new Solution("", (s) -> {
-            gui.removeComponent();
-            paused = false;
-        })
-                , 10
+                    map.getTile("stone_1").setMesh(stone1Mesh);
+                    map.getTile("stone_1").setSolid(true);
+                    map.getTile("arc").setMesh(stone2Mesh);
+                    map.getTile("arc").setSolid(true);
+                    map.getTile("stone_2").setMesh(stone1Mesh);
+                    map.getTile("stone_2").setSolid(true);
+                    // Remove tag
+                    puzzle1Tile.removeTag("trigger");
+                    // Remove indicator
+                    puzzle1Inicator.remove(() -> {
+                        entitiesToRemove.add(puzzle1Inicator);
+                    });
+                    puzzleSolved = true;
+                    // Remove the snake
+                    entitiesToRemove.add(snake);
+                })},
+                new Solution("", (s) -> {
+                    gui.setComponent(new ScrollingPopup("A " + s + " will probably not work. Quick, try again!", () -> {
+                        paused = false;
+                    }));
+                }),
+                10
         );
-        tiles[Math.round(entities.get(0).getPosition().x)][Math.round(entities.get(0).getPosition().z)].addTag("trigger");
 
         // Setup Player spawn
         Mesh playerMesh = PLYLoader.loadMesh("/models/basic/basic_cylinder_two_colors_1.ply");
         playerMesh.setMaterial(new Material(0.5f));
         playerMesh.setIsStatic(false);
         player = new Player(playerMesh, map);
-        player.setSpeed(5);
+        player.setSpeed(3);
         player.setScale(new Vector3f(1, 2, 1));
-        player.setPosition(2, 0.5f, 5);
-        entities.add(player);
+
+        // Get player spawn
+        Vector2i spawn = map.getTile("spawn").getPosition();
+        player.setPosition(spawn.x, 0.5f, spawn.y);
 
         // Setup camera
         camera = new FollowCamera(
@@ -165,8 +179,68 @@ public class MobEscape extends Level {
                 new Vector3f(3, 11, 3)
         );
 
-        // DEBUG
-        Debug.println("MobEscape", "Mob Escape level loaded");
+        // Load snake
+        snakeMesh = PLYLoader.loadMesh("/models/entities/snake.ply");
+        snakeMesh.setMaterial(new Material(0.0f));
+        snakeMesh.setIsStatic(false);
+
+        snake = new Snake(snakeMesh, map);
+        snake.setScale(0.08f);
+        snake.setPosition(14, 0.49f, 1);
+        snake.setSpeed(2.5f);
+        snake.setTarget(player);
+        snake.followOnSightOnly(false);
+
+        text1 = new ScrollingPopup("Welcome inside the dungeon, traveller. Please, make yourself at home.", () -> {
+            gui.setComponent(new ScrollingPopup("Please, be aware of our... pets. Some won't hurt you, but others try to chase you.", () -> {
+                gui.setComponent(new ScrollingPopup("The latter you can't fight, so you must find other ways of keeping them away.", () -> {
+                    gui.removeComponent();
+                    paused = false;
+                }));
+            }));
+        });
+
+        text2 = new ScrollingPopup("Oh no! The house snake Snaky the Snek has awoken. He doesn't like visitors that much. Quick, try to find a way of escaping.", () -> {
+            paused = false;
+        });
+
+        text3 = new ScrollingPopup("See that arc? We might be able to blow it up and stop Snaky that way...", () -> {
+            gui.setComponent(new PuzzleGUI(arcCollapsePuzzle));
+        });
+
+        // Setup Map Lights
+        sceneLight = new SceneLight();
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f, 0.2f, 0.2f));
+
+        map.getTiles("lantern").forEach(t -> {
+            sceneLight.pointLights.add(
+                    new PointLight(
+                            new Vector3f(0.968f, 0.788f, 0.390f),
+                            new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
+                            0.3f,
+                            new PointLight.Attenuation(0f, 0f, 0f),
+                            new Vector2f(0.1f, 100f)
+                    )
+            );
+        });
+        map.getTiles("lantern_crate").forEach(t -> {
+            sceneLight.pointLights.add(
+                    new PointLight(
+                            new Vector3f(0.9f, 0.3f, 0.2f),
+                            new Vector3f(t.getPosition().x, 2.5f, t.getPosition().y),
+                            0.4f,
+                            new PointLight.Attenuation(0f, 0.1f, 0f),
+                            new Vector2f(0.1f, 100f)
+                    )
+            );
+        });
+
+        entitiesToRemove = new ArrayList<>();
+        entities = new ArrayList<>(Arrays.asList(
+                player,
+                text1Indicator,
+                puzzle1Inicator
+        ));
     }
 
     @Override
@@ -178,72 +252,97 @@ public class MobEscape extends Level {
 
     @Override
     public void update(float interval, MouseInput mouseInput) {
-        if (!paused) {
-            camera.update();
-            player.update(interval);
-            //sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
+        gui.update(interval);
 
-            for (Entity entity : entities) {
-                entity.update(interval);
-            }
+        if (paused) {
+            return;
+        }
 
-            // Remove entities
-            Tile currentPlayerTile = map.getTile(
-                    Math.round(player.getPosition().x),
-                    Math.round(player.getPosition().z)
-            );
+        camera.update();
+        player.update(interval);
+        //sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
 
-            // Mob
-            if (mob == null) {
-                if (currentPlayerTile.getPosition().x == 13 &&
-                    currentPlayerTile.getPosition().y >= 4 &&
-                    currentPlayerTile.getPosition().y <= 6) {
-                    Mesh mobMesh;
-                    try {
-                        mobMesh = PLYLoader.loadMesh("/models/entities/snake.ply");
-                        mobMesh.setMaterial(new Material(0.0f));
-                        mobMesh.setIsStatic(false);
-                        mob = new Snake(mobMesh, map);
-                        mob.setScale(0.08f);
-                        mob.setPosition(14, 0.49f, 1);
-                        mob.setSpeed(2.5f);
-                        mob.setTarget(player);
-                        mob.followOnSightOnly(false);
-                        entities.add(mob);
-                        Debug.println("Mob Escape", "mob spawned");
-                    } catch (Exception e) {
-                    } // temporary
-                }
-            } else {
-                if (mob.isCollidingWithTarget()) {
+        for (Entity entity : entities) {
+            entity.update(interval);
+        }
+        entities.removeAll(entitiesToRemove);
+
+        // Remove entities
+        Tile currentPlayerTile = map.getTile(
+                Math.round(player.getPosition().x),
+                Math.round(player.getPosition().z)
+        );
+
+        if (currentPlayerTile.hasTag("mob_trigger")) {
+
+            gui.setComponent(text2);
+            paused = true;
+
+            map.getTiles("mob_trigger").forEach(t -> t.removeTag("mob_trigger"));
+            snake = new Snake(snakeMesh, map);
+            snake.setScale(0.08f);
+            Vector2i spawn = map.getTile("mob_spawn").getPosition();
+            snake.setPosition(spawn.x, 0.49f, spawn.y);
+            snake.setSpeed(2.5f);
+            snake.setTarget(player);
+            snake.followOnSightOnly(false);
+            entities.add(snake);
+
+            // Skip the update loop this time so we actually pause the loop
+            return;
+        }
+
+        // Snake
+        if (snake != null) {
+            if (snake.isCollidingWithTarget()) {
+                gui.setComponent(new ScrollingPopup("Snaky the Snek got you :c Try again.", () -> {
                     levelController.restart();
-                }
+                }));
             }
+        }
 
-            // Check for tiles that have a trigger
-            if (currentPlayerTile.hasTag("trigger")) {
-                if (!gui.hasComponent()) {
-                    // Show interact hint
-                    gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
-                    // Check the exact trigger
-                }
-                if (KeyBinding.isInteractPressed() && currentPlayerTile.hasTag("trigger")) {
-                    // Show puzzle GUI
-                    gui.setComponent(new PuzzleGUI(arcCollapsePuzzle));
-                    paused = true;
-                }
-                // If not on any trigger anymore, remove floating text
-            } else if (gui.hasComponent()) {
-                gui.removeComponent();
-            }
+        if (currentPlayerTile.hasTag("end")) {
+            if (!puzzleSolved) {
+                gui.setComponent(new ScrollingPopup("We must first get rid of the snake.", () -> {
+                    Vector2i arcPos = map.getTile("arc").getPosition();
+                    player.setPosition(arcPos.x, 0.5f, arcPos.y);
+                    paused = false;
+                }));
+                paused = true;
 
-            // Check end of level
-            if (Math.round(player.getPosition().x) == 27 && Math.round(player.getPosition().z) == 22) {
+                return;
+            } else {
                 levelController.next();
             }
         }
 
-        gui.update(interval);
+        // Check for tiles that have a trigger
+        if (currentPlayerTile.hasTag("trigger")) {
+            if (!gui.hasComponent()) {
+                // Show interact hint
+                gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
+                // Check the exact trigger
+            }
+            if (KeyBinding.isInteractPressed()) {
+                if (currentPlayerTile.hasTag("text_1")) {
+                    gui.setComponent(text1);
+                    paused = true;
+                }
+                if (currentPlayerTile.hasTag("puzzle_1")) {
+                    gui.setComponent(text3);
+                    paused = true;
+                }
+            }
+            // If not on any trigger anymore, remove floating text
+        } else if (gui.hasComponent()) {
+            gui.removeComponent();
+        }
+
+        // Check end of level
+        if (Math.round(player.getPosition().x) == 27 && Math.round(player.getPosition().z) == 22) {
+            levelController.next();
+        }
+
     }
 
     @Override
@@ -259,7 +358,7 @@ public class MobEscape extends Level {
 
     @Override
     public void terminate() {
-        mob = null;
+        snake = null;
         camera = null;
         sceneLight.cleanup();
     }

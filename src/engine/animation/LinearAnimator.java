@@ -45,6 +45,8 @@ public class LinearAnimator extends Animator {
                 this.animationTime = animation.getLength();
                 running = false;
             }
+        } else if (animationTime > animation.getLength() / 2) {
+            halfWay = true;
         }
     }
 

@@ -4,9 +4,7 @@ import engine.MouseInput;
 import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
-import engine.entities.Entity;
-import engine.entities.IndicatorEntity;
-import engine.entities.Player;
+import engine.entities.*;
 import engine.gui.FloatingScrollText;
 import engine.gui.ScrollingPopup;
 import engine.input.KeyBinding;
@@ -22,12 +20,12 @@ import game.Renderer;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
 import game.map.tile.Tile;
-import game.puzzle.Puzzle;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,26 +47,27 @@ public class MainRoomLevel extends Level {
      */
     private ScrollingPopup text1;
     /**
-     * Puzzles in the level
-     */
-    private Puzzle puzzle1;
-    /**
      * Flags that indicate whether the levels has been completed. These do NOT reset when the level reloads
      */
-    private boolean level1, level2, level3, level4;
-
+    private boolean level1Completed, level2Completed, level3Completed, level4Completed;
     /**
      * Flag whether the game is paused (because of gui)
      */
     private boolean paused;
+    /**
+     * The spawn point of the player
+     */
+    private MAIN_ROOM_SPAWN spawnPoint;
 
     public MainRoomLevel(LevelController levelController) {
         super(levelController);
 
-        this.level1 = true;
-        this.level2 = true;
-        this.level3 = true;
-        this.level4 = true;
+        this.level1Completed = false;
+        this.level2Completed = false;
+        this.level3Completed = false;
+        this.level4Completed = false;
+
+        this.spawnPoint = MAIN_ROOM_SPAWN.FROM_TUTORIAL;
     }
 
     @Override
@@ -90,14 +89,13 @@ public class MainRoomLevel extends Level {
         player.setSpeed(3f);
         player.setScale(new Vector3f(1, 2, 1));
 
-        Vector2i spawn = map.getTile("spawn").getPosition();
-        player.setPosition(spawn.x, 0.5f, spawn.y);
+        setPlayerSpawnPoint();
 
         // Setup camera
         camera = new FollowCamera(
                 player,
                 new Vector3f(75f, -10f, 0f),
-                new Vector3f(3, 11, 3)
+                new Vector3f(2, 11, 3)
         );
 
         // Load mesh for question mark
@@ -110,10 +108,47 @@ public class MainRoomLevel extends Level {
         pencilMesh.setMaterial(new Material(0f));
         pencilMesh.setIsStatic(false);
 
-        // Load mesh for door
-        Mesh doorMesh = AssetStore.getMesh("entities", "wooden_door");
-        doorMesh.setMaterial(new Material(0f));
-        doorMesh.setIsStatic(false);
+        // Load mesh for silver door and lock
+        Mesh silverDoorMesh = AssetStore.getMesh("entities", "silver_door");
+        silverDoorMesh.setMaterial(new Material(0f));
+        silverDoorMesh.setIsStatic(false);
+        Mesh silverDoorMeshMirror = AssetStore.getMesh("entities", "silver_door_mirror");
+        silverDoorMesh.setMaterial(new Material(0f));
+        silverDoorMesh.setIsStatic(false);
+        Mesh lockMesh = AssetStore.getMesh("entities", "lock");
+        lockMesh.setMaterial(new Material(0f));
+        lockMesh.setIsStatic(false);
+
+        // Setup silver door
+        map.getTile("silver_door_left").setSolid(true);
+        map.getTile("silver_door_right").setSolid(true);
+        map.getTile("silver_door_center").setSolid(true);
+
+        Tile silverDoorLeftTile = map.getTile("silver_door_left");
+        Tile silverDoorRightTile = map.getTile("silver_door_right");
+        Tile silverDoorCenterTile = map.getTile("silver_door_center");
+
+        DoorEntity silverDoorLeft = new DoorEntity(
+                silverDoorMesh,
+                new Vector3f(silverDoorLeftTile.getPosition().x, 0.5f, silverDoorLeftTile.getPosition().y - 0.42f),
+                new Vector3f(0f),
+                new Vector3f(0.6f, 0.7f, 0.55f),
+                null
+        );
+        DoorEntity silverDoorRight = new DoorEntity(
+                silverDoorMeshMirror,
+                new Vector3f(silverDoorRightTile.getPosition().x, 0.5f, silverDoorRightTile.getPosition().y + 0.42f),
+                new Vector3f(0f, 0f, 0f),
+                new Vector3f(0.6f, 0.7f, 0.55f),
+                null,
+                true
+        );
+        LockEntity lock = new LockEntity(
+                lockMesh,
+                new Vector3f(silverDoorCenterTile.getPosition().x - 0.3f, 2.5f, silverDoorCenterTile.getPosition().y),
+                new Vector3f(0f),
+                new Vector3f(1f)
+        );
 
         loadGems();
 
@@ -154,10 +189,21 @@ public class MainRoomLevel extends Level {
             sceneLight.pointLights.add(
                     new PointLight(
                             new Vector3f(0.968f, 0.788f, 0.390f),
-                            new Vector3f(t.getPosition().x, 4.5f, t.getPosition().y),
-                            0.2f,
-                            new PointLight.Attenuation(0f, 1f, 0f),
-                            new Vector2f(1f, 100f)
+                            new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
+                            0.3f,
+                            new PointLight.Attenuation(0f, 0f, 0f),
+                            new Vector2f(0.1f, 100f)
+                    )
+            );
+        });
+        map.getTiles("lantern_crate").forEach(t -> {
+            sceneLight.pointLights.add(
+                    new PointLight(
+                            new Vector3f(0.9f, 0.3f, 0.2f),
+                            new Vector3f(t.getPosition().x, 2.5f, t.getPosition().y),
+                            0.4f,
+                            new PointLight.Attenuation(0f, 0.1f, 0f),
+                            new Vector2f(0.1f, 100f)
                     )
             );
         });
@@ -170,10 +216,32 @@ public class MainRoomLevel extends Level {
         entitiesToRemove = new ArrayList<>();
         entities.addAll(Arrays.asList(
                 player,
-                textIndicator1
+                textIndicator1,
+                silverDoorLeft,
+                silverDoorRight,
+                lock
         ));
 
         paused = false;
+
+        // Only execute the following if the game has finished
+        if (isGameFinished()) {
+            Vector2i spawn = map.getTile("spawn_end").getPosition();
+            player.setPosition(spawn.x, 0.5f, spawn.y);
+
+            gui.setComponent(new ScrollingPopup("What's that... All gems are in place! What are all these moving sounds I hear?", () -> {
+                lock.halfway(() -> {
+                    silverDoorLeft.open();
+                    silverDoorRight.open();
+                    silverDoorLeftTile.setSolid(false);
+                    silverDoorCenterTile.setSolid(false);
+                    silverDoorRightTile.setSolid(false);
+                });
+                lock.remove(() -> entitiesToRemove.add(lock));
+                paused = false;
+            }));
+            paused = true;
+        }
     }
 
     private void loadGems() {
@@ -224,16 +292,16 @@ public class MainRoomLevel extends Level {
                 null
         );
 
-        if (level1) {
+        if (level1Completed) {
             entities.add(redGem);
         }
-        if (level2) {
+        if (level2Completed) {
             entities.add(yellowGem);
         }
-        if (level3) {
+        if (level3Completed) {
             entities.add(greenGem);
         }
-        if (level4) {
+        if (level4Completed) {
             entities.add(blueGem);
         }
     }
@@ -242,6 +310,11 @@ public class MainRoomLevel extends Level {
     public void input(MouseInput mouseInput) {
         if (camera instanceof FreeCamera) {
             ((FreeCamera) camera).handleInput(mouseInput);
+        }
+
+        // Hack to complete the level
+        if (KeyBinding.isKeyPressed(GLFW.GLFW_KEY_F5)) {
+            finishLevel();
         }
     }
 
@@ -270,6 +343,19 @@ public class MainRoomLevel extends Level {
                     gui.setComponent(text1);
                     paused = true;
                 }
+                if (currentPlayerTile.hasTag("entrance_level_1")) {
+                    levelController.switchToLevel(3);
+                }
+                if (currentPlayerTile.hasTag("entrance_level_2")) {
+                    // TODO: Switch to level
+                }
+                if (currentPlayerTile.hasTag("entrance_level_3")) {
+                    levelController.switchToLevel(4);
+                }
+                if (currentPlayerTile.hasTag("entrance_level_4")) {
+                    // TODO: Switch to level
+                }
+
             }
         } else if (gui.hasComponent()) {
             gui.removeComponent();
@@ -294,5 +380,85 @@ public class MainRoomLevel extends Level {
     @Override
     public void terminate() {
         sceneLight.cleanup();
+    }
+
+    public void setPlayerSpawnPoint() {
+        Vector2i spawn;
+
+        switch (spawnPoint) {
+            case FROM_TUTORIAL:
+                spawn = map.getTile("tutorial_spawn").getPosition();
+                break;
+            case FROM_LEVEL_1:
+                spawn = map.getTile("spawn_level_1").getPosition();
+                break;
+            case FROM_LEVEL_2:
+                spawn = map.getTile("spawn_level_2").getPosition();
+                break;
+            case FROM_LEVEL_3:
+                spawn = map.getTile("spawn_level_3").getPosition();
+                break;
+            case FROM_LEVEL_4:
+                spawn = map.getTile("spawn_level_4").getPosition();
+                break;
+
+            default:
+                spawn = map.getTile("tutorial_spawn").getPosition();
+        }
+
+        player.setPosition(spawn.x, 0.5f, spawn.y);
+    }
+
+    /**
+     * Sets the spawn point where the player should start when this level is loaded
+     *
+     * @param spawnPoint Spawn point
+     */
+    public void setSpawn(MAIN_ROOM_SPAWN spawnPoint) {
+        this.spawnPoint = spawnPoint;
+    }
+
+    public void setGemFound(LevelController.GEM gem) {
+        switch (gem) {
+            case RED:
+                this.level1Completed = true;
+                break;
+            case BLUE:
+                this.level2Completed = true;
+                break;
+            case GREEN:
+                this.level3Completed = true;
+                break;
+            case YELLOW:
+                this.level4Completed = true;
+                break;
+        }
+    }
+
+    /**
+     * @return True if the game is completed, false otherwise
+     */
+    private boolean isGameFinished() {
+        return level1Completed && level2Completed && level3Completed && level4Completed;
+    }
+
+    /**
+     * Hack to instantly finish the game
+     */
+    private void finishLevel() {
+        level1Completed = true;
+        level2Completed = true;
+        level3Completed = true;
+        level4Completed = true;
+
+        levelController.restart();
+    }
+
+    public enum MAIN_ROOM_SPAWN {
+        FROM_TUTORIAL,
+        FROM_LEVEL_1,
+        FROM_LEVEL_2,
+        FROM_LEVEL_3,
+        FROM_LEVEL_4
     }
 }

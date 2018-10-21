@@ -5,9 +5,12 @@ import engine.MouseInput;
 import engine.util.Timer;
 import game.NeuralNetwork;
 import game.puzzle.Puzzle;
+import game.puzzle.Solution;
 import org.joml.Vector2f;
 
 import java.awt.image.BufferedImage;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DrawingList extends Popup {
 
@@ -46,7 +49,7 @@ public class DrawingList extends Popup {
         isRunning = true;
         timeLeft = puzzle.getTime();
     }
-    
+
     @Override
     public void render() {
         super.render();
@@ -79,7 +82,13 @@ public class DrawingList extends Popup {
                 if (image == null) {
                     puzzle.getDefaultSolution().getAction().execute("bamboozled");
                 } else {
-                    String networkGuess = NeuralNetwork.getBestGuess(canvas.getImage());
+
+                    Set<String> solutions = new HashSet<>();
+                    for (Solution s : puzzle.getSolutions()) {
+                        solutions.add(s.getValue());
+                    }
+
+                    String networkGuess = NeuralNetwork.getBestGuess(canvas.getImage(), solutions);
                     puzzle.evaluate(networkGuess).execute(networkGuess);
                 }
                 isRunning = false;
