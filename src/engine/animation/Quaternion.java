@@ -44,6 +44,28 @@ public class Quaternion {
         normalize();
     }
 
+    public Quaternion(Axis axis, float degrees) {
+        switch (axis) {
+            case X:
+                this.x = (float) Math.sin(Math.toRadians(degrees) / 2);
+                this.y = 0;
+                this.z = 0;
+                break;
+            case Y:
+                this.y = (float) Math.sin(Math.toRadians(degrees) / 2);
+                this.x = 0;
+                this.z = 0;
+                break;
+            case Z:
+                this.z = (float) Math.sin(Math.toRadians(degrees) / 2);
+                this.x = 0;
+                this.y = 0;
+                break;
+        }
+        this.w = (float) Math.cos(Math.toRadians(degrees) / 2);
+        normalize();
+    }
+
     /**
      * Normalizes the quaternion.
      */
@@ -178,6 +200,12 @@ public class Quaternion {
         }
         result.normalize();
         return result;
+    }
+
+    public enum Axis {
+        X,
+        Y,
+        Z
     }
 
 }

@@ -64,8 +64,6 @@ public class Player extends LivingEntity {
     @Override
     public void update(float delta) {
 
-        animatedModel.update(delta);
-
         // Get input
         boolean forward = KeyBinding.isForwardPressed();
         boolean backward = KeyBinding.isBackwardPressed();
@@ -119,8 +117,11 @@ public class Player extends LivingEntity {
         }
 
         if (xChange == 0 && zChange == 0) {
+            animatedModel.getAnimator().update(delta * getSpeed(), true);
             return;
         }
+
+        animatedModel.getAnimator().update(delta * getSpeed() * 3, false);
 
         if (!checkCollision) {
             getPosition().add(xChange, 0, zChange);

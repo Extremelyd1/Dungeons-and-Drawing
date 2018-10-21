@@ -76,12 +76,14 @@ public class FullLevel1 extends Level {
         renderer.init();
 
         // Setup player
-        AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/color_model.dae");
+        AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/player_model.dae");
+        playerModel.getMesh().setMaterial(new Material(0));
+        playerModel.getMesh().setIsStatic(false);
         ModelAnimation playerAnimation = AnimationLoader.loadAnimation(playerModel);
         playerModel.doAnimation(playerAnimation);
         player = new Player(playerModel, map);
-        player.setSpeed(5);
-        player.setScale(new Vector3f(1, 2, 1));
+        player.setSpeed(2);
+        player.setScale(new Vector3f(0.25f));
         player.setPosition(2, 0.55f, 3);
 
         //Vector2i spawn = map.getTile("spawn").getPosition();

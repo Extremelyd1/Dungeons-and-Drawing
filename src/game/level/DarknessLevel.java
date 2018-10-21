@@ -95,7 +95,7 @@ public class DarknessLevel extends Level {
         renderer.init();
 
         // Setup player
-        AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/color_model.dae");
+        AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/player_model.dae");
         playerModel.getMesh().setMaterial(new Material(0.0f));
         playerModel.getMesh().setIsStatic(false);
         ModelAnimation playerAnimation = AnimationLoader.loadAnimation(playerModel);

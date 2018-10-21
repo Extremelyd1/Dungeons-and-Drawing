@@ -36,6 +36,9 @@ public class ModelAnimator {
 
     private ModelAnimation currentAnimation;
     private float animationTime = 0;
+    private float idleAnimationTime = 0;
+
+    private boolean idle = false;
 
     /**
      * @param entity
@@ -57,6 +60,11 @@ public class ModelAnimator {
         this.currentAnimation = animation;
     }
 
+    private void resetAnimation() {
+        animationTime = 0;
+        idleAnimationTime = 0;
+    }
+
     /**
      * This method should be called each frame to update the animation currently
      * being played. This increases the animation time (and loops it back to
@@ -64,13 +72,29 @@ public class ModelAnimator {
      * time of the animation, and then applies that pose to all the model's
      * joints by setting the joint transforms.
      */
-    public void update(float delta) {
+    public void update(float delta, boolean idle) {
         if (currentAnimation == null) {
             return;
         }
-        increaseAnimationTime(delta);
-        Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
-        applyPoseToJoints(currentPose, entity.getRootJoint(), new Matrix4f());
+        if (!this.idle && idle) {
+            // First update call of idle
+            this.idle = true;
+        }
+        if (this.idle && !idle) {
+            // First update call of not idle
+            this.idle = false;
+            resetAnimation();
+        }
+        if (!this.idle) {
+            increaseAnimationTime(delta);
+            Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
+            applyPoseToJoints(currentPose, entity.getRootJoint(), new Matrix4f());
+        }
+        if (this.idle) {
+            increaseIdleAnimationTime(delta);
+            Map<String, Matrix4f> currentPose = calculateCurrentIdleAnimationPose();
+            applyPoseToJoints(currentPose, entity.getRootJoint(), new Matrix4f());
+        }
     }
 
     /**
@@ -82,6 +106,13 @@ public class ModelAnimator {
         animationTime += delta;
         if (animationTime > currentAnimation.getLength()) {
             this.animationTime %= currentAnimation.getLength();
+        }
+    }
+
+    private void increaseIdleAnimationTime(float delta) {
+        idleAnimationTime += delta;
+        if (idleAnimationTime > 1f) {
+            idleAnimationTime = 1f;
         }
     }
 
@@ -108,6 +139,12 @@ public class ModelAnimator {
         ModelKeyFrame[] frames = getPreviousAndNextFrames();
         float progression = calculateProgression(frames[0], frames[1]);
         return interpolatePoses(frames[0], frames[1], progression);
+    }
+
+    private Map<String, Matrix4f> calculateCurrentIdleAnimationPose() {
+        ModelKeyFrame[] frames = getPreviousAndNextFrames();
+        float progression = calculateProgression(frames[0], frames[1]);
+        return interpolateIdlePoses(frames[0], frames[1], progression, idleAnimationTime);
     }
 
     /**
@@ -220,6 +257,23 @@ public class ModelAnimator {
             JointTransform previousTransform = previousFrame.getJointKeyFrames().get(jointName);
             JointTransform nextTransform = nextFrame.getJointKeyFrames().get(jointName);
             JointTransform currentTransform = JointTransform.interpolate(previousTransform, nextTransform, progression);
+            currentPose.put(jointName, currentTransform.getLocalTransform());
+        }
+        return currentPose;
+    }
+
+    private Map<String, Matrix4f> interpolateIdlePoses(ModelKeyFrame previousFrame, ModelKeyFrame nextFrame,
+                                                      float progression, float progression2) {
+        Map<String, Matrix4f> currentPose = new HashMap<>();
+        for (String jointName : previousFrame.getJointKeyFrames().keySet()) {
+            JointTransform previousTransform = previousFrame.getJointKeyFrames().get(jointName);
+            JointTransform nextTransform = nextFrame.getJointKeyFrames().get(jointName);
+            JointTransform currentTransform = JointTransform.interpolate(previousTransform, nextTransform, progression);
+
+            JointTransform idleTransform = currentAnimation.getIdleKeyFrame().getJointKeyFrames().get(jointName);
+
+            currentTransform = JointTransform.interpolate(currentTransform, idleTransform, progression2);
+
             currentPose.put(jointName, currentTransform.getLocalTransform());
         }
         return currentPose;

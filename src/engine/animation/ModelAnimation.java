@@ -13,6 +13,7 @@ public class ModelAnimation {
 
     private final float length;//in seconds
     private final ModelKeyFrame[] keyFrames;
+    private final ModelKeyFrame idleKeyFrame;
 
     /**
      * @param lengthInSeconds
@@ -21,9 +22,10 @@ public class ModelAnimation {
      *            - all the keyframes for the animation, ordered by time of
      *            appearance in the animation.
      */
-    public ModelAnimation(float lengthInSeconds, ModelKeyFrame[] frames) {
+    public ModelAnimation(float lengthInSeconds, ModelKeyFrame[] frames, ModelKeyFrame idleFrame) {
         this.keyFrames = frames;
         this.length = lengthInSeconds;
+        this.idleKeyFrame = idleFrame;
     }
 
     /**
@@ -40,6 +42,14 @@ public class ModelAnimation {
      */
     public ModelKeyFrame[] getKeyFrames() {
         return keyFrames;
+    }
+
+    /**
+     *
+     * @return The keyframe used when the player is idle
+     */
+    public ModelKeyFrame getIdleKeyFrame() {
+        return idleKeyFrame;
     }
 
 }

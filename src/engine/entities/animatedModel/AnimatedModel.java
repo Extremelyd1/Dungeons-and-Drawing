@@ -90,11 +90,10 @@ public class AnimatedModel {
     }
 
     /**
-     * Updates the animator for this entity, basically updating the animated
-     * pose of the entity. Must be called every frame.
+     * Gets the animator for this model
      */
-    public void update(float delta) {
-        animator.update(delta);
+    public ModelAnimator getAnimator() {
+        return animator;
     }
 
     /**

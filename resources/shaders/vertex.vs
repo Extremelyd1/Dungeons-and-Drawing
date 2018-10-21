@@ -44,6 +44,7 @@ void main()
         pos.x = position.x;
         pos.y = position.y;
         pos.z = position.z + offset * sin(step + len * 0.55f);
+        normal = vertexNormal;
     } else if (mode == 1) {
         vec4 totalLocalPos = vec4(0.0);
         vec4 totalNormal = vec4(0.0);
