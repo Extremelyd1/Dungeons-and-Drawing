@@ -1,24 +1,29 @@
 package game.level;
 
 import engine.MouseInput;
+import engine.animation.ModelAnimation;
 import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
-import engine.entities.Player;
+import engine.entities.animatedModel.AnimatedModel;
+import engine.entities.animatedModel.Player;
 import engine.gui.FloatingScrollText;
 import engine.gui.PuzzleGUI;
 import engine.gui.ScrollingPopup;
 import engine.input.KeyBinding;
 import engine.lights.*;
 import engine.loader.PLYLoader;
+import engine.loader.animatedModelLoader.AnimatedModelLoader;
+import engine.loader.animatedModelLoader.AnimationLoader;
 import engine.sound.SoundBuffer;
 import engine.sound.SoundListener;
 import engine.sound.SoundManager;
 import engine.sound.SoundSource;
 import engine.util.AssetStore;
+import engine.util.MyFile;
 import game.GUI;
 import game.LevelController;
 import game.Renderer;
@@ -71,13 +76,15 @@ public class FullLevel1 extends Level {
         renderer.init();
 
         // Setup player
-        Mesh playerMesh = PLYLoader.loadMesh("/models/basic/basic_cylinder_two_colors_1.ply");
-        playerMesh.setMaterial(new Material(0.5f));
-        playerMesh.setIsStatic(false);
-        player = new Player(playerMesh, map);
-        player.setSpeed(5);
-        player.setScale(new Vector3f(1, 2, 1));
-        player.setPosition(2, 0.5f, 3);
+        AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/player_model.dae");
+        playerModel.getMesh().setMaterial(new Material(0));
+        playerModel.getMesh().setIsStatic(false);
+        ModelAnimation playerAnimation = AnimationLoader.loadAnimation(playerModel);
+        playerModel.doAnimation(playerAnimation);
+        player = new Player(playerModel, map);
+        player.setSpeed(2);
+        player.setScale(new Vector3f(0.25f));
+        player.setPosition(2, 0.55f, 3);
 
         //Vector2i spawn = map.getTile("spawn").getPosition();
         //player.setPosition(spawn.x, 0.5f, spawn.y);

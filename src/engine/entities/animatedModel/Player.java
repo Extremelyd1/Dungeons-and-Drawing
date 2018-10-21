@@ -1,43 +1,59 @@
-package engine.entities;
+package engine.entities.animatedModel;
 
 import engine.GameWindow;
+import engine.entities.LivingEntity;
 import engine.input.KeyBinding;
 import engine.util.Timer;
 import game.map.Map;
+import graphics.AnimatedMesh;
 import graphics.Mesh;
+import graphics.Texture;
 import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_F6;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.glfwGetKey;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 /**
  * Player class, the controllable PC of the game
  */
 public class Player extends LivingEntity {
 
+    private AnimatedModel animatedModel;
+
     // The range of the cylindrical collision box around the player
     float collisionSize;
 
     private boolean checkCollision = true;
 
-    public Player(Mesh mesh, Map map){
-        super(mesh, map);
+    public Player(AnimatedModel model, Map map){
+        super(null, map);
+        this.animatedModel = model;
         collisionSize = 0.45f;
     }
 
-    public Player(Mesh mesh, Map map, Vector3f position, Vector3f rotation) {
-        super(mesh, map, position, rotation);
+    public Player(AnimatedModel model, Map map, Vector3f position, Vector3f rotation) {
+        super(null, map, position, rotation);
+        this.animatedModel = model;
         collisionSize = 0.45f;
     }
 
-    public Player(Mesh mesh, Map map, Vector3f position, Vector3f rotation, float speed) {
-        super(mesh, map, position, rotation, speed);
+    public Player(AnimatedModel model, Map map, Vector3f position, Vector3f rotation, float speed) {
+        super(null, map, position, rotation, speed);
+        this.animatedModel = model;
         collisionSize = 0.45f;
     }
 
-    public Player(Mesh mesh, Map map, Vector3f position, float scale) {
-        super(mesh, map, position, new Vector3f(0), scale, 1);
+    public Player(AnimatedModel model, Map map, Vector3f position, float scale) {
+        super(null, map, position, new Vector3f(0), scale, 1);
+        this.animatedModel = model;
         collisionSize = 0.45f;
     }
 
@@ -47,6 +63,7 @@ public class Player extends LivingEntity {
      */
     @Override
     public void update(float delta) {
+
         // Get input
         boolean forward = KeyBinding.isForwardPressed();
         boolean backward = KeyBinding.isBackwardPressed();
@@ -62,12 +79,12 @@ public class Player extends LivingEntity {
                 xChange = (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2));
                 zChange = (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2));
 
-                this.getRotation().set(0, 315, 0);
+                this.getRotation().set(0, 45, 0);
             } else if (right) {
                 xChange = (float) (delta * this.getSpeed() * 1 / Math.sqrt(2));
                 zChange = (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2));
 
-                this.getRotation().set(0, 45, 0);
+                this.getRotation().set(0, 315, 0);
             } else {
                 zChange = -delta * this.getSpeed();
 
@@ -78,12 +95,12 @@ public class Player extends LivingEntity {
                 xChange = (float) (-delta * this.getSpeed() * 1 / Math.sqrt(2));
                 zChange = (float) (delta * this.getSpeed() * 1 / Math.sqrt(2));
 
-                this.getRotation().set(0, 225, 0);
+                this.getRotation().set(0, 135, 0);
             } else if (right) {
                 xChange = (float) (delta * this.getSpeed() * 1 / Math.sqrt(2));
                 zChange = (float) (delta * this.getSpeed() * 1 / Math.sqrt(2));
 
-                this.getRotation().set(0, 135, 0);
+                this.getRotation().set(0, 225, 0);
             } else {
                 zChange = delta * this.getSpeed();
 
@@ -92,16 +109,19 @@ public class Player extends LivingEntity {
         } else if (left) {
             xChange = -delta * this.getSpeed();
 
-            this.getRotation().set(0,270, 0);
+            this.getRotation().set(0,90, 0);
         } else if (right) {
             xChange = delta * this.getSpeed();
 
-            this.getRotation().set(0, 90, 0);
+            this.getRotation().set(0, 270, 0);
         }
 
         if (xChange == 0 && zChange == 0) {
+            animatedModel.getAnimator().update(delta * getSpeed(), true);
             return;
         }
+
+        animatedModel.getAnimator().update(delta * getSpeed() * 3, false);
 
         if (!checkCollision) {
             getPosition().add(xChange, 0, zChange);
@@ -125,6 +145,20 @@ public class Player extends LivingEntity {
                 , newPosition.z - collisionSize, newPosition.z + collisionSize)) {
             getPosition().add(0, 0, zChange);
         }
+    }
+
+    @Override
+    public Mesh getMesh() {
+        return animatedModel.getMesh();
+    }
+
+    @Override
+    public void render() {
+        animatedModel.getMesh().render();
+    }
+
+    public AnimatedModel getAnimatedModel() {
+        return animatedModel;
     }
 
     public void toggleCollisionDetection() {

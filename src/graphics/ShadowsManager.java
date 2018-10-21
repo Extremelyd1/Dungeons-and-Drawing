@@ -2,6 +2,7 @@ package graphics;
 
 import engine.Transformation;
 import engine.entities.Entity;
+import engine.entities.animatedModel.Player;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.lights.SpotLight;
@@ -161,7 +162,9 @@ public class ShadowsManager {
                                     model = transformation.getWorldMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
                                     shaderManager.updateDepthCubeMapShader(model);
                                     if (entity instanceof Snake) {
-                                        shaderManager.setDepthShaderCubeMode0(((Snake) entity).getMorph(), new Vector3f(entity.getPosition()).add(1,0,0));
+                                        shaderManager.setDepthShaderCubeMode0(((Snake) entity).getMorph(), new Vector3f(entity.getPosition()).add(1, 0, 0));
+                                    } else if (entity instanceof Player) {
+                                        shaderManager.setDepthShaderCubeMode1(((Player) entity).getAnimatedModel().getJointTransforms());
                                     } else {
                                         shaderManager.setDepthShaderCubeModeDefault();
                                     }
