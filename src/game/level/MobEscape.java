@@ -55,7 +55,7 @@ public class MobEscape extends Level {
 
     private ScrollingPopup text1, text2, text3;
 
-    private boolean paused = false;
+    private boolean paused;
 
     private Mesh snakeMesh;
 
@@ -247,6 +247,8 @@ public class MobEscape extends Level {
                 text1Indicator,
                 puzzle1Inicator
         ));
+
+        paused = false;
     }
 
     @Override
@@ -304,6 +306,10 @@ public class MobEscape extends Level {
                 gui.setComponent(new ScrollingPopup("Snaky the Snek got you :c Try again.", () -> {
                     levelController.restart();
                 }));
+                paused = true;
+
+                // Skip the rest of the update to show the pop up
+                return;
             }
         }
 
