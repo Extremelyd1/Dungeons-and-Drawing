@@ -1,6 +1,7 @@
 package graphics;
 
 import engine.GameEntity;
+import engine.loader.animatedModelLoader.dataStructures.MeshData;
 import engine.loader.data.OBJData;
 import engine.loader.data.PLYData;
 import org.lwjgl.system.MemoryUtil;
@@ -51,11 +52,11 @@ import static org.lwjgl.opengl.GL30.*;
  */
 public class Mesh {
 
-    private final int vaoId; // Vertex Array Object (VAO)
-    private final List<Integer> vboIdList;
-    private final int vertexCount; // Amount of vertices we are rendering
-    private Material material;
-    private boolean isStatic = true;
+    protected int vaoId; // Vertex Array Object (VAO)
+    protected List<Integer> vboIdList;
+    protected int vertexCount; // Amount of vertices we are rendering
+    protected Material material;
+    protected boolean isStatic = true;
 
     /**
      * Indicates whether vertex colors have been defined
@@ -65,6 +66,10 @@ public class Mesh {
      * Indicates whether texture coordinates have been defined
      */
     private boolean hasTextureCoords;
+
+    // Only used in AnimatedMesh
+    protected Mesh(MeshData data) {
+    }
 
     /**
      * Construct a new mesh using PLY data.
@@ -144,7 +149,7 @@ public class Mesh {
      * @param size  size of each attribute (so vec3f has size 3)
      * @return handler for the FloatBuffer
      */
-    private FloatBuffer createVBO(float[] data, int index, int size) {
+    protected FloatBuffer createVBO(float[] data, int index, int size) {
         int vboId = glGenBuffers();
         vboIdList.add(vboId);
         FloatBuffer buffer = MemoryUtil.memAllocFloat(data.length);
@@ -161,7 +166,7 @@ public class Mesh {
      * @param data data to transfer
      * @return handler for the IntBuffer
      */
-    private IntBuffer createVBO(int[] data) {
+    protected IntBuffer createVBO(int[] data) {
         int vboId = glGenBuffers();
         vboIdList.add(vboId);
         IntBuffer buffer = MemoryUtil.memAllocInt(data.length);
@@ -294,7 +299,7 @@ public class Mesh {
     /**
      * Needed for the level editor
      */
-    private String name;
+    protected String name;
 
     public void setName(String name) {
         this.name = name;

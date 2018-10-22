@@ -7,7 +7,7 @@ import engine.camera.FreeCamera;
 import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
-import engine.entities.Player;
+import engine.entities.animatedModel.Player;
 import engine.lights.AmbientLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
@@ -50,7 +50,7 @@ public class AnimatedTilesLevel extends Level {
         // Setup player
         Mesh playerMesh = PLYLoader.loadMesh("/models/basic/basic_cylinder_two_colors_1.ply");
         playerMesh.setMaterial(new Material(0.5f));
-        player = new Player(playerMesh, map);
+        //player = new Player(playerMesh, map);
         Vector2i spawnLocation = map.getTile("spawn").getPosition();
         player.setPosition(new Vector3f(spawnLocation.x, 0.5f, spawnLocation.y));
         player.setSpeed(5);

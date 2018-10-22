@@ -1,19 +1,22 @@
 package game.level;
 
 import engine.MouseInput;
+import engine.animation.ModelAnimation;
 import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
-import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
-import engine.entities.Player;
+import engine.entities.animatedModel.AnimatedModel;
+import engine.entities.animatedModel.Player;
 import engine.gui.FloatingScrollText;
 import engine.gui.PuzzleGUI;
 import engine.gui.ScrollingPopup;
 import engine.input.KeyBinding;
 import engine.lights.*;
 import engine.loader.PLYLoader;
+import engine.loader.animatedModelLoader.AnimatedModelLoader;
+import engine.loader.animatedModelLoader.AnimationLoader;
 import engine.sound.SoundBuffer;
 import engine.sound.SoundListener;
 import engine.sound.SoundManager;
@@ -25,7 +28,6 @@ import game.Renderer;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
 import game.map.tile.Tile;
-import game.mobs.Snake;
 import game.puzzle.Puzzle;
 import game.puzzle.Solution;
 import graphics.Material;
@@ -92,12 +94,14 @@ public class DarknessLevel extends Level {
         renderer.init();
 
         // Setup player
-        Mesh playerMesh = PLYLoader.loadMesh("/models/basic/basic_cylinder_two_colors_1.ply");
-        playerMesh.setMaterial(new Material(0.5f));
-        playerMesh.setIsStatic(false);
-        player = new Player(playerMesh, map);
+        AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/player_model.dae");
+        playerModel.getMesh().setMaterial(new Material(0.0f));
+        playerModel.getMesh().setIsStatic(false);
+        ModelAnimation playerAnimation = AnimationLoader.loadAnimation(playerModel);
+        playerModel.doAnimation(playerAnimation);
+        player = new Player(playerModel, map);
         player.setSpeed(3f);
-        player.setScale(new Vector3f(1, 2, 1));
+        player.setScale(new Vector3f(0.25f));
 
         Vector2i spawn = map.getTile("spawn").getPosition();
         player.setPosition(spawn.x, 0.5f, spawn.y);
@@ -309,7 +313,7 @@ public class DarknessLevel extends Level {
 
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("Hm, the only way we could use a " + s.replace('_', ' ') + ", is if we light it on fire... I'm not sure if that is such a bright idea.", () -> {
+                    gui.setComponent(new ScrollingPopup("Hm, the only way we could use a " + s + ", is if we light it on fire... I'm not sure if that is such a bright idea.", () -> {
                         gui.setComponent(new PuzzleGUI(puzzle1));
                     }));
                 }),

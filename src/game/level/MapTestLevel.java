@@ -3,7 +3,7 @@ package game.level;
 import engine.MouseInput;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
-import engine.entities.Player;
+import engine.entities.animatedModel.Player;
 import engine.lights.*;
 import engine.loader.PLYLoader;
 import engine.util.ColorInterpolator;

@@ -4,6 +4,7 @@ import engine.camera.Camera;
 import engine.entities.Entity;
 import engine.GameWindow;
 import engine.Transformation;
+import engine.entities.animatedModel.Player;
 import engine.gui.NanoVG;
 import engine.lights.SceneLight;
 import game.map.Map;
@@ -192,6 +193,7 @@ public class Renderer {
                 }
             }
         }
+
         // Render Entities
         for (Entity entity : entities) {
             int frustrum = frustumIntersection.intersectAab(new Vector3f(entity.getPosition()).sub(1.0f, 1.1f, 1.0f), new Vector3f(entity.getPosition()).add(1.0f,3.0f, 1.0f));
@@ -203,6 +205,8 @@ public class Renderer {
                 // Render the mesh
                 if (entity instanceof Snake) {
                     shaderManager.setSceneShaderMode0(((Snake) entity).getMorph(), new Vector3f(entity.getPosition()).add(1,0,0));
+                } else if (entity instanceof Player) {
+                    shaderManager.setSceneShaderMode1(((Player) entity).getAnimatedModel().getJointTransforms());
                 } else {
                     shaderManager.setSceneShaderModeDefault();
                 }
