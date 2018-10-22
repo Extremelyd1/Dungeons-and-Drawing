@@ -68,10 +68,6 @@ public class PrisonEscapeLevel extends Level{
     private SimpleMob[] mob;
     private int spawnedMobs = 0;
 
-    /**
-     * TODO: reload level when caught by ghost
-     * TODO: load interior cells
-     */
     public PrisonEscapeLevel(LevelController levelController) {
         super(levelController);
     }
@@ -251,7 +247,7 @@ public class PrisonEscapeLevel extends Level{
         //Puzzles
         doorPuzzle1 = new Puzzle(
                 "This does nothing...",
-                new String[]{"key", "lightning", "mug"},
+                new String[]{"key"},
                 new Solution[]{
                         new Solution( "key", (s) -> {
                             gui.setComponent(new ScrollingPopup("The door swings open!", () -> {
@@ -273,7 +269,7 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " will solve this.", () -> {
+                    gui.setComponent(new ScrollingPopup("Stop screwing around! How will I use a " + s + " to open a door?", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
@@ -282,7 +278,7 @@ public class PrisonEscapeLevel extends Level{
         );
         doorPuzzle2 = new Puzzle(
                 "This does nothing...",
-                new String[]{"key", "lightning", "mug"},
+                new String[]{"key"},
                 new Solution[]{
                         new Solution( "key", (s) -> {
                             gui.setComponent(new ScrollingPopup("The door swings open!", () -> {
@@ -304,7 +300,7 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " will solve this.", () -> {
+                    gui.setComponent(new ScrollingPopup("Stop screwing around! How will I use a " + s + " to open a door?", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
@@ -313,7 +309,7 @@ public class PrisonEscapeLevel extends Level{
         );
         doorPuzzle3 = new Puzzle(
                 "This does nothing...",
-                new String[]{"key", "lightning", "mug"},
+                new String[]{"key"},
                 new Solution[]{
                         new Solution( "key", (s) -> {
                             gui.setComponent(new ScrollingPopup("The door swings open!", () -> {
@@ -333,7 +329,7 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " will solve this.", () -> {
+                    gui.setComponent(new ScrollingPopup("Stop screwing around! How will I use a " + s + " to open a door?", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
@@ -342,7 +338,7 @@ public class PrisonEscapeLevel extends Level{
         );
         doorPuzzle4 = new Puzzle(
                 "This does nothing...",
-                new String[]{"key", "lightning", "mug"},
+                new String[]{"key"},
                 new Solution[]{
                         new Solution( "key", (s) -> {
                             gui.setComponent(new ScrollingPopup("The door swings open!", () -> {
@@ -365,7 +361,7 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " will solve this.", () -> {
+                    gui.setComponent(new ScrollingPopup("Stop screwing around! How will I use a " + s + " to open a door?", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
@@ -374,7 +370,7 @@ public class PrisonEscapeLevel extends Level{
         );
         doorPuzzle5 = new Puzzle(
                 "This does nothing...",
-                new String[]{"key", "lightning", "mug"},
+                new String[]{"key"},
                 new Solution[]{
                         new Solution( "key", (s) -> {
                             gui.setComponent(new ScrollingPopup("The door swings open!", () -> {
@@ -402,7 +398,7 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " will solve this.", () -> {
+                    gui.setComponent(new ScrollingPopup("Stop screwing around! How will I use a " + s + " to open a door?", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
@@ -414,7 +410,7 @@ public class PrisonEscapeLevel extends Level{
                 "This does nothing...",
                 new String[]{"key", "cannon", "hammer", "mug", "lightning"},
                 new Solution[]{
-                        new Solution( "key", (s) -> { //@TODO: change to hammer
+                        new Solution( "hammer", (s) -> {
                             gui.setComponent(new ScrollingPopup("You break down the wall with the hammer!", () -> {
                                 gui.setComponent(new ScrollingPopup("There seems to be a tunnel here!", () -> {
                                     gui.removeComponent();
@@ -435,7 +431,7 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " will solve this.", () -> {
+                    gui.setComponent(new ScrollingPopup("I don't think that will work.", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
