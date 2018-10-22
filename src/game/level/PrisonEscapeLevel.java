@@ -416,7 +416,7 @@ public class PrisonEscapeLevel extends Level{
 
         wallPuzzle = new Puzzle(
                 "This does nothing...",
-                new String[]{"key", "cannon", "hammer", "mug", "lightning"},
+                new String[]{"key", "cannon", "hammer", "guitar", "lightning"},
                 new Solution[]{
                         new Solution( "hammer", (s) -> {
                             gui.setComponent(new ScrollingPopup("You break down the wall with the hammer!", () -> {
@@ -439,7 +439,7 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("I don't think that will work.", () -> {
+                    gui.setComponent(new ScrollingPopup("I don't think that using " + s + " will work.", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
