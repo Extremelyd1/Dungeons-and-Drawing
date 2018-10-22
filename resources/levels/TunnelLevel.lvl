@@ -20,7 +20,7 @@ corner_wall 0 1
 air 0 1
 air 0 1
 corner_wall 0 1
-stone_floor 0 0 gem:trigger:blue_light
+stone_floor 0 0 gem:trigger:yellow_light
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0

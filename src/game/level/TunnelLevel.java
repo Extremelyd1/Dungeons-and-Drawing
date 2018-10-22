@@ -112,13 +112,13 @@ public class TunnelLevel extends Level {
          ghostMesh.setMaterial(new Material(0f));
 
          // Load gem
-         Mesh blueGemMesh = AssetStore.getMesh("entities", "gem_yellow");
-         blueGemMesh.setMaterial(new Material(0f));
-         blueGemMesh.setIsStatic(false);
+         Mesh yellowGemMesh = AssetStore.getMesh("entities", "gem_yellow");
+         yellowGemMesh.setMaterial(new Material(0f));
+         yellowGemMesh.setIsStatic(false);
 
          Vector2i gemPosition = map.getTile("gem").getPosition();
-         IndicatorEntity blueGem = new IndicatorEntity(
-                 blueGemMesh,
+         IndicatorEntity yellowGem = new IndicatorEntity(
+                 yellowGemMesh,
                  new Vector3f(gemPosition.x, 1.5f, gemPosition.y),
                  new Vector3f(45f, 90f, 45f),
                  null
@@ -164,9 +164,9 @@ public class TunnelLevel extends Level {
              }));
          });
 
-         gemText = new ScrollingPopup("I have found a blue gem! Maybe I can find more of these!", () -> {
+         gemText = new ScrollingPopup("I have found a yellow gem! Maybe I can find more of these!", () -> {
              gui.removeComponent();
-             blueGem.remove(() -> entitiesToRemove.add(blueGem));
+             yellowGem.remove(() -> entitiesToRemove.add(yellowGem));
             map.getTile("gem").removeTag("trigger");
             paused = false;
          });
@@ -245,7 +245,7 @@ public class TunnelLevel extends Level {
                      )
              );
          });
-         map.getTiles("blue_light").forEach( t -> {
+         map.getTiles("yellow_light").forEach( t -> {
              sceneLight.pointLights.add(
                      new PointLight(
                              new Vector3f(244f, 244f, 66f),
@@ -267,7 +267,7 @@ public class TunnelLevel extends Level {
                  puzzleIndicator,
                  textIndicator,
                  puzzleGhost,
-                 blueGem
+                 yellowGem
          ));
     }
 
@@ -303,7 +303,7 @@ public class TunnelLevel extends Level {
                 }
                 if (currentPlayerTile.hasTag("gem")) {
                     gui.setComponent(gemText);
-                    levelController.setGemFound(LevelController.GEM.BLUE);
+                    levelController.setGemFound(LevelController.GEM.YELLOW);
                     paused = true;
                 }
                 if (currentPlayerTile.hasTag("ladder")) {
