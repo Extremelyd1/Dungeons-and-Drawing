@@ -261,6 +261,7 @@ public class PrisonEscapeLevel extends Level{
                                 door1Right.setSolid(false);
                                 // Spawn mob
                                 spawnMob("ghost1spawn");
+                                spawnInterior("interior1");
                                 // Remove indicators
                                 puzzle1Indicator1.remove(() -> entitiesToRemove.add(puzzle1Indicator1));
                                 // Remove triggers
@@ -292,6 +293,7 @@ public class PrisonEscapeLevel extends Level{
                                 door2Right.setSolid(false);
                                 // Spawn mob
                                 spawnMob("ghost2spawn");
+                                spawnInterior("interior2");
                                 // Remove indicators
                                 puzzle1Indicator2.remove(() -> entitiesToRemove.add(puzzle1Indicator2));
                                 // Remove triggers
@@ -321,6 +323,7 @@ public class PrisonEscapeLevel extends Level{
                                 door3.open();
                                 door3Left.setSolid(false);
                                 door3Right.setSolid(false);
+                                spawnInterior("interior3");
                                 // Remove indicators
                                 puzzle1Indicator3.remove(() -> entitiesToRemove.add(puzzle1Indicator3));
                                 // Remove triggers
@@ -383,6 +386,7 @@ public class PrisonEscapeLevel extends Level{
                                 door5Left.setSolid(false);
                                 door5Right.setSolid(false);
                                 // Spawn new puzzle and cracked wall
+                                spawnInterior("interior5");
                                 try {
                                     Mesh crackedWall = PLYLoader.loadMesh("/models/tiles/crate.ply");
                                     crackedWall.setMaterial(new Material(0f));
@@ -390,6 +394,7 @@ public class PrisonEscapeLevel extends Level{
                                     wall.setMesh(crackedWall);//TODO: replace with cracked model
                                 } catch (Exception e){}
                                 entities.add(puzzle1Indicator6);
+                                entities.add(textIndicator2);
                                 // Remove indicators
                                 puzzle1Indicator5.remove(() -> entitiesToRemove.add(puzzle1Indicator5));
                                 // Remove triggers
@@ -469,6 +474,7 @@ public class PrisonEscapeLevel extends Level{
             gui.setComponent(new ScrollingPopup("Maybe it has to do with that crack in the wall over there?", () -> {
                 gui.removeComponent();
                 textIndicator2.remove(() -> {entitiesToRemove.add(textIndicator2);});
+                textTile2.removeTag("trigger");
                 paused = false;
             }));
         });
@@ -533,8 +539,7 @@ public class PrisonEscapeLevel extends Level{
                 door3, puzzle1Indicator3,
                 door4, puzzle1Indicator4,
                 door5, puzzle1Indicator5,
-                textIndicator, riddleIndicator,
-                textIndicator2
+                textIndicator, riddleIndicator
         ));
     }
 

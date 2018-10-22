@@ -27,7 +27,7 @@ corner_wall 0 1
 corner_wall 0 1
 corner_wall 0 1
 stone_floor 0 0 interior1:bed
-stone_floor 0 0 trigger:text2
+stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0 lantern_crate
 corner_wall 0 1
@@ -54,7 +54,7 @@ corner_wall 0 1
 corner_wall 0 1
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0 ghost1spawn:skeleton
+stone_floor 0 0 ghost1spawn:interior1:skeleton
 stone_floor 0 0
 corner_wall 0 1
 stone_floor 0 0
@@ -83,7 +83,7 @@ stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 corner_wall 0 1
-stone_floor 0 0 skeleton
+stone_floor 0 0 interior2:skeleton
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -100,7 +100,7 @@ stone_floor 0 0
 corner_wall 0 1
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 trigger:text2
 stone_floor 0 0
 corner_wall 0 1
 corner_wall 0 1
