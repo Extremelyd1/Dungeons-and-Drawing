@@ -65,6 +65,9 @@ public class PrisonEscapeLevel extends Level{
     private SimpleMob[] mob;
     private int spawnedMobs = 0;
 
+    /**
+     * TODO: reload level when caught by ghost
+     */
     public PrisonEscapeLevel(LevelController levelController) {
         super(levelController);
     }
@@ -428,9 +431,24 @@ public class PrisonEscapeLevel extends Level{
                 30
         );
         // Text
-        riddleText = new ScrollingPopup("PLACEHOLDER", () -> {});
+        riddleText = new ScrollingPopup("There seems to be five cells. I need to find the escaped prisoner's" +
+                " cell. All the cells have a number, but someone forgot to put the signs up! The escapee is in prison cell" +
+                " 3, however, the cells numbers are all jumbled", () -> {
+            gui.setComponent(new ScrollingPopup("Prisoner 3 was in a cell next to prisoner 5. Prisoner 2 was in a cell" +
+                    " at the end of the hall. Prisoner 1 is in a cell neighbouring prisoner 5 and 4.", () -> {
+                gui.removeComponent();
+                paused = false;
+            }));
 
-        text1 = new ScrollingPopup("PLACEHOLDER", () -> {});
+        });
+
+        text1 = new ScrollingPopup("You have entered the dungeon!", () -> {
+            gui.setComponent(new ScrollingPopup("This is where the prisoners were locked up, one of the prisoners tried to" +
+                    " escape recently!", () -> {
+                gui.removeComponent();
+                paused = false;
+            }));
+        });
 
         // Set up ambient light
         sceneLight = new SceneLight();
@@ -552,10 +570,12 @@ public class PrisonEscapeLevel extends Level{
                     levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_2);
                 }
                 if (currentPlayerTile.hasTag("riddle_text")) {
-
+                    gui.setComponent(riddleText);
+                    paused = true;
                 }
                 if (currentPlayerTile.hasTag("text1")) {
-
+                    gui.setComponent(text1);
+                    paused = true;
                 }
             }
             if (currentPlayerTile.hasTag("enter_tunnel")) {
