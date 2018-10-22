@@ -313,7 +313,7 @@ public class DarknessLevel extends Level {
 
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("Hm, the only way we could use a " + s.replace('_', ' ') + ", is if we light it on fire... I'm not sure if that is such a bright idea.", () -> {
+                    gui.setComponent(new ScrollingPopup("Hm, the only way we could use a " + s + ", is if we light it on fire... I'm not sure if that is such a bright idea.", () -> {
                         gui.setComponent(new PuzzleGUI(puzzle1));
                     }));
                 }),
