@@ -367,8 +367,10 @@ public class DarknessLevel extends Level {
             }
         }
 
-        sceneLight.directionalLight.setIntensity(0f);
         if (lightningEnabled) {
+
+            sceneLight.directionalLight.setIntensity(0f);
+
             Random rd = new Random();
 
             if (deltaUpdates >= 50) {
@@ -434,7 +436,8 @@ public class DarknessLevel extends Level {
     public void terminate() {
         soundManager.terminate();
         sceneLight.cleanup();
-        lightningEnabled = false; 
+        lightningEnabled = false;
+        gui.terminate();
     }
 
 }
