@@ -19,9 +19,11 @@ public class GUI {
      * Can only be one component
      */
     private List<GUIComponent> components;
+    private List<GUIComponent> toRemove;
 
     public GUI() {
         this.components = new ArrayList<>();
+        this.toRemove = new ArrayList<>();
     }
 
     /**
@@ -68,7 +70,7 @@ public class GUI {
      * Old remove component method
      */
     public void removeComponent() {
-        this.components.clear();
+        this.toRemove.addAll(components);
     }
 
     /**
@@ -76,7 +78,7 @@ public class GUI {
      * @param component to remove
      */
     public void removeComponent(GUIComponent component) {
-        this.components.remove(component);
+        this.toRemove.add(component);
     }
 
     /**
@@ -91,6 +93,11 @@ public class GUI {
      */
     public void update(float delta) {
         mouse.input();
+
+        for (GUIComponent component : toRemove) {
+            components.remove(component);
+        }
+        toRemove.clear();
 
         for (GUIComponent component : components) {
             component.update(mouse, delta);
