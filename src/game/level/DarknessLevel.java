@@ -437,7 +437,6 @@ public class DarknessLevel extends Level {
         soundManager.terminate();
         sceneLight.cleanup();
         lightningEnabled = false;
-        gui.terminate();
     }
 
 }
