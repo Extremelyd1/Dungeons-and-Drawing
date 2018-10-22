@@ -219,14 +219,14 @@ stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 trigger:riddle_text
 stone_floor 0 0
 stone_floor 0 0  
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0 trigger:riddle_text
+stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
@@ -327,7 +327,7 @@ stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 trigger:text1
 stone_floor 0 0
 stone_floor 0 0 spawn
 ladder_up 0 0 trigger:ladder
@@ -352,7 +352,7 @@ corner_wall 0 1
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0 trigger:text1
+stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
