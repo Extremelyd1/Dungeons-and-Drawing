@@ -144,6 +144,7 @@ public class MobFastRun extends Level {
                 tiles[Math.round(entities.get(4).getPosition().x)][Math.round(entities.get(4).getPosition().z)]
         );
         entities.set(4, mainDoor);
+        tiles[Math.round(entities.get(4).getPosition().x)][Math.round(entities.get(4).getPosition().z)].setSolid(true);
 
         // Setup gui
         gui = new GUI();
