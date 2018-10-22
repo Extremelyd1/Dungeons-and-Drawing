@@ -1,13 +1,15 @@
 package game.level;
 
 import engine.MouseInput;
+import engine.animation.ModelAnimation;
 import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
-import engine.entities.Player;
+import engine.entities.animatedModel.AnimatedModel;
+import engine.entities.animatedModel.Player;
 import engine.gui.FloatingScrollText;
 import engine.gui.PuzzleGUI;
 import engine.gui.ScrollingPopup;
@@ -17,6 +19,8 @@ import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
+import engine.loader.animatedModelLoader.AnimatedModelLoader;
+import engine.loader.animatedModelLoader.AnimationLoader;
 import engine.util.AssetStore;
 import game.GUI;
 import game.LevelController;
@@ -146,12 +150,14 @@ public class MobFastRun extends Level {
         gui.initialize();
 
         // Setup Player spawn
-        Mesh playerMesh = PLYLoader.loadMesh("/models/basic/basic_cylinder_two_colors_1.ply");
-        playerMesh.setMaterial(new Material(0.5f));
-        playerMesh.setIsStatic(false);
-        player = new Player(playerMesh, map);
-        player.setSpeed(5);
-        player.setScale(new Vector3f(1, 2, 1));
+        AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/player_model.dae");
+        playerModel.getMesh().setMaterial(new Material(0.0f));
+        playerModel.getMesh().setIsStatic(false);
+        ModelAnimation playerAnimation = AnimationLoader.loadAnimation(playerModel);
+        playerModel.doAnimation(playerAnimation);
+        player = new Player(playerModel, map);
+        player.setSpeed(4f);
+        player.setScale(new Vector3f(0.25f));
         player.setPosition(1, 0.5f, 9);
         entities.add(player);
 
@@ -159,7 +165,7 @@ public class MobFastRun extends Level {
         camera = new FollowCamera(
                 player,
                 new Vector3f(75f, -10f, 0f),
-                new Vector3f(3, 11, 3)
+                new Vector3f(2, 11, 3)
         );
 
         // Setup Puzzles
@@ -445,7 +451,7 @@ public class MobFastRun extends Level {
     @Override
     public void update(float interval, MouseInput mouseInput) {
         if (!paused) {
-            camera.update();
+            camera.update(interval);
             player.update(interval);
             sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
 
