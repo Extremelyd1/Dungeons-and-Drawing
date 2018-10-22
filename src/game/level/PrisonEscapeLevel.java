@@ -1,13 +1,15 @@
 package game.level;
 
 import engine.MouseInput;
+import engine.animation.ModelAnimation;
 import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
-import engine.entities.Player;
+import engine.entities.animatedModel.AnimatedModel;
+import engine.entities.animatedModel.Player;
 import engine.gui.FloatingScrollText;
 import engine.gui.PuzzleGUI;
 import engine.gui.ScrollingPopup;
@@ -17,6 +19,8 @@ import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
+import engine.loader.animatedModelLoader.AnimatedModelLoader;
+import engine.loader.animatedModelLoader.AnimationLoader;
 import engine.util.AssetStore;
 import game.GUI;
 import game.LevelController;
@@ -25,7 +29,6 @@ import game.map.Map;
 import game.map.loader.MapFileLoader;
 import game.map.tile.Tile;
 import game.mobs.SimpleMob;
-import game.mobs.Snake;
 import game.puzzle.Puzzle;
 import game.puzzle.Solution;
 import graphics.Material;
@@ -85,12 +88,14 @@ public class PrisonEscapeLevel extends Level{
         renderer.init();
 
         // Setup player
-        Mesh playerMesh = PLYLoader.loadMesh("/models/basic/basic_cylinder_two_colors_1.ply");
-        playerMesh.setMaterial(new Material(0.5f));
-        playerMesh.setIsStatic(false);
-        player = new Player(playerMesh, map);
+        AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/player_model.dae");
+        playerModel.getMesh().setMaterial(new Material(0.0f));
+        playerModel.getMesh().setIsStatic(false);
+        ModelAnimation playerAnimation = AnimationLoader.loadAnimation(playerModel);
+        playerModel.doAnimation(playerAnimation);
+        player = new Player(playerModel, map);
         player.setSpeed(3f);
-        player.setScale(new Vector3f(1, 2, 1));
+        player.setScale(new Vector3f(0.25f));
 
         Vector2i spawn = map.getTile("spawn").getPosition();
         player.setPosition(spawn.x, 0.5f, spawn.y);
@@ -554,6 +559,20 @@ public class PrisonEscapeLevel extends Level{
                 Math.round(player.getPosition().z)
         );
 
+        // Mob handling
+        for (int i = 0; i < mob.length; i++) {
+            if (mob[i]!=null) {
+                if (mob[i].isCollidingWithTarget()) {
+                    gui.setComponent(new ScrollingPopup("The ghost caught you, try again!", () -> {
+                        levelController.restart();
+                    }));
+                    paused = true;
+
+                    return;
+                }
+            }
+        }
+
         if (currentPlayerTile.hasTag("trigger")) {
             if (!gui.hasComponent()) {
                 gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
@@ -649,7 +668,7 @@ public class PrisonEscapeLevel extends Level{
         map.getTiles(tag).forEach(t -> {
             try {
                 if (t.hasTag("bed")) {
-                    Mesh bedMesh = PLYLoader.loadMesh("/models/tiles/crate.ply");
+                    Mesh bedMesh = PLYLoader.loadMesh("/models/tiles/bed.ply");
                     bedMesh.setMaterial(new Material(0f));
                     t.setSolid(true);
                     t.setMesh(bedMesh);
