@@ -207,10 +207,12 @@ public class Renderer {
                     shaderManager.setSceneShaderMode0(((Snake) entity).getMorph(), new Vector3f(entity.getPosition()).add(1,0,0));
                 } else if (entity instanceof Player) {
                     shaderManager.setSceneShaderMode1(((Player) entity).getAnimatedModel().getJointTransforms());
+                    glDisable(GL_CULL_FACE);
                 } else {
                     shaderManager.setSceneShaderModeDefault();
                 }
                 mesh.render();
+                glEnable(GL_CULL_FACE);
             }
         }
         shaderManager.unbindSceneShader();

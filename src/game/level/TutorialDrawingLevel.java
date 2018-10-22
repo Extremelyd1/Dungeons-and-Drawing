@@ -99,7 +99,7 @@ public class TutorialDrawingLevel extends Level {
         camera = new FollowCamera(
                 player,
                 new Vector3f(75f, -10f, 0f),
-                new Vector3f(3, 11, 3)
+                new Vector3f(2, 11, 3)
         );
 
         // Load mesh for question mark
@@ -193,7 +193,7 @@ public class TutorialDrawingLevel extends Level {
         text3 = new ScrollingPopup("In this game you need to draw your solution to puzzles.", () -> {
             gui.setComponent(new ScrollingPopup("Use the drawing interface to draw your solution.", () -> {
                 gui.setComponent(new ScrollingPopup("You can see a list of possible options to your right and the timer in the right upper corner.", () -> {
-                    gui.setComponent(new ScrollingPopup("When the timer hits zero, you drawing will be evaluated. Or you can fast forwar dthis by pressing right mouse button", () -> {
+                    gui.setComponent(new ScrollingPopup("When the timer hits zero, you drawing will be evaluated. Or you can fast forward this by pressing the enter key.", () -> {
                         gui.setComponent(new PuzzleGUI(puzzle1));
                     }));
                 }));
@@ -362,7 +362,7 @@ public class TutorialDrawingLevel extends Level {
             gui.removeComponent();
         }
 
-        camera.update();
+        camera.update(interval);
         player.update(interval);
         sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
     }

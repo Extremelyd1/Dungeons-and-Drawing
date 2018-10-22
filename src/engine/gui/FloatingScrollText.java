@@ -1,8 +1,10 @@
 package engine.gui;
 
+import engine.GameWindow;
 import engine.MouseInput;
 import engine.animation.Animator;
 import engine.util.AssetStore;
+import org.joml.Vector2f;
 
 public class FloatingScrollText extends FloatingText {
 
@@ -25,6 +27,12 @@ public class FloatingScrollText extends FloatingText {
      * @param width width of the popup
      */
     public FloatingScrollText(float width, String text) {
+        super(width, text);
+        this.fullText = text;
+        this.animator = AssetStore.getAnimator("linear1sec");
+    }
+
+    public FloatingScrollText(float width, float yPosition, String text) {
         super(width, text);
         this.fullText = text;
         this.animator = AssetStore.getAnimator("linear1sec");

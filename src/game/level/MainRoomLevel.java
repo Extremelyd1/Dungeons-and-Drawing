@@ -342,7 +342,7 @@ public class MainRoomLevel extends Level {
         );
 
         if (currentPlayerTile.hasTag("treasure_room")) {
-            levelController.switchToLevel(5);
+            levelController.switchToLevel(7);
         }
 
         if (currentPlayerTile.hasTag("trigger")) {
@@ -364,14 +364,14 @@ public class MainRoomLevel extends Level {
                     levelController.switchToLevel(4);
                 }
                 if (currentPlayerTile.hasTag("entrance_level_4")) {
-                    // TODO: Switch to level
+                    levelController.switchToLevel(5);
                 }
             }
         } else if (gui.hasComponent()) {
             gui.removeComponent();
         }
 
-        camera.update();
+        camera.update(interval);
         player.update(interval);
         sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
     }
