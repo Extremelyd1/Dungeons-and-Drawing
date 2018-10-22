@@ -6,10 +6,7 @@ import engine.camera.Camera;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
 import engine.input.KeyBinding;
-import engine.lights.AmbientLight;
-import engine.lights.DirectionalLight;
-import engine.lights.PointLight;
-import engine.lights.SceneLight;
+import engine.lights.*;
 import game.LevelController;
 import game.Renderer;
 import game.level.Level;
@@ -46,10 +43,7 @@ public class LightValidation extends Level {
         speedx = new Vector3f(0.02f, 0, 0);
         speedz = new Vector3f(0, 0f, 0.02f);
 
-        renderer = new Renderer();
-        renderer.init();
-
-        GameWindow.getGameWindow().setClearColor(2f, 2f, 2f, 0);
+        setupRenderer();
     }
 
     @Override
@@ -75,6 +69,9 @@ public class LightValidation extends Level {
         }
         if (KeyBinding.isKeyPressed(GLFW.GLFW_KEY_6)) {
             setupLights6();
+        }
+        if (KeyBinding.isKeyPressed(GLFW.GLFW_KEY_7)) {
+            setupLights7();
         }
 
         if (KeyBinding.isInteractPressed()) {
@@ -114,9 +111,17 @@ public class LightValidation extends Level {
         }
 
         camera.update();
-        if (sceneLight.directionalLight != null) {
-            sceneLight.directionalLight.setPosition(new Vector3f(camera.getPosition()));
+    }
+
+    private void setupRenderer() {
+        renderer = new Renderer();
+        try {
+            renderer.init();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        GameWindow.getGameWindow().setClearColor(2f, 2f, 2f, 0);
     }
 
     private void setupLights1() {
@@ -194,13 +199,16 @@ public class LightValidation extends Level {
         sceneLight = new SceneLight();
 
         sceneLight.directionalLight = new DirectionalLight(
-                new Vector3f(0.0f, 7.0f, 0.0f),       // position
+                new Vector3f(3.0f, 7.0f, 3.0f),       // position
                 new Vector3f(0.2f, 0.4f, 0.8f),       // color
                 new Vector3f(0.0f, 1.0f, 0.4f),       // direction
                 1f,                                // intensity
                 new Vector2f(1.0f, 10.0f),              // near-far plane
-                true
+                false
         );
+        sceneLight.directionalLight.setOrthoProjection(-20, 20, -20, 20, new Vector2f(1.0f, 10.0f));
+
+        setupRenderer();
     }
 
     private void setupLights6() {
@@ -208,13 +216,49 @@ public class LightValidation extends Level {
         sceneLight = new SceneLight();
 
         sceneLight.directionalLight = new DirectionalLight(
-                new Vector3f(0.0f, 7.0f, 0.0f),       // position
+                new Vector3f(3.0f, 7.0f, 3.0f),       // position
                 new Vector3f(0.9f, 0.4f, 0.8f),       // color
                 new Vector3f(0.5f, 0.6f, 0.2f),       // direction
                 0.5f,                                // intensity
                 new Vector2f(1.0f, 10.0f),              // near-far plane
-                true
+                false
         );
+
+        sceneLight.directionalLight.setOrthoProjection(-20, 20, -20, 20, new Vector2f(1.0f, 10.0f));
+
+        setupRenderer();
+    }
+
+    private void setupLights7() {
+        sceneLight.cleanup();
+        sceneLight = new SceneLight();
+
+        sceneLight.spotLights.add(
+                new SpotLight(
+                        new Vector3f(1f, 1f, 1f), // Color
+                        new Vector3f(0f, 2f, 0f), // position
+                        1f,
+                        new Vector3f(1f, -0.3f, 1f),
+                        (float) Math.cos(Math.toRadians(20)),
+                        (float) Math.cos(Math.toRadians(40)),
+                        new Vector2f(0.1f, 20f),
+                        4096
+                )
+        );
+        sceneLight.spotLights.add(
+                new SpotLight(
+                        new Vector3f(1f, 1f, 1f), // Color
+                        new Vector3f(7f, 2f, 0f), // position
+                        1f,
+                        new Vector3f(-1f, -0.3f, 1f),
+                        (float) Math.cos(Math.toRadians(20)),
+                        (float) Math.cos(Math.toRadians(40)),
+                        new Vector2f(0.1f, 20f),
+                        4096
+                )
+        );
+
+        setupRenderer();
     }
 
     @Override
