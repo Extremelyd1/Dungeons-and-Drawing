@@ -26,7 +26,8 @@ public class LevelController implements IGameLogic {
                 new MobEscape(this),
                 new MainRoomLevel(this),
                 new DarknessLevel(this),
-                new MurderMysteryLevel(this)
+                new MurderMysteryLevel(this),
+                new MobFastRun(this)
         ));
         this.active = 0;
         this.timer = new Timer();
