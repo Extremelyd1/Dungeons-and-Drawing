@@ -1,11 +1,13 @@
 package game.level;
 
 import engine.MouseInput;
+import engine.animation.ModelAnimation;
 import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
-import engine.entities.Player;
+import engine.entities.animatedModel.AnimatedModel;
+import engine.entities.animatedModel.Player;
 import engine.gui.FloatingScrollText;
 import engine.gui.PuzzleGUI;
 import engine.gui.ScrollingPopup;
@@ -14,7 +16,8 @@ import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
-import engine.loader.PLYLoader;
+import engine.loader.animatedModelLoader.AnimatedModelLoader;
+import engine.loader.animatedModelLoader.AnimationLoader;
 import engine.util.AssetStore;
 import game.GUI;
 import game.LevelController;
@@ -71,12 +74,14 @@ public class TunnelLevel extends Level {
          renderer.init();
 
          // Setup player
-         Mesh playerMesh = PLYLoader.loadMesh("/models/basic/basic_cylinder_two_colors_1.ply");
-         playerMesh.setMaterial(new Material(0.5f));
-         playerMesh.setIsStatic(false);
-         player = new Player(playerMesh, map);
+         AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/player_model.dae");
+         playerModel.getMesh().setMaterial(new Material(0.0f));
+         playerModel.getMesh().setIsStatic(false);
+         ModelAnimation playerAnimation = AnimationLoader.loadAnimation(playerModel);
+         playerModel.doAnimation(playerAnimation);
+         player = new Player(playerModel, map);
          player.setSpeed(3f);
-         player.setScale(new Vector3f(1, 2, 1));
+         player.setScale(new Vector3f(0.25f));
 
          Vector2i spawn = map.getTile("spawn").getPosition();
          player.setPosition(spawn.x, 0.5f, spawn.y);
@@ -107,7 +112,7 @@ public class TunnelLevel extends Level {
          ghostMesh.setMaterial(new Material(0f));
 
          // Load gem
-         Mesh blueGemMesh = AssetStore.getMesh("entities", "gem_blue");
+         Mesh blueGemMesh = AssetStore.getMesh("entities", "gem_yellow");
          blueGemMesh.setMaterial(new Material(0f));
          blueGemMesh.setIsStatic(false);
 
@@ -243,7 +248,7 @@ public class TunnelLevel extends Level {
          map.getTiles("blue_light").forEach( t -> {
              sceneLight.pointLights.add(
                      new PointLight(
-                             new Vector3f(0.3f, 0.4f, 0.9f),
+                             new Vector3f(244f, 244f, 66f),
                              new Vector3f(t.getPosition().x, 2.5f, t.getPosition().y),
                              0.70f,
                              new PointLight.Attenuation(0f, 1f, 0f),
