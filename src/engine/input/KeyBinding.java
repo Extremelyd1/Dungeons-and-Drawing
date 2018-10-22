@@ -58,6 +58,10 @@ public class KeyBinding {
         return glfwGetKey(windowHandle, GLFW_KEY_ENTER) == GLFW_PRESS;
     }
 
+    public static boolean isStartPressed() {
+        return glfwGetKey(windowHandle, GLFW_KEY_SPACE) == GLFW_PRESS;
+    }
+
     public static boolean isKeyPressed(int key) {
         return glfwGetKey(windowHandle, key) == GLFW_PRESS;
     }

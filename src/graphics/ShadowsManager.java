@@ -165,10 +165,12 @@ public class ShadowsManager {
                                         shaderManager.setDepthShaderCubeMode0(((Snake) entity).getMorph(), new Vector3f(entity.getPosition()).add(1, 0, 0));
                                     } else if (entity instanceof Player) {
                                         shaderManager.setDepthShaderCubeMode1(((Player) entity).getAnimatedModel().getJointTransforms());
+                                        glDisable(GL_CULL_FACE);
                                     } else {
                                         shaderManager.setDepthShaderCubeModeDefault();
                                     }
                                     mesh.render();
+                                    glEnable(GL_CULL_FACE);
                                 }
                             }
                         }

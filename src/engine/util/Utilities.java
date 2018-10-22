@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -74,6 +76,16 @@ public class Utilities {
             floatArr[i] = list.get(i);
         }
         return floatArr;
+    }
+
+    /**
+     * Gets the absolute path of the resource requested
+     * @param resource the requested resource
+     * @return the absolute path to this resource
+     */
+    public static String getResourcePath(String resource) {
+        URL url = Utilities.class.getClassLoader().getResource(resource);
+        return url.getPath().replaceFirst("/", "");
     }
 
     public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {

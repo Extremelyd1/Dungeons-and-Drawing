@@ -410,7 +410,7 @@ public class DarknessLevel extends Level {
             gui.removeComponent();
         }
 
-        camera.update();
+        camera.update(interval);
         player.update(interval);
 
         if (sceneLight.directionalLight != null) {
