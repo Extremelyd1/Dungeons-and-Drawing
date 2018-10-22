@@ -321,7 +321,7 @@ public class TunnelLevel extends Level {
             gui.removeComponent();
         }
 
-        camera.update();
+        camera.update(interval);
         player.update(interval);
     }
 
