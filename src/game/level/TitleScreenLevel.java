@@ -82,7 +82,6 @@ public class TitleScreenLevel extends Level {
 
         // Setup camera
         camera = new AnimatedCamera(cameraPoints, new Vector3f(75f, -10f, 0f));
-//        camera = new FreeCamera();
 
         // Setup lights
         sceneLight = new SceneLight();
@@ -119,7 +118,6 @@ public class TitleScreenLevel extends Level {
         doorMesh.setMaterial(new Material(0f));
 
         // Define tile and door entity
-        Tile puzzle1Tile = map.getTile("door1");
         map.getTiles("door").forEach(t -> {
             boolean inverted = t.hasTag("inverted");
             DoorEntity door = new DoorEntity(
@@ -148,6 +146,7 @@ public class TitleScreenLevel extends Level {
 
     }
 
+    @Override
     public void input(MouseInput mouseinput) {
     }
 
@@ -180,7 +179,7 @@ public class TitleScreenLevel extends Level {
 
     @Override
     public void terminate() {
-        gui.terminate();
         soundManager.terminate();
+        sceneLight.cleanup();
     }
 }
