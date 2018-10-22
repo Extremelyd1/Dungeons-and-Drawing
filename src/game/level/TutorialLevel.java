@@ -6,7 +6,7 @@ import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
-import engine.entities.Player;
+import engine.entities.animatedModel.Player;
 import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
@@ -55,7 +55,7 @@ public class TutorialLevel extends Level {
         Mesh playerMesh = PLYLoader.loadMesh("/models/basic/basic_cylinder_two_colors_1.ply");
         playerMesh.setMaterial(new Material(0.5f));
         playerMesh.setIsStatic(false);
-        player = new Player(playerMesh, map);
+        //player = new Player(playerMesh, map);
         player.setSpeed(5);
         player.setScale(new Vector3f(1, 2, 1));
         player.setPosition(2, 0.5f, 3);

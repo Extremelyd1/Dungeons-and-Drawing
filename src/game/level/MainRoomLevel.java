@@ -1,10 +1,13 @@
 package game.level;
 
 import engine.MouseInput;
+import engine.animation.ModelAnimation;
 import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.*;
+import engine.entities.animatedModel.AnimatedModel;
+import engine.entities.animatedModel.Player;
 import engine.gui.FloatingScrollText;
 import engine.gui.ScrollingPopup;
 import engine.input.KeyBinding;
@@ -13,6 +16,8 @@ import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
+import engine.loader.animatedModelLoader.AnimatedModelLoader;
+import engine.loader.animatedModelLoader.AnimationLoader;
 import engine.util.AssetStore;
 import game.GUI;
 import game.LevelController;
@@ -82,12 +87,14 @@ public class MainRoomLevel extends Level {
         renderer.init();
 
         // Setup player
-        Mesh playerMesh = PLYLoader.loadMesh("/models/basic/basic_cylinder_two_colors_1.ply");
-        playerMesh.setMaterial(new Material(0.5f));
-        playerMesh.setIsStatic(false);
-        player = new Player(playerMesh, map);
+        AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/player_model.dae");
+        playerModel.getMesh().setMaterial(new Material(0.0f));
+        playerModel.getMesh().setIsStatic(false);
+        ModelAnimation playerAnimation = AnimationLoader.loadAnimation(playerModel);
+        playerModel.doAnimation(playerAnimation);
+        player = new Player(playerModel, map);
         player.setSpeed(3f);
-        player.setScale(new Vector3f(1, 2, 1));
+        player.setScale(new Vector3f(0.25f));
 
         setPlayerSpawnPoint();
 
@@ -344,13 +351,13 @@ public class MainRoomLevel extends Level {
                     paused = true;
                 }
                 if (currentPlayerTile.hasTag("entrance_level_1")) {
-                    // TODO: Switch to level
+                    levelController.switchToLevel(3);
                 }
                 if (currentPlayerTile.hasTag("entrance_level_2")) {
                     // TODO: Switch to level
                 }
                 if (currentPlayerTile.hasTag("entrance_level_3")) {
-                    levelController.switchToLevel(3);
+                    levelController.switchToLevel(4);
                 }
                 if (currentPlayerTile.hasTag("entrance_level_4")) {
                     // TODO: Switch to level

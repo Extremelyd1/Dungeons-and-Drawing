@@ -5,8 +5,7 @@ import engine.camera.Camera;
 import engine.camera.FollowCamera;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
-import engine.entities.Player;
-import engine.lights.DirectionalLight;
+import engine.entities.animatedModel.Player;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
 import engine.loader.PLYLoader;
@@ -14,7 +13,6 @@ import game.LevelController;
 import game.Renderer;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
-import game.map.loader.TempTutorialMapLoader;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
@@ -45,7 +43,7 @@ public class MapFileLoadingTestLevel extends Level {
         // Setup player
         Mesh playerMesh = PLYLoader.loadMesh("/models/basic/basic_cylinder_two_colors_1.ply");
         playerMesh.setMaterial(new Material(0.5f));
-        player = new Player(playerMesh, map);
+        //player = new Player(playerMesh, map);
         player.setPosition(new Vector3f(0, 0.5f, 2));
         player.setSpeed(5);
 

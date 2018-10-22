@@ -64,6 +64,9 @@ public class ShaderManager {
         sceneShader.createUniform("step");
         sceneShader.createUniform("headPos");
 
+        // Mode 1 (Player animation)
+        sceneShader.createUniform("jointTransforms");
+
         GameWindow.getGameWindow().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
@@ -88,6 +91,8 @@ public class ShaderManager {
         // Mode 0 (Snake morphing)
         depthShaderCube.createUniform("step");
         depthShaderCube.createUniform("headPos");
+        // Mode 1 (Player animation)
+        depthShaderCube.createUniform("jointTransforms");
 
         // Create Depth Shader
         depthShader = new Shader();
@@ -102,6 +107,8 @@ public class ShaderManager {
         // Mode 0 (Snake morphing)
         depthShader.createUniform("step");
         depthShader.createUniform("headPos");
+        // Mode 1 (Player animation)
+        depthShader.createUniform("jointTransforms");
     }
 
     /**
@@ -212,6 +219,10 @@ public class ShaderManager {
         sceneShader.setUniform("step", step);
         sceneShader.setUniform("headPos", headPos);
     }
+    public void setSceneShaderMode1(Matrix4f[] jointTransforms) {
+        sceneShader.setUniform("mode", 1);
+        sceneShader.setUniform("jointTransforms", jointTransforms, jointTransforms.length);
+    }
     public void setSceneShaderModeDefault(){
         sceneShader.setUniform("mode", 99);
     }
@@ -264,6 +275,10 @@ public class ShaderManager {
         depthShaderCube.setUniform("mode", 0);
         depthShaderCube.setUniform("step", step);
         depthShaderCube.setUniform("headPos", headPos);
+    }
+    public void setDepthShaderCubeMode1(Matrix4f[] jointTransforms) {
+        depthShaderCube.setUniform("mode", 1);
+        depthShaderCube.setUniform("jointTransforms", jointTransforms, jointTransforms.length);
     }
     public void setDepthShaderCubeModeDefault(){
         depthShaderCube.setUniform("mode", 99);
