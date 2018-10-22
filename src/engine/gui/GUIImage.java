@@ -20,6 +20,7 @@ import java.util.List;
 public class GUIImage extends GUIComponent {
 
     private int imageHandle;
+    private String path;
 
     /**
      * Constructs an image to be drawn on the GUI
@@ -29,7 +30,15 @@ public class GUIImage extends GUIComponent {
         setCentered(true);
         setComponentWidth(width);
         setComponentHeight(height);
-        imageHandle = NanoVG.getInstance().createImage(path);
+        this.path = path;
+        imageHandle = NanoVG.getInstance().createImage(path, this::reload);
+    }
+
+    public void reload() {
+        imageHandle = NanoVG.getInstance().createImage(path, this::reload);
+        float imageSize = (float) GameWindow.getGameWindow().getWindowWidth() / 2f;
+        setComponentWidth(imageSize);
+        setComponentHeight(imageSize);
     }
 
     @Override

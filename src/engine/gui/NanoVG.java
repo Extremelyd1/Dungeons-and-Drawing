@@ -2,6 +2,7 @@ package engine.gui;
 
 import engine.GameWindow;
 import engine.util.Utilities;
+import game.action.Action;
 import org.joml.Vector2f;
 import org.lwjgl.nanovg.NVGColor;
 import org.lwjgl.nanovg.NVGPaint;
@@ -32,7 +33,7 @@ public class NanoVG {
 
     private NVGColor color;
 
-    private List<Integer> loadedImages;
+    private Action imageReloadAction;
 
     private static final String SEGOE_UI = "SEGOE_UI";
     private static final String SEGOE_UI_BOLD = "SEGOE_UI_BOLD";
@@ -44,7 +45,8 @@ public class NanoVG {
     public static final float FONT_SIZE_TITLE = 96.0f;
 
     public static void reload() {
-        nanoVG = new NanoVG();
+        nanoVG = new NanoVG(nanoVG.imageReloadAction);
+        nanoVG.imageReloadAction.execute();
     }
 
     /**
@@ -73,8 +75,11 @@ public class NanoVG {
 
         // Initializes fonts
         initializeFonts();
+    }
 
-        loadedImages = new ArrayList<>();
+    private NanoVG(Action imageReloadAction) {
+        this();
+        this.imageReloadAction = imageReloadAction;
     }
 
     /**
@@ -380,14 +385,10 @@ public class NanoVG {
         nvgFill(nanoVGHandler);
     }
 
-    public int createImage(String path) {
+    public int createImage(String path, Action action) {
         int imageHandle = nvgCreateImage(nanoVGHandler, path, 0);
-        loadedImages.add(imageHandle);
+        imageReloadAction = action;
         return imageHandle;
-    }
-
-    public void removeImage(int handle) {
-        nvgDeleteImage(nanoVGHandler, handle);
     }
 
     /**
@@ -460,9 +461,6 @@ public class NanoVG {
     }
 
     public void terminateNanoVG() {
-        while (!loadedImages.isEmpty()) {
-            removeImage(loadedImages.remove(0));
-        }
         nvgDelete(nanoVGHandler);
     }
 }

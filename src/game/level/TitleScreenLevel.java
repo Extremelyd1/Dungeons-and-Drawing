@@ -8,11 +8,18 @@ import engine.camera.FreeCamera;
 import engine.entities.DoorEntity;
 import engine.entities.Entity;
 import engine.entities.IndicatorEntity;
+import engine.gui.FloatingScrollText;
 import engine.gui.GUIImage;
+import engine.gui.TitleScreenText;
+import engine.input.KeyBinding;
 import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
+import engine.sound.SoundBuffer;
+import engine.sound.SoundListener;
+import engine.sound.SoundManager;
+import engine.sound.SoundSource;
 import engine.util.AssetStore;
 import engine.util.Utilities;
 import game.GUI;
@@ -40,6 +47,8 @@ public class TitleScreenLevel extends Level {
      */
     private SceneLight sceneLight;
     private GUI gui;
+
+    private SoundManager soundManager;
 
     public TitleScreenLevel(LevelController levelController) {
         super(levelController);
@@ -83,7 +92,7 @@ public class TitleScreenLevel extends Level {
                                 new Vector3f(1f, 1f, 1f),
                                 new Vector3f(t.getPosition().x, 2.2f, t.getPosition().y),
                                 0.4f,
-                                new Vector2f(1f, 100f)
+                                new Vector2f(0.1f, 100f)
                         )
                 )
         );
@@ -100,7 +109,9 @@ public class TitleScreenLevel extends Level {
         gui = new GUI();
         gui.initialize();
         float imageSize = (float) GameWindow.getGameWindow().getWindowWidth() / 2f;
-        gui.setComponent(new GUIImage(imageSize, imageSize, Utilities.getResourcePath("textures/logo.png")));
+        gui.addComponent(new GUIImage(imageSize, imageSize, Utilities.getResourcePath("textures/logo.png")));
+        gui.addComponent(new TitleScreenText("Press 'spacebar' to start..."));
+
         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f));
 
         // Load mesh for door
@@ -122,6 +133,19 @@ public class TitleScreenLevel extends Level {
             entities.add(door);
         });
 
+        // Setup sound
+        soundManager = new SoundManager();
+        soundManager.init();
+
+        SoundBuffer music = new SoundBuffer("/sound/impossible.ogg");
+        soundManager.addSoundBuffer(music);
+        SoundSource sourceMusic = new SoundSource(true, true);
+        sourceMusic.setBuffer(music.getBufferId());
+        soundManager.addSoundSource("titlescreen-music", sourceMusic);
+        soundManager.setListener(SoundListener.getSoundListener());
+
+        sourceMusic.play();
+
     }
 
     public void input(MouseInput mouseinput) {
@@ -136,6 +160,11 @@ public class TitleScreenLevel extends Level {
         }
 
         gui.update(delta);
+        soundManager.updateListenerPosition(camera);
+
+        if (KeyBinding.isStartPressed()) {
+            levelController.next();
+        }
     }
 
     @Override
@@ -152,5 +181,6 @@ public class TitleScreenLevel extends Level {
     @Override
     public void terminate() {
         gui.terminate();
+        soundManager.terminate();
     }
 }
