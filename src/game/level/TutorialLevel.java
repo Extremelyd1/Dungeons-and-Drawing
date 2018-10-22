@@ -130,7 +130,7 @@ public class TutorialLevel extends Level {
 
     @Override
     public void update(float interval, MouseInput mouseInput) {
-        camera.update();
+        camera.update(interval);
         player.update(interval);
         mob.update(interval);
         indicatorEntity.update(interval);

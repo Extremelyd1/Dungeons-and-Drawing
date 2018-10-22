@@ -80,7 +80,7 @@ public class TestLevel extends Level {
 
     @Override
     public void update(float interval, MouseInput mouseInput) {
-        camera.update();
+        camera.update(interval);
     }
 
     @Override

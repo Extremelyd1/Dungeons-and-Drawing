@@ -66,6 +66,6 @@ public class Camera {
     /**
      * Update the camera during the update cycle, if necessary
      */
-    public void update() {
+    public void update(float delta) {
     }
 }

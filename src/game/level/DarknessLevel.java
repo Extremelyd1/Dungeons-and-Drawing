@@ -110,7 +110,7 @@ public class DarknessLevel extends Level {
         camera = new FollowCamera(
                 player,
                 new Vector3f(75f, -10f, 0f),
-                new Vector3f(3, 11, 3)
+                new Vector3f(2, 11, 3)
         );
 
         // Load mesh for question mark
@@ -253,8 +253,7 @@ public class DarknessLevel extends Level {
                 "This description does nothing",
                 // Options
                 new String[]{
-                        // flashlight, sun, lightning, lighthouse, harp
-                        "flashlight", "lightning", "apple", "panda" // Temporary list
+                        "flashlight", "lightning", "sun", "piano"
                 },
                 // Solutions
                 new Solution[]{
@@ -284,7 +283,7 @@ public class DarknessLevel extends Level {
                             }));
                         }),
                         // Sun
-                        new Solution("apple", (s) -> {
+                        new Solution("sun", (s) -> {
                             gui.setComponent(new ScrollingPopup("A sun seems like a highly impracticable light source to use inside of a dungeon. But who am I to judge? You do you!", () -> {
                                 sceneLight.directionalLight = new DirectionalLight(
                                         new Vector3f(0.0f, 7.0f, 0.0f),       // position
@@ -300,7 +299,7 @@ public class DarknessLevel extends Level {
                             }));
                         }),
 
-                        new Solution("panda", (s) -> {
+                        new Solution("piano", (s) -> {
                             gui.setComponent(new ScrollingPopup("You prefer music over some proper light source? Oh, you think darkness is your ally? But you merely adopted the dark. I was born in it! Molded by it!", () -> {
                                 gui.setComponent(new ScrollingPopup("Oh, right, music. I know something that fits this situation.", () -> {
                                     sourceBack.play();
@@ -367,8 +366,10 @@ public class DarknessLevel extends Level {
             }
         }
 
-        sceneLight.directionalLight.setIntensity(0f);
         if (lightningEnabled) {
+
+            sceneLight.directionalLight.setIntensity(0f);
+
             Random rd = new Random();
 
             if (deltaUpdates >= 50) {
@@ -410,7 +411,7 @@ public class DarknessLevel extends Level {
             gui.removeComponent();
         }
 
-        camera.update();
+        camera.update(interval);
         player.update(interval);
 
         if (sceneLight.directionalLight != null) {
@@ -434,7 +435,7 @@ public class DarknessLevel extends Level {
     public void terminate() {
         soundManager.terminate();
         sceneLight.cleanup();
-        lightningEnabled = false; 
+        lightningEnabled = false;
     }
 
 }
