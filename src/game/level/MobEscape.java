@@ -158,6 +158,7 @@ public class MobEscape extends Level {
                 })},
                 new Solution("", (s) -> {
                     gui.setComponent(new ScrollingPopup("A " + s + " will probably not work. Quick, try again!", () -> {
+                        gui.removeComponent();
                         paused = false;
                     }));
                 }),
