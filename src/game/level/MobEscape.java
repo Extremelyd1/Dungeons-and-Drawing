@@ -133,10 +133,10 @@ public class MobEscape extends Level {
         arcCollapsePuzzle = new Puzzle(
                 "To collapse the arc you draw:",
                 // Possible guesses
-                new String[]{"key", "cactus", "hat"}, // TODO: Change values
+                new String[]{"cannon", "frying pan", "rifle"},
                 // Solutions and their corresponding actions
-                new Solution[]{new Solution("key", (s) -> { // TODO: Change the value
-                    gui.setComponent(new ScrollingPopup("You hear a loud bang!", () ->
+                new Solution[]{new Solution("cannon", (s) -> {
+                    gui.setComponent(new ScrollingPopup("You hear a loud explosion!", () ->
                             paused = false
                     ));
                     // Remove the arc and replace the entire row with boulders to block the mob path

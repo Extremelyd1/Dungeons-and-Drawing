@@ -239,7 +239,7 @@ public class MurderMysteryLevel extends Level {
                 new String[]{"saw", "frying pan", "syringe", "knife", "fork", "gun", "pencil", "axe", "sword"},
                 // Solutions
                 new Solution[]{
-                        new Solution("key", (s) -> { // TODO: Update to the real solution value
+                        new Solution("pencil", (s) -> { // TODO: Update to the real solution value
                             gui.setComponent(new ScrollingPopup("Indeed! Now I remember! It was the pencil. Hah... what a coincidence. I will remove the boxes for you", () -> {
                                 gui.removeComponent();
                                 // Remove crates
