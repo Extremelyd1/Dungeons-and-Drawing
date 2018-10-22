@@ -250,8 +250,8 @@ public class SimpleMob extends LivingEntity {
         forcePathUpdate = true;
     }
 
-    public boolean isCollidingWithTarget() {
-        if ((new Vector3f(getPosition()).sub(target.getPosition())).length() < 0.95f) {
+    public boolean isCollidingWithTarget(float radius) {
+        if ((new Vector3f(getPosition()).sub(target.getPosition())).length() < radius) {
             return true;
         } else {
             return false;

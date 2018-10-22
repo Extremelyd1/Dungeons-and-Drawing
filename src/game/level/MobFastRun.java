@@ -149,7 +149,7 @@ public class MobFastRun extends Level {
         gui = new GUI();
         gui.initialize();
 
-        // Setup Player spawn
+        // Setup player
         AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/player_model.dae");
         playerModel.getMesh().setMaterial(new Material(0.0f));
         playerModel.getMesh().setIsStatic(false);
@@ -461,7 +461,7 @@ public class MobFastRun extends Level {
 
             if (mob != null) {
                 mob.update(interval);
-                if (mob.isCollidingWithTarget()) {
+                if (mob.isCollidingWithTarget(0.95f)) {
                     //levelController.restart();
                     gui.setComponent(new ScrollingPopup("You were too slow...", () -> {
                         paused = false;
