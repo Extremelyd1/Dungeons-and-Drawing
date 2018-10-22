@@ -300,7 +300,7 @@ public class MobEscape extends Level {
 
         // Snake
         if (snake != null) {
-            if (snake.isCollidingWithTarget()) {
+            if (snake.isCollidingWithTarget(0.95f)) {
                 gui.setComponent(new ScrollingPopup("Snaky the Snek got you :c Try again.", () -> {
                     levelController.restart();
                 }));

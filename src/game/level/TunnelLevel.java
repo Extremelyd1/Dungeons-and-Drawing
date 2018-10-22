@@ -212,7 +212,7 @@ public class TunnelLevel extends Level {
 
         // Lighting
          sceneLight = new SceneLight();
-         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.1f));
+         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.3f));
          sceneLight.directionalLight = new DirectionalLight(
                  new Vector3f(0.0f, 7.0f, 0.0f),       // position
                  new Vector3f(0.2f, 0.4f, 0.8f),       // color
@@ -248,9 +248,9 @@ public class TunnelLevel extends Level {
          map.getTiles("yellow_light").forEach( t -> {
              sceneLight.pointLights.add(
                      new PointLight(
-                             new Vector3f(244f, 244f, 66f),
+                             new Vector3f(0.96f, 0.96f, 0.26f),
                              new Vector3f(t.getPosition().x, 2.5f, t.getPosition().y),
-                             0.70f,
+                             1.5f,
                              new PointLight.Attenuation(0f, 1f, 0f),
                              new Vector2f(1f, 100f)
                      )

@@ -74,6 +74,9 @@ public class PrisonEscapeLevel extends Level{
 
     @Override
     public void init() throws Exception {
+
+        paused = false;
+
         entities = new ArrayList<>();
         mob = new SimpleMob[4];
         // Load map
@@ -442,8 +445,9 @@ public class PrisonEscapeLevel extends Level{
         riddleText = new ScrollingPopup("There seems to be five cells. I need to find the escaped prisoner's" +
                 " cell. All the cells have a number, but someone forgot to put the signs up! The escapee is in prison cell" +
                 " 3, however, the cells numbers are all jumbled", () -> {
-            gui.setComponent(new ScrollingPopup("Prisoner 3 was in a cell next to prisoner 5. Prisoner 2 was in a cell" +
-                    " at the end of the hall. Prisoner 1 is in a cell neighbouring prisoner 5 and 4.", () -> {
+            gui.setComponent(new ScrollingPopup("Prisoner 3 was in a cell adjacent to the right of prisoner 5. "
+                    + "Prisoner 2 was in a cell at the left end of the hall. Prisoner 1 is in a cell "
+                    + "neighbouring prisoner 5 and 4.", () -> {
                 gui.removeComponent();
                 paused = false;
             }));
@@ -455,6 +459,8 @@ public class PrisonEscapeLevel extends Level{
                     " escape recently!", () -> {
                 gui.removeComponent();
                 textIndicator.remove(() -> {entitiesToRemove.add(textIndicator);});
+                textTile.removeTag("trigger");
+
                 paused = false;
             }));
         });
@@ -558,7 +564,7 @@ public class PrisonEscapeLevel extends Level{
         // Mob handling
         for (int i = 0; i < mob.length; i++) {
             if (mob[i]!=null) {
-                if (mob[i].isCollidingWithTarget()) {
+                if (mob[i].isCollidingWithTarget(1.7f)) {
                     gui.setComponent(new ScrollingPopup("The ghost caught you, try again!", () -> {
                         levelController.restart();
                     }));
