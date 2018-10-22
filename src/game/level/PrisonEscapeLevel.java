@@ -51,7 +51,7 @@ public class PrisonEscapeLevel extends Level{
     /**
      * Texts in the level
      */
-    private ScrollingPopup riddleText, text1;
+    private ScrollingPopup riddleText, text1, text2;
     /**
      * Puzzles in the level
      */
@@ -67,6 +67,7 @@ public class PrisonEscapeLevel extends Level{
 
     /**
      * TODO: reload level when caught by ghost
+     * TODO: load interior cells
      */
     public PrisonEscapeLevel(LevelController levelController) {
         super(levelController);
@@ -168,6 +169,12 @@ public class PrisonEscapeLevel extends Level{
                 new Vector3f(textTile.getPosition().x, 1f, textTile.getPosition().y),
                 textTile
         );
+        Tile textTile2 = map.getTile("text2");
+        IndicatorEntity textIndicator2 = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(textTile2.getPosition().x, 1f, textTile2.getPosition().y),
+                textTile2
+        );
         // Spawn wall
         Tile wall = map.getTile("cracked_wall");
         wall.setSolid(true);
@@ -261,7 +268,7 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
+                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " will solve this.", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
@@ -292,7 +299,7 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
+                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " will solve this.", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
@@ -321,7 +328,7 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
+                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " will solve this.", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
@@ -353,7 +360,7 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
+                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " will solve this.", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
@@ -390,7 +397,7 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
+                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " will solve this.", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
@@ -423,7 +430,7 @@ public class PrisonEscapeLevel extends Level{
                 },
                 // Default solution
                 new Solution("", (s) -> {
-                    gui.setComponent(new ScrollingPopup("Hm, no, that's not quite right.", () -> {
+                    gui.setComponent(new ScrollingPopup("I don't think a " + s + " will solve this.", () -> {
                         gui.removeComponent();
                         paused = false;
                     }));
@@ -446,6 +453,15 @@ public class PrisonEscapeLevel extends Level{
             gui.setComponent(new ScrollingPopup("This is where the prisoners were locked up, one of the prisoners tried to" +
                     " escape recently!", () -> {
                 gui.removeComponent();
+                textIndicator.remove(() -> {entitiesToRemove.add(textIndicator);});
+                paused = false;
+            }));
+        });
+
+        text2 = new ScrollingPopup("This seems to be the prison cell of the escaped prisoner, I wonder how he escaped!", () -> {
+            gui.setComponent(new ScrollingPopup("Maybe it has to do with that crack in the wall over there?", () -> {
+                gui.removeComponent();
+                textIndicator2.remove(() -> {entitiesToRemove.add(textIndicator2);});
                 paused = false;
             }));
         });
@@ -457,7 +473,7 @@ public class PrisonEscapeLevel extends Level{
                 new Vector3f(0.0f, 7.0f, 0.0f),       // position
                 new Vector3f(0.2f, 0.4f, 0.8f),       // color
                 new Vector3f(0.0f, 1.0f, 0.4f),       // direction
-                0.05f,                                // intensity
+                0.3f,                                // intensity
                 new Vector2f(1.0f, 10.0f),              // near-far plane
                 false
         );
@@ -477,7 +493,7 @@ public class PrisonEscapeLevel extends Level{
                     new PointLight(
                             new Vector3f(0.968f, 0.588f, 0.290f),
                             new Vector3f(t.getPosition().x, 1f, t.getPosition().y),
-                            0.4f,
+                            1f,
                             new PointLight.Attenuation(0f, 1f, 0f),
                             new Vector2f(1f, 100f)
                     )
@@ -490,7 +506,7 @@ public class PrisonEscapeLevel extends Level{
                     new PointLight(
                             new Vector3f(0.768f, 0.688f, 0.290f),
                             new Vector3f(t.getPosition().x, 2.5f, t.getPosition().y),
-                            0.45f,
+                            1f,
                             new PointLight.Attenuation(0f, 1f, 0f),
                             new Vector2f(1f, 100f)
                     )
@@ -510,7 +526,8 @@ public class PrisonEscapeLevel extends Level{
                 door3, puzzle1Indicator3,
                 door4, puzzle1Indicator4,
                 door5, puzzle1Indicator5,
-                textIndicator, riddleIndicator
+                textIndicator, riddleIndicator,
+                textIndicator2
         ));
     }
 
@@ -577,6 +594,10 @@ public class PrisonEscapeLevel extends Level{
                     gui.setComponent(text1);
                     paused = true;
                 }
+                if (currentPlayerTile.hasTag("text2")) {
+                    gui.setComponent(text2);
+                    paused = true;
+                }
             }
             if (currentPlayerTile.hasTag("enter_tunnel")) {
                 levelController.next();
@@ -626,7 +647,20 @@ public class PrisonEscapeLevel extends Level{
 
     private void spawnInterior(String tag) {
         map.getTiles(tag).forEach(t -> {
-            // TODO: spawn all the interior stuff.
+            try {
+                if (t.hasTag("bed")) {
+                    Mesh bedMesh = PLYLoader.loadMesh("/models/tiles/crate.ply");
+                    bedMesh.setMaterial(new Material(0f));
+                    t.setSolid(true);
+                    t.setMesh(bedMesh);
+                }
+                if (t.hasTag("skeleton")) {
+                    Mesh skeletonMesh = PLYLoader.loadMesh("/models/tiles/crate.ply");
+                    skeletonMesh.setMaterial(new Material(0f));
+                    t.setSolid(true);
+                    t.setMesh(skeletonMesh);
+                }
+            } catch (Exception e) {}
         });
     }
 }

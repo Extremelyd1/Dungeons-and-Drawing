@@ -212,7 +212,7 @@ public class TunnelLevel extends Level {
                  new Vector3f(0.0f, 7.0f, 0.0f),       // position
                  new Vector3f(0.2f, 0.4f, 0.8f),       // color
                  new Vector3f(0.0f, 1.0f, 0.4f),       // direction
-                 0.05f,                                // intensity
+                 0.2f,                                // intensity
                  new Vector2f(1.0f, 10.0f),              // near-far plane
                  false
          );
@@ -221,7 +221,7 @@ public class TunnelLevel extends Level {
                      new PointLight(
                              new Vector3f(0.968f, 0.588f, 0.290f),
                              new Vector3f(t.getPosition().x, 1f, t.getPosition().y),
-                             0.4f,
+                             0.7f,
                              new PointLight.Attenuation(0f, 1f, 0f),
                              new Vector2f(1f, 100f)
                      )
@@ -234,7 +234,18 @@ public class TunnelLevel extends Level {
                      new PointLight(
                              new Vector3f(0.768f, 0.688f, 0.290f),
                              new Vector3f(t.getPosition().x, 2.5f, t.getPosition().y),
-                             0.45f,
+                             0.70f,
+                             new PointLight.Attenuation(0f, 1f, 0f),
+                             new Vector2f(1f, 100f)
+                     )
+             );
+         });
+         map.getTiles("blue_light").forEach( t -> {
+             sceneLight.pointLights.add(
+                     new PointLight(
+                             new Vector3f(0.3f, 0.4f, 0.9f),
+                             new Vector3f(t.getPosition().x, 2.5f, t.getPosition().y),
+                             0.70f,
                              new PointLight.Attenuation(0f, 1f, 0f),
                              new Vector2f(1f, 100f)
                      )
@@ -295,7 +306,7 @@ public class TunnelLevel extends Level {
                 }
             }
             if (currentPlayerTile.hasTag("exit")) {
-                levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_2); // TODO: change to correct level
+                levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_2);
             }
             if (currentPlayerTile.hasTag("text1")) {
                 gui.setComponent(text1);
