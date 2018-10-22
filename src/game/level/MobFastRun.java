@@ -47,6 +47,7 @@ public class MobFastRun extends Level {
     private GUI gui;
     private Puzzle shovelRockPuzzle, doorPuzzle, leftCratePuzzle, rightCratePuzzle;
     private Entity leftCrateQuestionMark, rightCrateQuestionMark, doorQuestionMark;
+    IndicatorEntity gem;
     private DoorEntity mainDoor;
     private Snake mob = null;
     private int toolUsed = 0;
@@ -215,7 +216,7 @@ public class MobFastRun extends Level {
                         ));
                         return;         // Axe already used
                     } else if (toolUsed == 0) {
-                        gui.setComponent(new ScrollingPopup("As you slice open the crate the crowbar suddenly snaps.", () ->
+                        gui.setComponent(new ScrollingPopup("As you slice open the crate the axe handle suddenly flies off.", () ->
                                 gui.setComponent(new ScrollingPopup("Guess I won't be able to use this anymore. Hope I won't need it again.", () ->
                                         gui.setComponent(new ScrollingPopup("At least it opened the box though and you find a mysterious artifact", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
@@ -252,7 +253,7 @@ public class MobFastRun extends Level {
                         ));
                         return;         // Axe already used
                     } else if (toolUsed == 0) {
-                        gui.setComponent(new ScrollingPopup("As you saw open the crate the axe head suddenly flies off.", () ->
+                        gui.setComponent(new ScrollingPopup("As you saw open the crate the saw handle suddenly breaks off.", () ->
                                 gui.setComponent(new ScrollingPopup("Guess I won't be able to use this anymore. Hope I won't need it again.", () ->
                                         gui.setComponent(new ScrollingPopup("At least it opened the box though and you find a mysterious artifact", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
@@ -413,6 +414,23 @@ public class MobFastRun extends Level {
         );
         tiles[Math.round(entities.get(3).getPosition().x)][Math.round(entities.get(3).getPosition().z)].addTag("trigger4");
 
+        // Add gem
+        // Load gem
+        Mesh gemMesh = AssetStore.getMesh("entities", "gem_blue");
+        gemMesh.setMaterial(new Material(0f));
+        gemMesh.setIsStatic(false);
+
+        gem = new IndicatorEntity(
+                gemMesh,
+                new Vector3f(23, 1.5f, 35),
+                new Vector3f(45f, 90f, 45f),
+                null
+        );
+        tiles[23][35].addTag("gem");
+        entities.add(gem);
+
+        paused = false;
+
         // DEBUG
         Debug.println("MobFastRun", "Mob Fast Run level loaded");
     }
@@ -438,7 +456,15 @@ public class MobFastRun extends Level {
             if (mob != null) {
                 mob.update(interval);
                 if (mob.isCollidingWithTarget()) {
-                    levelController.restart();
+                    //levelController.restart();
+                    gui.setComponent(new ScrollingPopup("You were too slow...", () -> {
+                        paused = false;
+                        Debug.println("MobFastRun", "Level restart");
+                        levelController.restart();
+                    }));
+                    Debug.println("MobFastRun", "Paused");
+                    paused = true;
+                    return;
                 }
             }
 
@@ -496,6 +522,10 @@ public class MobFastRun extends Level {
                     paused = true;
                 }
                 // If not on any trigger anymore, remove floating text
+            } else if (currentPlayerTile.hasTag("gem")) {
+                entities.remove(gem);
+                currentPlayerTile.removeTag("gem");
+                levelController.setGemFound(LevelController.GEM.BLUE);
             }else if (gui.hasComponent()) {
                 gui.removeComponent();
             }
@@ -522,6 +552,8 @@ public class MobFastRun extends Level {
 
     @Override
     public void terminate() {
+        paused = false;
+        toolUsed = 0;
         mob = null;
         camera = null;
         sceneLight.cleanup();
