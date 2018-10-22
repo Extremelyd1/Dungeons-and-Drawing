@@ -215,8 +215,8 @@ stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
-stone_floor 0 0
-stone_floor 0 0
+stone_floor 0 0 trigger:text1
+stone_floor 0 0 trigger:riddle_text
 stone_floor 0 0
 stone_floor 0 0
 stone_floor 0 0
