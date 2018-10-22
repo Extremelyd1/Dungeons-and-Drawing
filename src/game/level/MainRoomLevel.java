@@ -341,6 +341,10 @@ public class MainRoomLevel extends Level {
                 Math.round(player.getPosition().z)
         );
 
+        if (currentPlayerTile.hasTag("treasure_room")) {
+            levelController.switchToLevel(5);
+        }
+
         if (currentPlayerTile.hasTag("trigger")) {
             if (!gui.hasComponent()) {
                 gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
@@ -362,7 +366,6 @@ public class MainRoomLevel extends Level {
                 if (currentPlayerTile.hasTag("entrance_level_4")) {
                     // TODO: Switch to level
                 }
-
             }
         } else if (gui.hasComponent()) {
             gui.removeComponent();
