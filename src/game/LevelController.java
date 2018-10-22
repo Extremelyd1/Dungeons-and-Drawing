@@ -28,6 +28,7 @@ public class LevelController implements IGameLogic {
                 new DarknessLevel(this),
                 new MurderMysteryLevel(this),
                 new PrisonEscapeLevel(this),
+                new TunnelLevel(this),
                 new MobFastRun(this),
                 new TreasureRoomLevel(this)
         ));
