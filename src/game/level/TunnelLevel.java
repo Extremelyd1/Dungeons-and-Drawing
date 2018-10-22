@@ -186,7 +186,7 @@ public class TunnelLevel extends Level {
                  "This does nothing...",
                  new String[]{},
                  new Solution[]{
-                         new Solution( "key", (s) -> { //@TODO: change to answer riddle
+                         new Solution( "clock", (s) -> {
                              gui.setComponent(new ScrollingPopup("Well played adventurer, I will let you through!", () -> {
                                  gui.removeComponent();
                                  ghostTile.setSolid(false);
@@ -202,7 +202,7 @@ public class TunnelLevel extends Level {
                  },
                  // Default solution
                  new Solution("", (s) -> {
-                     gui.setComponent(new ScrollingPopup("Try again adventurer!", () -> {
+                     gui.setComponent(new ScrollingPopup(s.substring(0, 1).toUpperCase() + s.substring(1) + " is not the answer. Try again adventurer!", () -> {
                          gui.removeComponent();
                          paused = false;
                      }));
