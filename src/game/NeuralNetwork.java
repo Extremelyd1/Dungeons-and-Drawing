@@ -30,7 +30,7 @@ public class NeuralNetwork {
             "hammer",
             "key",
             "knife",
-            "lighting",
+            "lightning",
             "pencil",
             "piano",
             "rifle",

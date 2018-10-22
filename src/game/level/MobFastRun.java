@@ -149,7 +149,6 @@ public class MobFastRun extends Level {
         gui = new GUI();
         gui.initialize();
 
-        // Setup Player spawn
         // Setup player
         AnimatedModel playerModel = AnimatedModelLoader.loadEntity("/models/entities/player_model.dae");
         playerModel.getMesh().setMaterial(new Material(0.0f));
@@ -157,7 +156,7 @@ public class MobFastRun extends Level {
         ModelAnimation playerAnimation = AnimationLoader.loadAnimation(playerModel);
         playerModel.doAnimation(playerAnimation);
         player = new Player(playerModel, map);
-        player.setSpeed(3f);
+        player.setSpeed(4f);
         player.setScale(new Vector3f(0.25f));
         player.setPosition(1, 0.5f, 9);
         entities.add(player);
@@ -166,7 +165,7 @@ public class MobFastRun extends Level {
         camera = new FollowCamera(
                 player,
                 new Vector3f(75f, -10f, 0f),
-                new Vector3f(3, 11, 3)
+                new Vector3f(2, 11, 3)
         );
 
         // Setup Puzzles
