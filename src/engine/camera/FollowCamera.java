@@ -33,7 +33,7 @@ public class FollowCamera extends Camera {
      * Update the position of the camera to match the position of the entity
      */
     @Override
-    public void update() {
+    public void update(float delta) {
         // Make sure to COPY the vector and not copy the reference
         position = new Vector3f(entity.getPosition()).add(offset);
     }
