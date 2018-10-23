@@ -18,7 +18,6 @@ import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
-import engine.loader.PLYLoader;
 import engine.loader.animatedModelLoader.AnimatedModelLoader;
 import engine.loader.animatedModelLoader.AnimationLoader;
 import engine.util.AssetStore;
@@ -164,7 +163,7 @@ public class TutorialDrawingLevel extends Level {
         text1 = new ScrollingPopup("Welcome, traveller, I see you came from quite far.", () -> {
             gui.setComponent(new ScrollingPopup("Who I am you ask? Oh, don't you worry. I'm the ominous voice, obviously.", () -> {
                 gui.setComponent(new ScrollingPopup(
-                        "You seek the treasure of the ancient dwarfs? Hahahaha! hundreds, no, thousands, no, countless men tried before you!.", () -> {
+                        "You seek the treasure of the ancient dwarfs? Hahahaha! hundreds, no, thousands, no, countless men tried before you!", () -> {
                     gui.setComponent(new ScrollingPopup("We'll see how your creativity holds up... Good luck traveller. Try to find the entrance.", () -> {
                         textIndicator1.remove(() -> entitiesToRemove.add(textIndicator1));
                         textTile1.removeTag("trigger");
@@ -190,11 +189,15 @@ public class TutorialDrawingLevel extends Level {
             }));
         });
 
-        text3 = new ScrollingPopup("In this game you need to draw your solution to puzzles.", () -> {
-            gui.setComponent(new ScrollingPopup("Use the drawing interface to draw your solution.", () -> {
-                gui.setComponent(new ScrollingPopup("You can see a list of possible options to your right and the timer in the right upper corner.", () -> {
-                    gui.setComponent(new ScrollingPopup("When the timer hits zero, you drawing will be evaluated. Or you can fast forward this by pressing the enter key.", () -> {
-                        gui.setComponent(new PuzzleGUI(puzzle1));
+        text3 = new ScrollingPopup("In this game you need to draw your solution to puzzles. Use the drawing interface to draw your solution.", () -> {
+            gui.setComponent(new ScrollingPopup("You can see a list of possible options to your right and the timer in the right upper corner.", () -> {
+                gui.setComponent(new ScrollingPopup("When the timer hits zero, your drawing will be evaluated. Or you can fast forward this by pressing the enter key.", () -> {
+                    gui.setComponent(new ScrollingPopup("In order to improve your results, make sure that your drawings are as big as possible. The bigger, the better the game is at recognising them.", () -> {
+                        gui.setComponent(new ScrollingPopup("Some puzzles will only have one solution and you might even have to look for hints to figure out what the solution is. Others might have multiple, so let the creativity flow through you, young adventurer!", () -> {
+                            gui.setComponent(new ScrollingPopup("If the game keeps mistaking your drawing for something else, try to draw the defining features of your object as well as possible.", () -> {
+                                gui.setComponent(new PuzzleGUI(puzzle1));
+                            }));
+                        }));
                     }));
                 }));
             }));
