@@ -236,10 +236,10 @@ public class MurderMysteryLevel extends Level {
         puzzle1 = new Puzzle(
                 "What's the murdering weapon?",
                 // Options
-                new String[]{"saw", "frying pan", "syringe", "knife", "fork", "gun", "pencil", "axe", "sword"},
+                new String[]{"saw", "frying pan", "giraffe", "knife", "fork", "rifle", "pencil", "axe", "sword"},
                 // Solutions
                 new Solution[]{
-                        new Solution("pencil", (s) -> { // TODO: Update to the real solution value
+                        new Solution("pencil", (s) -> {
                             gui.setComponent(new ScrollingPopup("Indeed! Now I remember! It was the pencil. Hah... what a coincidence. I will remove the boxes for you", () -> {
                                 gui.removeComponent();
                                 // Remove crates
