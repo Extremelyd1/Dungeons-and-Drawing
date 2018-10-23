@@ -85,7 +85,6 @@ public class GUI {
      * Initialises nano vg
      */
     public void initialize() {
-        mouse.init();
     }
 
     /**
