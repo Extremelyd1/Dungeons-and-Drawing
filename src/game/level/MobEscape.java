@@ -353,12 +353,6 @@ public class MobEscape extends Level {
         } else if (gui.hasComponent()) {
             gui.removeComponent();
         }
-
-        // Check end of level
-        if (Math.round(player.getPosition().x) == 27 && Math.round(player.getPosition().z) == 22) {
-            levelController.next();
-        }
-
     }
 
     @Override
