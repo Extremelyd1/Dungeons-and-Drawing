@@ -18,7 +18,6 @@ import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
-import engine.loader.PLYLoader;
 import engine.loader.animatedModelLoader.AnimatedModelLoader;
 import engine.loader.animatedModelLoader.AnimationLoader;
 import engine.util.AssetStore;
@@ -190,11 +189,13 @@ public class TutorialDrawingLevel extends Level {
             }));
         });
 
-        text3 = new ScrollingPopup("In this game you need to draw your solution to puzzles.", () -> {
-            gui.setComponent(new ScrollingPopup("Use the drawing interface to draw your solution.", () -> {
-                gui.setComponent(new ScrollingPopup("You can see a list of possible options to your right and the timer in the right upper corner.", () -> {
-                    gui.setComponent(new ScrollingPopup("When the timer hits zero, you drawing will be evaluated. Or you can fast forward this by pressing the enter key.", () -> {
-                        gui.setComponent(new PuzzleGUI(puzzle1));
+        text3 = new ScrollingPopup("In this game you need to draw your solution to puzzles. Use the drawing interface to draw your solution.", () -> {
+            gui.setComponent(new ScrollingPopup("You can see a list of possible options to your right and the timer in the right upper corner.", () -> {
+                gui.setComponent(new ScrollingPopup("When the timer hits zero, your drawing will be evaluated. Or you can fast forward this by pressing the enter key.", () -> {
+                    gui.setComponent(new ScrollingPopup("In order to improve your results, make sure that your drawings are as big as possible. The bigger, the better the game is at recognising them.", () -> {
+                        gui.setComponent(new ScrollingPopup("Sometimes there is more than one solution, so get creative! If the game keeps mistaken your drawing for something else, try to draw the defining features of your object as good as possible.", () -> {
+                            gui.setComponent(new PuzzleGUI(puzzle1));
+                        }));
                     }));
                 }));
             }));
