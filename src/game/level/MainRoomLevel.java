@@ -327,7 +327,7 @@ public class MainRoomLevel extends Level {
 
     @Override
     public void update(float interval, MouseInput mouseInput) {
-        gui.update(interval);
+        gui.update(interval, mouseInput);
 
         if (paused) {
             return;

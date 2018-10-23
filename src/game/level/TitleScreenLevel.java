@@ -158,7 +158,7 @@ public class TitleScreenLevel extends Level {
             entity.update(delta);
         }
 
-        gui.update(delta);
+        gui.update(delta, mouseInput);
         soundManager.updateListenerPosition(camera);
 
         if (KeyBinding.isStartPressed()) {
