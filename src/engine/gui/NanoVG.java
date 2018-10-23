@@ -2,8 +2,10 @@ package engine.gui;
 
 import engine.GameWindow;
 import engine.util.Utilities;
+import game.action.Action;
 import org.joml.Vector2f;
 import org.lwjgl.nanovg.NVGColor;
+import org.lwjgl.nanovg.NVGPaint;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -31,6 +33,8 @@ public class NanoVG {
 
     private NVGColor color;
 
+    private Action imageReloadAction;
+
     private static final String SEGOE_UI = "SEGOE_UI";
     private static final String SEGOE_UI_BOLD = "SEGOE_UI_BOLD";
     private static final String SEGOE_UI_LIGHT = "SEGOE_UI_LIGHT";
@@ -41,7 +45,8 @@ public class NanoVG {
     public static final float FONT_SIZE_TITLE = 96.0f;
 
     public static void reload() {
-        nanoVG = new NanoVG();
+        nanoVG = new NanoVG(nanoVG.imageReloadAction);
+        nanoVG.imageReloadAction.execute();
     }
 
     /**
@@ -70,6 +75,11 @@ public class NanoVG {
 
         // Initializes fonts
         initializeFonts();
+    }
+
+    private NanoVG(Action imageReloadAction) {
+        this();
+        this.imageReloadAction = imageReloadAction;
     }
 
     /**
@@ -360,6 +370,25 @@ public class NanoVG {
         for (int i = 1; i < points.length / 2; i++) {
             nvgLineTo(nanoVGHandler, points[i * 2], points[i * 2 + 1]);
         }
+    }
+
+    public void drawImage(Vector2f relativePosition, float width, float height, int handle) {
+        nvgBeginPath(nanoVGHandler);
+        nvgRect(nanoVGHandler, relativePosition.x, relativePosition.y, width, height);
+        NVGPaint imgPaint = NVGPaint.create();
+        imgPaint = nvgImagePattern(
+                nanoVGHandler,
+                relativePosition.x, relativePosition.y,
+                width, height,
+                0f, handle, 1f, imgPaint);
+        nvgFillPaint(nanoVGHandler, imgPaint);
+        nvgFill(nanoVGHandler);
+    }
+
+    public int createImage(String path, Action action) {
+        int imageHandle = nvgCreateImage(nanoVGHandler, path, 0);
+        imageReloadAction = action;
+        return imageHandle;
     }
 
     /**

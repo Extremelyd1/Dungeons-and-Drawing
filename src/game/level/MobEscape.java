@@ -55,7 +55,7 @@ public class MobEscape extends Level {
 
     private ScrollingPopup text1, text2, text3;
 
-    private boolean paused = false;
+    private boolean paused;
 
     private Mesh snakeMesh;
 
@@ -133,10 +133,10 @@ public class MobEscape extends Level {
         arcCollapsePuzzle = new Puzzle(
                 "To collapse the arc you draw:",
                 // Possible guesses
-                new String[]{"key", "cactus", "hat"}, // TODO: Change values
+                new String[]{"cannon", "frying pan", "rifle"},
                 // Solutions and their corresponding actions
-                new Solution[]{new Solution("key", (s) -> { // TODO: Change the value
-                    gui.setComponent(new ScrollingPopup("You hear a loud bang!", () ->
+                new Solution[]{new Solution("cannon", (s) -> {
+                    gui.setComponent(new ScrollingPopup("You hear a loud explosion!", () ->
                             paused = false
                     ));
                     // Remove the arc and replace the entire row with boulders to block the mob path
@@ -158,6 +158,7 @@ public class MobEscape extends Level {
                 })},
                 new Solution("", (s) -> {
                     gui.setComponent(new ScrollingPopup("A " + s + " will probably not work. Quick, try again!", () -> {
+                        gui.removeComponent();
                         paused = false;
                     }));
                 }),
@@ -182,7 +183,7 @@ public class MobEscape extends Level {
         camera = new FollowCamera(
                 player,
                 new Vector3f(75f, -10f, 0f),
-                new Vector3f(3, 11, 3)
+                new Vector3f(2, 11, 3)
         );
 
         // Load snake
@@ -247,6 +248,8 @@ public class MobEscape extends Level {
                 text1Indicator,
                 puzzle1Inicator
         ));
+
+        paused = false;
     }
 
     @Override
@@ -264,7 +267,7 @@ public class MobEscape extends Level {
             return;
         }
 
-        camera.update();
+        camera.update(interval);
         player.update(interval);
         //sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
 
@@ -300,10 +303,14 @@ public class MobEscape extends Level {
 
         // Snake
         if (snake != null) {
-            if (snake.isCollidingWithTarget()) {
+            if (snake.isCollidingWithTarget(0.95f)) {
                 gui.setComponent(new ScrollingPopup("Snaky the Snek got you :c Try again.", () -> {
                     levelController.restart();
                 }));
+                paused = true;
+
+                // Skip the rest of the update to show the pop up
+                return;
             }
         }
 

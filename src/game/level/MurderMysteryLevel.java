@@ -101,7 +101,7 @@ public class MurderMysteryLevel extends Level {
         camera = new FollowCamera(
                 player,
                 new Vector3f(75f, -10f, 0f),
-                new Vector3f(3, 11, 3)
+                new Vector3f(2, 11, 3)
         );
 
         // Load mesh for question mark
@@ -239,7 +239,7 @@ public class MurderMysteryLevel extends Level {
                 new String[]{"saw", "frying pan", "syringe", "knife", "fork", "gun", "pencil", "axe", "sword"},
                 // Solutions
                 new Solution[]{
-                        new Solution("key", (s) -> { // TODO: Update to the real solution value
+                        new Solution("pencil", (s) -> { // TODO: Update to the real solution value
                             gui.setComponent(new ScrollingPopup("Indeed! Now I remember! It was the pencil. Hah... what a coincidence. I will remove the boxes for you", () -> {
                                 gui.removeComponent();
                                 // Remove crates
@@ -402,7 +402,7 @@ public class MurderMysteryLevel extends Level {
             gui.removeComponent();
         }
 
-        camera.update();
+        camera.update(interval);
         player.update(interval);
         sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
     }

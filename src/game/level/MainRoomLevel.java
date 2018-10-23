@@ -303,13 +303,13 @@ public class MainRoomLevel extends Level {
             entities.add(redGem);
         }
         if (level2Completed) {
-            entities.add(yellowGem);
+            entities.add(blueGem);
         }
         if (level3Completed) {
             entities.add(greenGem);
         }
         if (level4Completed) {
-            entities.add(blueGem);
+            entities.add(yellowGem);
         }
     }
 
@@ -341,6 +341,10 @@ public class MainRoomLevel extends Level {
                 Math.round(player.getPosition().z)
         );
 
+        if (currentPlayerTile.hasTag("treasure_room")) {
+            levelController.switchToLevel(9);
+        }
+
         if (currentPlayerTile.hasTag("trigger")) {
             if (!gui.hasComponent()) {
                 gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
@@ -351,24 +355,23 @@ public class MainRoomLevel extends Level {
                     paused = true;
                 }
                 if (currentPlayerTile.hasTag("entrance_level_1")) {
-                    levelController.switchToLevel(3);
-                }
-                if (currentPlayerTile.hasTag("entrance_level_2")) {
-                    // TODO: Switch to level
-                }
-                if (currentPlayerTile.hasTag("entrance_level_3")) {
                     levelController.switchToLevel(4);
                 }
-                if (currentPlayerTile.hasTag("entrance_level_4")) {
-                    // TODO: Switch to level
+                if (currentPlayerTile.hasTag("entrance_level_2")) {
+                    levelController.switchToLevel(6);
                 }
-
+                if (currentPlayerTile.hasTag("entrance_level_3")) {
+                    levelController.switchToLevel(5);
+                }
+                if (currentPlayerTile.hasTag("entrance_level_4")) {
+                    levelController.switchToLevel(8);
+                }
             }
         } else if (gui.hasComponent()) {
             gui.removeComponent();
         }
 
-        camera.update();
+        camera.update(interval);
         player.update(interval);
         sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
     }

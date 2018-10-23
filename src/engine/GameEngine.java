@@ -131,7 +131,7 @@ public class GameEngine implements Runnable {
                 // Sleep to allow system to do other things
                 Thread.sleep(1);
             } catch (InterruptedException ie) {
-                // TODO: Do something with exception?
+                //TODO: Do something with exception?
             }
         }
     }

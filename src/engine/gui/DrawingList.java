@@ -2,6 +2,7 @@ package engine.gui;
 
 import engine.GameWindow;
 import engine.MouseInput;
+import engine.input.KeyBinding;
 import engine.util.Timer;
 import game.NeuralNetwork;
 import game.puzzle.Puzzle;
@@ -77,7 +78,7 @@ public class DrawingList extends Popup {
         if (isRunning) {
             timeLeft = Math.max(0, timeLeft - timer.getElapsedTime());
 
-            if (timeLeft == 0 || mouse.isRightButtonPressed()) {
+            if (timeLeft == 0 || KeyBinding.isFinishedDrawingPressed()) {
                 BufferedImage image = canvas.getImage();
                 if (image == null) {
                     puzzle.getDefaultSolution().getAction().execute("bamboozled");
