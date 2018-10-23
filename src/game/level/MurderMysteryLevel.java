@@ -239,7 +239,7 @@ public class MurderMysteryLevel extends Level {
                 new String[]{"saw", "frying pan", "syringe", "knife", "fork", "gun", "pencil", "axe", "sword"},
                 // Solutions
                 new Solution[]{
-                        new Solution("pencil", (s) -> { // TODO: Update to the real solution value
+                        new Solution("pencil", (s) -> {
                             gui.setComponent(new ScrollingPopup("Indeed! Now I remember! It was the pencil. Hah... what a coincidence. I will remove the boxes for you", () -> {
                                 gui.removeComponent();
                                 // Remove crates
@@ -260,6 +260,12 @@ public class MurderMysteryLevel extends Level {
                                 hintTile2.removeTag("trigger");
                                 hintTile3.removeTag("trigger");
                                 // Resume the game
+                                paused = false;
+                            }));
+                        }),
+                        new Solution("frying pan", (s) -> {
+                            gui.setComponent(new ScrollingPopup("Although my trusty frying pan has deflected its fair share of bullets, I'm quite sure it didn't kill me.", () -> {
+                                gui.removeComponent();
                                 paused = false;
                             }));
                         })
