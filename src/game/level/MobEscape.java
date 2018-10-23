@@ -155,6 +155,8 @@ public class MobEscape extends Level {
                     puzzleSolved = true;
                     // Remove the snake
                     entitiesToRemove.add(snake);
+                    // Set snake to null so that collision check doesn't occur
+                    snake = null;
                 })},
                 new Solution("", (s) -> {
                     gui.setComponent(new ScrollingPopup("A " + s + " will probably not work. Quick, try again!", () -> {
@@ -271,10 +273,11 @@ public class MobEscape extends Level {
         player.update(interval);
         //sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
 
+        entities.removeAll(entitiesToRemove);
+
         for (Entity entity : entities) {
             entity.update(interval);
         }
-        entities.removeAll(entitiesToRemove);
 
         // Remove entities
         Tile currentPlayerTile = map.getTile(
@@ -350,12 +353,6 @@ public class MobEscape extends Level {
         } else if (gui.hasComponent()) {
             gui.removeComponent();
         }
-
-        // Check end of level
-        if (Math.round(player.getPosition().x) == 27 && Math.round(player.getPosition().z) == 22) {
-            levelController.next();
-        }
-
     }
 
     @Override
