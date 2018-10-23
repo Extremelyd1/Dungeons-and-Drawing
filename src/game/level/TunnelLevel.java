@@ -184,7 +184,9 @@ public class TunnelLevel extends Level {
          //Puzzles
          ghostPuzzle = new Puzzle(
                  "This does nothing...",
-                 new String[]{},
+                 new String[]{"giraffe", "hammer", "butterfly", "cannon", "pencil", "piano", "flashlight", "syringe",
+                         "shovel", "guitar", "key", "knife", "clock", "lightning", "rifle", "saw", "axe", "sun",
+                         "sword", "frying pan", "fork"},
                  new Solution[]{
                          new Solution( "clock", (s) -> {
                              gui.setComponent(new ScrollingPopup("Well played adventurer, I will let you through!", () -> {
