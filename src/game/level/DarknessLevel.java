@@ -58,6 +58,7 @@ public class DarknessLevel extends Level {
      */
     private boolean lightningEnabled = false;
     private int deltaUpdates = 0;
+    private float lightAmount = 0f;
 
     /**
      *
@@ -368,18 +369,19 @@ public class DarknessLevel extends Level {
 
         if (lightningEnabled) {
 
-            sceneLight.directionalLight.setIntensity(0f);
-
             Random rd = new Random();
 
             if (deltaUpdates >= 50) {
+                lightAmount = Math.max(0, lightAmount - 0.09f);
+                sceneLight.directionalLight.setIntensity(lightAmount);
                 deltaUpdates--;
             } else if (rd.nextInt(100) <= 1) {
-                float amount = rd.nextFloat() / 4 + 0.75f;
-                sceneLight.ambientLight = new AmbientLight(new Vector3f(amount));
-                sceneLight.directionalLight.setIntensity(0.1f);
-                deltaUpdates = 30;
+                lightAmount = rd.nextFloat() + 0.50f;
+//                sceneLight.ambientLight = new AmbientLight(new Vector3f(amount));
+                sceneLight.directionalLight.setIntensity(lightAmount);
+                deltaUpdates = 90;
             } else {
+                sceneLight.directionalLight.setIntensity(0f);
                 sceneLight.ambientLight = new AmbientLight(new Vector3f(0f));
                 deltaUpdates = 0;
             }
