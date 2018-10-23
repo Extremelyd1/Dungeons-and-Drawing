@@ -21,8 +21,9 @@ public class LightValidation extends Level {
     private Map map;
     private SceneLight sceneLight;
     private PointLight p1, p2;
-    private boolean p1Forward, p2Forward;
-    private Vector3f speedx, speedz;
+    private SpotLight sp1, sp2;
+    private boolean p1Forward, p2Forward, sp1Forward, sp2Forward;
+    private Vector3f speedx, speedz, rspeedx, rspeedz;
 
     public LightValidation(LevelController levelController) {
         super(levelController);
@@ -42,6 +43,8 @@ public class LightValidation extends Level {
 
         speedx = new Vector3f(0.02f, 0, 0);
         speedz = new Vector3f(0, 0f, 0.02f);
+        rspeedx = new Vector3f(0.008f, 0, 0);
+        rspeedz = new Vector3f(0, 0, 0.008f);
 
         setupRenderer();
     }
@@ -107,6 +110,36 @@ public class LightValidation extends Level {
                 p2.setPosition(new Vector3f(p2.getPosition()).add(speedz));
             } else {
                 p2.setPosition(new Vector3f(p2.getPosition()).sub(speedz));
+            }
+        }
+
+        if (sp1 != null && sp2 != null) {
+            if (sp1.getPosition().x > 7) {
+                sp1Forward = false;
+            } else if (sp1.getPosition().x < 0) {
+                sp1Forward = true;
+            }
+
+            if (sp1Forward) {
+                sp1.setPosition(new Vector3f(sp1.getPosition()).add(speedx));
+                sp1.setConeDirection(new Vector3f(sp1.getConeDirection()).sub(rspeedx));
+            } else {
+                sp1.setPosition(new Vector3f(sp1.getPosition()).sub(speedx));
+                sp1.setConeDirection(new Vector3f(sp1.getConeDirection()).add(rspeedx));
+            }
+
+            if (sp2.getPosition().z > 7) {
+                sp2Forward = false;
+            } else if (sp2.getPosition().z < 0) {
+                sp2Forward = true;
+            }
+
+            if (sp2Forward) {
+                sp2.setPosition(new Vector3f(sp2.getPosition()).add(speedz));
+                sp2.setConeDirection(new Vector3f(sp2.getConeDirection()).sub(rspeedz));
+            } else {
+                sp2.setPosition(new Vector3f(sp2.getPosition()).sub(speedz));
+                sp2.setConeDirection(new Vector3f(sp2.getConeDirection()).add(rspeedz));
             }
         }
 
@@ -240,7 +273,7 @@ public class LightValidation extends Level {
                         1f,
                         new Vector3f(1f, -0.3f, 1f),
                         (float) Math.cos(Math.toRadians(20)),
-                        (float) Math.cos(Math.toRadians(40)),
+                        (float) Math.cos(Math.toRadians(22)),
                         new Vector2f(0.1f, 20f),
                         4096
                 )
@@ -252,11 +285,17 @@ public class LightValidation extends Level {
                         1f,
                         new Vector3f(-1f, -0.3f, 1f),
                         (float) Math.cos(Math.toRadians(20)),
-                        (float) Math.cos(Math.toRadians(40)),
+                        (float) Math.cos(Math.toRadians(22)),
                         new Vector2f(0.1f, 20f),
                         4096
                 )
         );
+
+        sp1 = sceneLight.spotLights.get(0);
+        sp2 = sceneLight.spotLights.get(1);
+
+        sp1.setToDynamicOnly();
+        sp2.setToDynamicOnly();
 
         setupRenderer();
     }
