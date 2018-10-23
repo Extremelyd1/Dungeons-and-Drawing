@@ -78,16 +78,6 @@ public class Utilities {
         return floatArr;
     }
 
-    /**
-     * Gets the absolute path of the resource requested
-     * @param resource the requested resource
-     * @return the absolute path to this resource
-     */
-    public static String getResourcePath(String resource) {
-        URL url = Utilities.class.getClassLoader().getResource(resource);
-        return url.getPath().replaceFirst("/", "");
-    }
-
     public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
         ByteBuffer buffer;
 
@@ -95,7 +85,7 @@ public class Utilities {
         if (Files.isReadable(path)) {
             try (SeekableByteChannel fc = Files.newByteChannel(path)) {
                 buffer = createByteBuffer((int) fc.size() + 1);
-                while (fc.read(buffer) != -1) ;
+                while (fc.read(buffer) != -1);
             }
         } else {
             try (

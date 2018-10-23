@@ -386,9 +386,15 @@ public class NanoVG {
     }
 
     public int createImage(String path, Action action) {
-        int imageHandle = nvgCreateImage(nanoVGHandler, path, 0);
-        imageReloadAction = action;
-        return imageHandle;
+        try {
+            ByteBuffer buffer = Utilities.ioResourceToByteBuffer(path, 150 * 1024);
+            int imageHandle = nvgCreateImageMem(nanoVGHandler, 0, buffer);
+            imageReloadAction = action;
+            return imageHandle;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     /**
