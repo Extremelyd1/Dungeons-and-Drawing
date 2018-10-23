@@ -236,7 +236,7 @@ public class MurderMysteryLevel extends Level {
         puzzle1 = new Puzzle(
                 "What's the murdering weapon?",
                 // Options
-                new String[]{"saw", "frying pan", "syringe", "knife", "fork", "gun", "pencil", "axe", "sword"},
+                new String[]{"saw", "frying pan", "giraffe", "knife", "fork", "rifle", "pencil", "axe", "sword"},
                 // Solutions
                 new Solution[]{
                         new Solution("pencil", (s) -> {
