@@ -6,6 +6,7 @@ import engine.animation.ModelAnimation;
 import engine.camera.Camera;
 import engine.camera.FreeCamera;
 import engine.entities.Entity;
+import engine.entities.IndicatorEntity;
 import engine.entities.animatedModel.AnimatedModel;
 import engine.entities.animatedModel.Player;
 import engine.input.KeyBinding;
@@ -13,30 +14,37 @@ import engine.lights.*;
 import engine.loader.PLYLoader;
 import engine.loader.animatedModelLoader.AnimatedModelLoader;
 import engine.loader.animatedModelLoader.AnimationLoader;
+import engine.util.AssetStore;
 import game.LevelController;
 import game.Renderer;
 import game.level.Level;
 import game.map.Map;
 import game.map.loader.MapFileLoader;
+import game.mobs.Snake;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+import java.security.Key;
 import java.util.ArrayList;
 
 public class LightValidation extends Level {
 
     private Map map;
     private SceneLight sceneLight;
-    private PointLight p1, p2;
+    private PointLight p1, p2, p3, p4;
     private SpotLight sp1, sp2;
     private Entity e1, e2;
     private boolean p1Forward, p2Forward, sp1Forward, sp2Forward;
     private Vector3f speedx, speedz, rspeedx, rspeedz;
     private ArrayList<Entity> entities;
     private Player player;
+    private Mesh questionMarkMesh, snakeMesh;
+    private IndicatorEntity questionMark;
+    private Snake snake;
 
     public LightValidation(LevelController levelController) {
         super(levelController);
@@ -59,6 +67,14 @@ public class LightValidation extends Level {
         }
         Material material_light = new Material(0.1f);
         mesh_light.setMaterial(material_light);
+
+        questionMarkMesh = AssetStore.getMesh("entities", "question_mark");
+        questionMarkMesh.setMaterial(new Material(0f));
+        questionMarkMesh.setIsStatic(false);
+
+        snakeMesh = PLYLoader.loadMesh("/models/entities/snake.ply");
+        snakeMesh.setMaterial(new Material(0.0f));
+        snakeMesh.setIsStatic(false);
 
         e1 = new Entity(mesh_light, new Vector3f(0), new Vector3f(0), 0.05f);
         e2 = new Entity(mesh_light, new Vector3f(0), new Vector3f(0), 0.05f);
@@ -111,6 +127,12 @@ public class LightValidation extends Level {
 
         if (KeyBinding.isKeyPressed(GLFW.GLFW_KEY_A)) {
             setupAnimation();
+        }
+        if (KeyBinding.isKeyPressed(GLFW.GLFW_KEY_B)) {
+            setupAnimation2();
+        }
+        if (KeyBinding.isKeyPressed(GLFW.GLFW_KEY_C)) {
+            setupAnimation3();
         }
 
         if (KeyBinding.isKeyPressed(GLFW.GLFW_KEY_M)) {
@@ -206,7 +228,7 @@ public class LightValidation extends Level {
             if (!(e instanceof Player)) {e.update(interval);}
         });
 
-        camera.update();
+        camera.update(interval);
     }
 
     private void setupRenderer() {
@@ -486,29 +508,83 @@ public class LightValidation extends Level {
         player = new Player(playerModel, map);
         player.setSpeed(4f);
         player.setScale(new Vector3f(0.40f));
-        player.setPosition(new Vector3f(3f, 0.5f, 3f));
+        player.setPosition(new Vector3f(3f, 0.5f, 4.5f));
         player.setRotation(new Vector3f(0, 180, 0));
 
-        p1 = new PointLight(
+        p4 = new PointLight(
                 new Vector3f(1f),
-                new Vector3f(0, 1.5f, 0),
+                new Vector3f(7, 4.5f, 7),
                 0.5f,
                 new PointLight.Attenuation(0f, 0f, 0f),
                 new Vector2f(0.1f, 100f)
         );
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.5f));
 
-        p2 = new PointLight(
-                new Vector3f(1f),
-                new Vector3f(7, 1.5f, 0),
-                0.5f,
-                new PointLight.Attenuation(0f, 0f, 0f),
-                new Vector2f(0.1f, 100f)
-        );
-
-        sceneLight.pointLights.add(p1);
-        sceneLight.pointLights.add(p2);
+        sceneLight.pointLights.add(p4);
 
         entities.add(player);
+
+        setupRenderer();
+    }
+
+    private void setupAnimation2() {
+        sceneLight.cleanup();
+        sceneLight = new SceneLight();
+        entities.clear();
+
+        questionMark = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(3f, 1f, 3f),
+                null
+        );
+
+        p4 = new PointLight(
+                new Vector3f(1f),
+                new Vector3f(7, 4.5f, 7),
+                0.5f,
+                new PointLight.Attenuation(0f, 0f, 0f),
+                new Vector2f(0.1f, 100f)
+        );
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.5f));
+
+        sceneLight.pointLights.add(p4);
+
+        entities.add(questionMark);
+
+        setupRenderer();
+    }
+
+    private void setupAnimation3() {
+        sceneLight.cleanup();
+        sceneLight = new SceneLight();
+        entities.clear();
+
+        Entity target = new Entity(
+                questionMarkMesh,
+                new Vector3f(3, 1, 7),
+                0.01f
+        );
+
+        snake = new Snake(snakeMesh, map);
+        snake.setScale(0.08f);
+        snake.setPosition(3, 0.49f, 0);
+        snake.setSpeed(2.5f);
+        snake.setTarget(target);
+        snake.followOnSightOnly(false);
+
+        entities.add(target);
+        entities.add(snake);
+
+        p4 = new PointLight(
+                new Vector3f(1f),
+                new Vector3f(7, 4.5f, 7),
+                0.5f,
+                new PointLight.Attenuation(0f, 0f, 0f),
+                new Vector2f(0.1f, 100f)
+        );
+        sceneLight.ambientLight = new AmbientLight(new Vector3f(0.5f));
+
+        sceneLight.pointLights.add(p4);
 
         setupRenderer();
     }
