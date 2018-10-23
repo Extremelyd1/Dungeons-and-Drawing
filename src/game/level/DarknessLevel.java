@@ -372,7 +372,7 @@ public class DarknessLevel extends Level {
             Random rd = new Random();
 
             if (deltaUpdates >= 50) {
-                lightAmount = Math.max(0, lightAmount - 0.05f);
+                lightAmount = Math.max(0, lightAmount - 0.09f);
                 sceneLight.directionalLight.setIntensity(lightAmount);
                 deltaUpdates--;
             } else if (rd.nextInt(100) <= 1) {
