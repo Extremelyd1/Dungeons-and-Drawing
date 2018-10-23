@@ -34,9 +34,7 @@ import game.puzzle.Solution;
 import graphics.Material;
 import graphics.Mesh;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
 import org.joml.Vector3f;
-import sun.security.ssl.Debug;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,11 +45,14 @@ public class MobFastRun extends Level {
     private Renderer renderer;
     private Camera camera;
     private List<Entity> entities;
+    private List<Entity> entitiesToRemove;
     private SceneLight sceneLight;
     private GUI gui;
+
     private Puzzle shovelRockPuzzle, doorPuzzle, leftCratePuzzle, rightCratePuzzle;
-    private Entity leftCrateQuestionMark, rightCrateQuestionMark, doorQuestionMark;
-    IndicatorEntity gem;
+    private Mesh mobMesh;
+    private ScrollingPopup text1, text2, text3;
+    private IndicatorEntity gem;
     private DoorEntity mainDoor;
     private Snake mob = null;
     private int toolUsed = 0;
@@ -62,32 +63,13 @@ public class MobFastRun extends Level {
         super(levelController);
     }
 
-    /**
-     * Level Infos
-     *
-     * Tile 14/1 snake spawn tile
-     *
-     * Tile 10/27 open left box (Entity 1)
-     *
-     * Tile 34/27 open right box (Entity 2)
-     *
-     * Tile 27/12 shovel rock out of the way (Entity 0) (Rock at 28/12)     DONE
-     *
-     * Tile 23/30 door open after both boxes are open (Entity 4)
-     *
-     * Tile 23/29 key(Entity 3)
-     *
-     * Tile 23/36 End of level
-     */
-
     @Override
     public void init() throws Exception {
         // Load Map tiles
-        MapFileLoader mapFileLoader = new MapFileLoader("/levels/mobRun/generatedEditorLevel_tiles.lvl");
-        map = mapFileLoader.load();
-        final Tile tiles[][] = map.getTiles();
-        // Setup tiles
-        tiles[28][12].getMesh().setIsStatic(false);
+        map = new MapFileLoader("/levels/mob_run_fast.lvl").load();
+
+        entities = new ArrayList<>();
+        entitiesToRemove = new ArrayList<>();
 
         // Setup rendering
         renderer = new Renderer();
@@ -105,46 +87,152 @@ public class MobFastRun extends Level {
                 new Vector2f(1.0f, 10.0f),             // near-far plane
                 false);
 
-        for (int i = 0; i < 10; i++) {
+        map.getTiles("hang_light").forEach((t) -> {
             sceneLight.pointLights.add(new PointLight(
-                    new Vector3f(1f, 1f, 1f),
-                    new Vector3f(2, 2, 2),
-                    0.0f,
-                    new Vector2f(0.1f, 60f)
+                    new Vector3f(0.968f, 0.788f, 0.390f),
+                    new Vector3f(t.getPosition().x, 3.5f, t.getPosition().y),
+                    0.2f,
+                    new PointLight.Attenuation(0f, 0f, 0f),
+                    new Vector2f(0.1f, 100f)
             ));
-            sceneLight.pointLights.get(i).setAttenuation(new PointLight.Attenuation(0.0f, 0.00f,0.2f));
-        }
-        LevelEditor.loadLights("/resources/levels/mobRun/", "generatedEditorLevel_lights.lvl", sceneLight);
+        });
+        map.getTiles("crate_light").forEach(t -> {
+            sceneLight.pointLights.add(
+                    new PointLight(
+                            new Vector3f(0.701f, 0.439f, 0f),
+                            new Vector3f(t.getPosition().x, 2.5f, t.getPosition().y),
+                            0.6f,
+                            new PointLight.Attenuation(0f, 0f, 0f),
+                            new Vector2f(0.1f, 100f)
+                    )
+            );
+        });
 
-        // Setup map Entities
-        entities = new ArrayList<>();
-        LevelEditor.loadEntities("/resources/levels/mobRun", "generatedEditorLevel_entities.lvl", entities);
-        for (int i = 0; i < entities.size(); i++) {
-            entities.get(i).getMesh().setIsStatic(false);
-        }
+        // Load normal floor mesh
+        Mesh floorMesh = AssetStore.getTileMesh("stone_floor");
+        floorMesh.setMaterial(new Material(0f));
 
-        // Setup Question Marks
-        IndicatorEntity triggerEntity[] = new IndicatorEntity[5];
-        for (int i =0; i < 4; i++) {
-            triggerEntity[i] = new IndicatorEntity(
-                entities.get(i).getMesh(),
-                new Vector3f(entities.get(i).getPosition().x, 1f, entities.get(i).getPosition().z),
-                tiles[Math.round(entities.get(i).getPosition().x)][Math.round(entities.get(i).getPosition().z)]);
-            entities.set(i, triggerEntity[i]);
-        }
-        leftCrateQuestionMark = entities.get(1);
-        rightCrateQuestionMark = entities.get(2);
-        doorQuestionMark = entities.get(3);
+        // Load mesh for question mark
+        Mesh questionMarkMesh = AssetStore.getMesh("entities", "question_mark");
+        questionMarkMesh.setMaterial(new Material(0f));
+        questionMarkMesh.setIsStatic(false);
 
-        mainDoor = new DoorEntity(
-                entities.get(4).getMesh(),
-                entities.get(4).getPosition(),
-                entities.get(4).getRotation(),
-                0.5f,
-                tiles[Math.round(entities.get(4).getPosition().x)][Math.round(entities.get(4).getPosition().z)]
+        // Load mesh for pencil
+        Mesh pencilMesh = AssetStore.getMesh("entities", "pencil");
+        pencilMesh.setMaterial(new Material(0f));
+        pencilMesh.setIsStatic(false);
+
+        // Load gem
+        Mesh gemMesh = AssetStore.getMesh("entities", "gem_blue");
+        gemMesh.setMaterial(new Material(0f));
+        gemMesh.setIsStatic(false);
+
+        // Load door mesh
+        Mesh doorMesh = AssetStore.getMesh("entities", "wooden_door");
+        doorMesh.setMaterial(new Material(0f));
+        doorMesh.setIsStatic(false);
+
+        // Load mob mesh
+        mobMesh = PLYLoader.loadMesh("/models/entities/snake.ply");
+        mobMesh.setMaterial(new Material(0f));
+        mobMesh.setIsStatic(false);
+
+        Tile text1Tile = map.getTile("text1");
+
+        IndicatorEntity text1Indicator = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(text1Tile.getPosition().x, 1f, text1Tile.getPosition().y),
+                new Vector3f(text1Tile.getRotation()),
+                text1Tile
         );
-        entities.set(4, mainDoor);
-        tiles[Math.round(entities.get(4).getPosition().x)][Math.round(entities.get(4).getPosition().z)].setSolid(true);
+        entities.add(text1Indicator);
+
+        // Setup text
+        text1 = new ScrollingPopup("What is this room supposed to be? It looks like some kind of storage room.", () -> {
+            gui.setComponent(new ScrollingPopup("Perhaps I can find some treasure here, or maybe a gem!", () -> {
+                gui.removeComponent();
+                paused = false;
+            }));
+        });
+
+        Tile text2Tile = map.getTile("text2");
+
+        IndicatorEntity text2Indicator = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(text2Tile.getPosition().x, 1f, text2Tile.getPosition().y),
+                new Vector3f(text2Tile.getRotation()),
+                text2Tile
+        );
+        entities.add(text2Indicator);
+
+        text2 = new ScrollingPopup("What in tarnation are you doing here, there is a bloody snake after you!", () -> {
+            gui.setComponent(new ScrollingPopup("Well, don't just stand there, find a way out of here!", () -> {
+                gui.removeComponent();
+                paused = false;
+            }));
+        });
+
+        Tile text3Tile = map.getTile("text3");
+
+        IndicatorEntity text3Indicator = new IndicatorEntity(
+                questionMarkMesh,
+                new Vector3f(text3Tile.getPosition().x, 1f, text3Tile.getPosition().y),
+                new Vector3f(text3Tile.getRotation()),
+                text3Tile
+        );
+        entities.add(text3Indicator);
+
+        text3 = new ScrollingPopup("While rummaging around the crates you hear something. Better get moving.", () -> {
+            gui.removeComponent();
+            paused = false;
+        });
+
+        Tile puzzle1Tile = map.getTile("puzzle1");
+
+        IndicatorEntity puzzle1Indicator = new IndicatorEntity(
+                pencilMesh,
+                new Vector3f(puzzle1Tile.getPosition().x, 1f, puzzle1Tile.getPosition().y),
+                puzzle1Tile
+        );
+        entities.add(puzzle1Indicator);
+
+        Tile puzzle2Tile = map.getTile("puzzle2");
+
+        IndicatorEntity puzzle2Indicator = new IndicatorEntity(
+                pencilMesh,
+                new Vector3f(puzzle2Tile.getPosition().x, 1f, puzzle2Tile.getPosition().y),
+                puzzle2Tile
+        );
+        entities.add(puzzle2Indicator);
+
+        Tile puzzle3Tile = map.getTile("puzzle3");
+
+        IndicatorEntity puzzle3Indicator = new IndicatorEntity(
+                pencilMesh,
+                new Vector3f(puzzle3Tile.getPosition().x, 1f, puzzle3Tile.getPosition().y),
+                puzzle3Tile
+        );
+        entities.add(puzzle3Indicator);
+
+        Tile puzzle4Tile = map.getTile("puzzle4");
+
+        IndicatorEntity puzzle4Indicator = new IndicatorEntity(
+                pencilMesh,
+                new Vector3f(puzzle4Tile.getPosition().x, 1f, puzzle4Tile.getPosition().y),
+                puzzle4Tile
+        );
+        entities.add(puzzle4Indicator);
+
+        Tile doorTile = map.getTile("door");
+        mainDoor = new DoorEntity(
+                doorMesh,
+                new Vector3f(doorTile.getPosition().x - 0.5f, 0f, doorTile.getPosition().y),
+                new Vector3f(0),
+                0.5f,
+                doorTile
+        );
+        doorTile.setSolid(true);
+        entities.add(mainDoor);
 
         // Setup gui
         gui = new GUI();
@@ -157,10 +245,13 @@ public class MobFastRun extends Level {
         ModelAnimation playerAnimation = AnimationLoader.loadAnimation(playerModel);
         playerModel.doAnimation(playerAnimation);
         player = new Player(playerModel, map);
-        player.setSpeed(4f);
+        player.setSpeed(3f);
         player.setScale(new Vector3f(0.25f));
-        player.setPosition(1, 0.5f, 9);
         entities.add(player);
+
+        Tile spawn = map.getTile("spawn");
+
+        player.setPosition(spawn.getPosition().x, 0.5f, spawn.getPosition().y);
 
         // Setup camera
         camera = new FollowCamera(
@@ -168,6 +259,9 @@ public class MobFastRun extends Level {
                 new Vector3f(75f, -10f, 0f),
                 new Vector3f(2, 11, 3)
         );
+
+        Tile stoneTile = map.getTile("stone");
+        stoneTile.getMesh().setIsStatic(false);
 
         // Setup Puzzles
         //// Shovel Rock Puzzle
@@ -178,37 +272,27 @@ public class MobFastRun extends Level {
                 // Solutions and their corresponding actions
                 new Solution[]{new Solution("shovel", (s) -> {
                     gui.setComponent(new ScrollingPopup("Your shovel moves the rock out of the way however it snaps making a loud noise", () ->
-                            gui.setComponent(new ScrollingPopup("I hear a hissing noise in the distance... I better hurry up...", () ->
+                            gui.setComponent(new ScrollingPopup("While shoveling you heard some noises coming from somewhere around the crates...", () ->
                                     paused = false
                             ))
                     ));
-                    // Remove the arc and replace the entire row with boulders to block the mob path
-                    tiles[28][12] = new Tile(new Vector2i(28, 12), new Vector3f(tiles[28][12].getRotation()), AssetStore.getTileMesh("stone_floor"), true);
-                    tiles[28][12].getMesh().setIsStatic(false);
-                    tiles[28][12].setSolid(false);
-                    tiles[Math.round(entities.get(0).getPosition().x)][Math.round(entities.get(0).getPosition().z)].removeTag("trigger1");
-                    entities.remove(0);     // Remove Question Mark
 
-                    //Mob Spawn
-                    Mesh mobMesh = null;
-                    try { mobMesh = PLYLoader.loadMesh("/models/entities/snake.ply");} catch (Exception e) {}
-                    mobMesh.setMaterial(new Material(0.0f));
-                    mobMesh.setIsStatic(false);
-                    mob = new Snake(mobMesh, map);
-                    mob.setScale(0.08f);
-                    mob.setPosition(14, 0.49f, 1);
-                    mob.setSpeed(2.5f);
-                    mob.setTarget(player);
-                    mob.followOnSightOnly(false);
-                    entities.add(mob);
+                    stoneTile.setMesh(floorMesh);
+                    stoneTile.setSolid(false);
+
+                    puzzle1Indicator.remove(() -> entitiesToRemove.add(puzzle1Indicator));
+                    puzzle1Tile.removeTag("trigger");
 
                 })}, new Solution("", (s) -> {
-            gui.removeComponent();
-            paused = false;
-        })
-                , 10
+                    gui.setComponent(new ScrollingPopup("I'm not sure what to do with " + s, () -> {
+                        gui.removeComponent();
+                        paused = false;
+                    }));
+                }), 10
         );
-        tiles[Math.round(entities.get(0).getPosition().x)][Math.round(entities.get(0).getPosition().z)].addTag("trigger1");
+
+        Tile crate1 = map.getTile("crate1");
+        crate1.getMesh().setIsStatic(false);
 
         // Left Crate Puzzle
         leftCratePuzzle = new Puzzle(
@@ -246,23 +330,23 @@ public class MobFastRun extends Level {
                         toolUsed = 3;
                     }
 
-                    // Remove the crate and speed up the mob
-                    tiles[10][27] = new Tile(new Vector2i(10, 27), new Vector3f(tiles[10][27].getRotation()), AssetStore.getTileMesh("stone_floor"), true);
-                    tiles[10][27].getMesh().setIsStatic(false);
-                    tiles[10][27].setSolid(false);
-                    tiles[Math.round(entities.get(1).getPosition().x)][Math.round(entities.get(1).getPosition().z)].removeTag("trigger2");
-                    entities.remove(leftCrateQuestionMark);
+                    // Remove the crate and trigger
+                    crate1.setMesh(floorMesh);
+                    crate1.setSolid(false);
+
+                    puzzle2Indicator.remove(() -> entitiesToRemove.add(puzzle2Indicator));
+                    puzzle2Tile.removeTag("trigger");
                 }),
                 new Solution("saw", (s) -> {
                     if (toolUsed == 2) {
-                        gui.setComponent(new ScrollingPopup("Your saw is broken. You miserably fail to open the crate with it", () ->
+                        gui.setComponent(new ScrollingPopup("Your saw is broken. You miserably fail to open the crate with it.", () ->
                                 paused = false
                         ));
                         return;         // Axe already used
                     } else if (toolUsed == 0) {
                         gui.setComponent(new ScrollingPopup("As you saw open the crate the saw handle suddenly breaks off.", () ->
                                 gui.setComponent(new ScrollingPopup("Guess I won't be able to use this anymore. Hope I won't need it again.", () ->
-                                        gui.setComponent(new ScrollingPopup("At least it opened the box though and you find a mysterious artifact", () ->
+                                        gui.setComponent(new ScrollingPopup("At least it opened the box though and you find a mysterious artifact.", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
                                                         paused = false
                                                 ))
@@ -271,8 +355,8 @@ public class MobFastRun extends Level {
                         ));
                         toolUsed = 2;
                     } else {
-                        gui.setComponent(new ScrollingPopup("You manage to saw open the crate and find another mysterious artifact. ", () ->
-                                gui.setComponent(new ScrollingPopup("Yes! This completes the other half I found earlier! ", () ->
+                        gui.setComponent(new ScrollingPopup("You manage to saw open the crate and find another mysterious artifact.", () ->
+                                gui.setComponent(new ScrollingPopup("Yes! This completes the other half I found earlier!", () ->
                                         gui.setComponent(new ScrollingPopup("Wonder what I could do with this butterfly looking object...", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
                                                         paused = false
@@ -283,21 +367,25 @@ public class MobFastRun extends Level {
                         toolUsed = 3;
                     }
 
-                    // Remove the crate and speed up the mob
-                    tiles[10][27] = new Tile(new Vector2i(10, 27), new Vector3f(tiles[10][27].getRotation()), AssetStore.getTileMesh("stone_floor"), true);
-                    tiles[10][27].getMesh().setIsStatic(false);
-                    tiles[10][27].setSolid(false);
-                    tiles[Math.round(entities.get(1).getPosition().x)][Math.round(entities.get(1).getPosition().z)].removeTag("trigger2");
-                    entities.remove(leftCrateQuestionMark);
+                    // Remove the crate and trigger
+                    crate1.setMesh(floorMesh);
+                    crate1.setSolid(false);
+
+                    puzzle2Indicator.remove(() -> entitiesToRemove.add(puzzle2Indicator));
+                    puzzle2Tile.removeTag("trigger");
                 })
                 },
                 new Solution("", (s) -> {
-                    gui.removeComponent();
-                    paused = false;
+                    gui.setComponent(new ScrollingPopup("I'm not sure how I can use " + s, () -> {
+                        gui.removeComponent();
+                        paused = false;
+                    }));
                 })
                 , 10
         );
-        tiles[Math.round(entities.get(1).getPosition().x)][Math.round(entities.get(1).getPosition().z)].addTag("trigger2");
+
+        Tile crate2 = map.getTile("crate2");
+        crate2.getMesh().setIsStatic(false);
 
         // Right Crate Puzzle
         rightCratePuzzle = new Puzzle(
@@ -307,14 +395,14 @@ public class MobFastRun extends Level {
                 // Solutions and their corresponding actions
                 new Solution[]{new Solution("axe", (s) -> {
                     if (toolUsed == 1) {
-                        gui.setComponent(new ScrollingPopup("Your axe is broken. You miserably fail to open the crate with it", () ->
+                        gui.setComponent(new ScrollingPopup("Your axe is broken. You miserably fail to open the crate with it.", () ->
                                 paused = false
                         ));
                         return;         // Axe already used
                     } else if (toolUsed == 0) {
                         gui.setComponent(new ScrollingPopup("As you slice open the crate the axe head suddenly flies off.", () ->
                                 gui.setComponent(new ScrollingPopup("Guess I won't be able to use this anymore. Hope I won't need it again.", () ->
-                                        gui.setComponent(new ScrollingPopup("At least it opened the box though and you find a mysterious artifact", () ->
+                                        gui.setComponent(new ScrollingPopup("At least it opened the box though and you find a mysterious artifact.", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
                                                         paused = false
                                                 ))
@@ -323,8 +411,8 @@ public class MobFastRun extends Level {
                         ));
                         toolUsed = 1;
                     } else {
-                        gui.setComponent(new ScrollingPopup("You manage to slice open the crate and find another mysterious artifact. ", () ->
-                                gui.setComponent(new ScrollingPopup("Yes! This completes the other half I found earlier! ", () ->
+                        gui.setComponent(new ScrollingPopup("You manage to slice open the crate and find another mysterious artifact.", () ->
+                                gui.setComponent(new ScrollingPopup("Yes! This completes the other half I found earlier!", () ->
                                         gui.setComponent(new ScrollingPopup("Wonder what I could do with this butterfly looking object...", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
                                                         paused = false
@@ -335,12 +423,12 @@ public class MobFastRun extends Level {
                         toolUsed = 3;
                     }
 
-                    // Remove the crate and speed up the mob
-                    tiles[34][27] = new Tile(new Vector2i(34, 27), new Vector3f(tiles[34][27].getRotation()), AssetStore.getTileMesh("stone_floor"), true);
-                    tiles[34][27].getMesh().setIsStatic(false);
-                    tiles[34][27].setSolid(false);
-                    tiles[Math.round(entities.get(2).getPosition().x)][Math.round(entities.get(2).getPosition().z)].removeTag("trigger3");
-                    entities.remove(rightCrateQuestionMark);
+                    // Remove the crate and trigger
+                    crate2.setMesh(floorMesh);
+                    crate2.setSolid(false);
+
+                    puzzle3Indicator.remove(() -> entitiesToRemove.add(puzzle3Indicator));
+                    puzzle3Tile.removeTag("trigger");
                 }),
                 new Solution("saw", (s) -> {
                     if (toolUsed == 2) {
@@ -349,9 +437,9 @@ public class MobFastRun extends Level {
                         ));
                         return;         // Axe already used
                     } else if (toolUsed == 0) {
-                        gui.setComponent(new ScrollingPopup("As you saw through the crate the handle suddenly breaks apart", () ->
+                        gui.setComponent(new ScrollingPopup("As you saw through the crate the handle suddenly breaks apart.", () ->
                                 gui.setComponent(new ScrollingPopup("Guess I won't be able to use this anymore. Hope I won't need it again.", () ->
-                                        gui.setComponent(new ScrollingPopup("At least it opened the crate though and you find a mysterious artifact", () ->
+                                        gui.setComponent(new ScrollingPopup("At least it opened the crate though and you find a mysterious artifact.", () ->
                                                 gui.setComponent(new ScrollingPopup("You hear another hissing noise...", () ->
                                                         paused = false
                                                 ))
@@ -372,21 +460,22 @@ public class MobFastRun extends Level {
                         toolUsed = 3;
                     }
 
-                    // Remove the crate and speed up the mob
-                    tiles[34][27] = new Tile(new Vector2i(34, 27), new Vector3f(tiles[34][27].getRotation()), AssetStore.getTileMesh("stone_floor"), true);
-                    tiles[34][27].getMesh().setIsStatic(false);
-                    tiles[34][27].setSolid(false);
-                    tiles[Math.round(entities.get(2).getPosition().x)][Math.round(entities.get(2).getPosition().z)].removeTag("trigger3");
-                    entities.remove(rightCrateQuestionMark);
+                    // Remove the crate and trigger
+                    crate2.setMesh(floorMesh);
+                    crate2.setSolid(false);
+
+                    puzzle3Indicator.remove(() -> entitiesToRemove.add(puzzle3Indicator));
+                    puzzle3Tile.removeTag("trigger");
                 })
                 },
                 new Solution("", (s) -> {
-                    gui.removeComponent();
-                    paused = false;
+                    gui.setComponent(new ScrollingPopup("What am I supposed to do with " + s, () -> {
+                        gui.removeComponent();
+                        paused = false;
+                    }));
                 })
                 , 10
         );
-        tiles[Math.round(entities.get(2).getPosition().x)][Math.round(entities.get(2).getPosition().z)].addTag("trigger3");
 
         // Door Puzzle
         doorPuzzle = new Puzzle(
@@ -395,51 +484,49 @@ public class MobFastRun extends Level {
                 new String[]{"key", "butterfly"},
                 // Solutions and their corresponding actions
                 new Solution[]{new Solution("key", (s) -> {
-                    gui.setComponent(new ScrollingPopup("I need some kind of weird object to open this door", () ->
-                            gui.setComponent(new ScrollingPopup("Perhaps I can find it somewhere around here...", () ->
-                                    paused = false
-                            ))
+                    gui.setComponent(new ScrollingPopup("I need some kind of weird object to open this door.", () ->
+                            gui.setComponent(new ScrollingPopup("Perhaps I can find it somewhere around here...", () -> {
+                                    paused = false;
+                                    gui.removeComponent();
+                            }))
                     ));
                 }),
                 new Solution("butterfly", (s) -> {
                     if (toolUsed == 3) {
+                        gui.setComponent(new ScrollingPopup("The door opens very slowly.... Hurry up already before that snake catches up!", () -> {
+                            paused = false;
+                            gui.removeComponent();
+                        }));
+
                         mainDoor.open();
-                        gui.setComponent(new ScrollingPopup("The door opens.... Hurry up already before that snake catches up!", () ->
-                                paused = false
-                        ));
+
+                        puzzle4Indicator.remove(() -> entitiesToRemove.add(puzzle4Indicator));
+
                     } else {
-                        gui.setComponent(new ScrollingPopup("Not sure what I can do with a butterfly...", () ->
-                                paused = false
-                        ));
+                        gui.setComponent(new ScrollingPopup("Not sure what I can do with a butterfly...", () -> {
+                            paused = false;
+                            gui.removeComponent();
+                        }));
                     }
                 })},
                 new Solution("", (s) -> {
-                    gui.removeComponent();
-                    paused = false;
-                })
-                , 10
+                    gui.setComponent(new ScrollingPopup("Not sure what I can do with a " + s, () -> {
+                        paused = false;
+                        gui.removeComponent();
+                    }));
+                }), 10
         );
-        tiles[Math.round(entities.get(3).getPosition().x)][Math.round(entities.get(3).getPosition().z)].addTag("trigger4");
 
-        // Add gem
-        // Load gem
-        Mesh gemMesh = AssetStore.getMesh("entities", "gem_blue");
-        gemMesh.setMaterial(new Material(0f));
-        gemMesh.setIsStatic(false);
-
+        Tile gemTile = map.getTile("gem");
         gem = new IndicatorEntity(
                 gemMesh,
-                new Vector3f(23, 1.5f, 35),
+                new Vector3f(gemTile.getPosition().x, 1.5f, gemTile.getPosition().y),
                 new Vector3f(45f, 90f, 45f),
-                null
+                gemTile
         );
-        tiles[23][35].addTag("gem");
         entities.add(gem);
 
         paused = false;
-
-        // DEBUG
-        Debug.println("MobFastRun", "Mob Fast Run level loaded");
     }
 
     @Override
@@ -456,20 +543,19 @@ public class MobFastRun extends Level {
             player.update(interval);
             sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
 
+            entities.removeAll(entitiesToRemove);
+
             for (Entity entity : entities) {
                 entity.update(interval);
             }
 
             if (mob != null) {
                 mob.update(interval);
-                if (mob.isCollidingWithTarget(0.95f)) {
-                    //levelController.restart();
+                if (mob.isCollidingWithTarget(0.5f)) {
                     gui.setComponent(new ScrollingPopup("You were too slow...", () -> {
                         paused = false;
-                        Debug.println("MobFastRun", "Level restart");
                         levelController.restart();
                     }));
-                    Debug.println("MobFastRun", "Paused");
                     paused = true;
                     return;
                 }
@@ -481,65 +567,81 @@ public class MobFastRun extends Level {
                     Math.round(player.getPosition().z)
             );
             // Handle puzzles
-            if (currentPlayerTile.hasTag("trigger1")) {
+            if (currentPlayerTile.hasTag("trigger")) {
                 if (!gui.hasComponent()) {
                     // Show interact hint
                     gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
-                    // Check the exact trigger
                 }
-                if (KeyBinding.isInteractPressed() && currentPlayerTile.hasTag("trigger1")) {
-                    // Show puzzle GUI
-                    gui.setComponent(new PuzzleGUI(shovelRockPuzzle));
-                    paused = true;
+                if (KeyBinding.isInteractPressed()) {
+                    if (currentPlayerTile.hasTag("text1")) {
+                        gui.setComponent(text1);
+                        paused = true;
+                    } else if (currentPlayerTile.hasTag("text2")) {
+                        gui.setComponent(text2);
+                        paused = true;
+                    } else if (currentPlayerTile.hasTag("text3")) {
+                            gui.setComponent(text3);
+                            paused = true;
+                    } else if (currentPlayerTile.hasTag("puzzle1")) {
+                        paused = true;
+                        gui.setComponent(new ScrollingPopup("These rocks look like they could move if I had some tools for them.", () -> {
+                            gui.setComponent(new PuzzleGUI(shovelRockPuzzle));
+                        }));
+                    } else if (currentPlayerTile.hasTag("puzzle2")) {
+                        paused = true;
+                        gui.setComponent(new ScrollingPopup("This crate looks suspicious, perhaps with the right tool I could take a peek inside.", () -> {
+                            gui.setComponent(new PuzzleGUI(leftCratePuzzle));
+                        }));
+                    } else if (currentPlayerTile.hasTag("puzzle3")) {
+                        paused = true;
+                        gui.setComponent(new ScrollingPopup("This crate looks suspicious, I wonder if I could open it with a tool somehow.", () -> {
+                            gui.setComponent(new PuzzleGUI(rightCratePuzzle));
+                        }));
+                    } else if (currentPlayerTile.hasTag("puzzle4")) {
+                        paused = true;
+                        gui.setComponent(new ScrollingPopup("There is a weird shaped hole in this door...", () -> {
+                            gui.setComponent(new PuzzleGUI(doorPuzzle));
+                        }));
+                    } else if (currentPlayerTile.hasTag("end")) {
+                        levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_4);
+                    }
                 }
-                // If not on any trigger anymore, remove floating text
-            } else if (currentPlayerTile.hasTag("trigger2")) {
-                if (!gui.hasComponent()) {
-                    // Show interact hint
-                    gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
-                    // Check the exact trigger
-                }
-                if (KeyBinding.isInteractPressed() && currentPlayerTile.hasTag("trigger2")) {
-                    // Show puzzle GUI
-                    gui.setComponent(new PuzzleGUI(leftCratePuzzle));
-                    paused = true;
-                }
-                // If not on any trigger anymore, remove floating text
-            } else if (currentPlayerTile.hasTag("trigger3")) {
-                if (!gui.hasComponent()) {
-                    // Show interact hint
-                    gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
-                    // Check the exact trigger
-                }
-                if (KeyBinding.isInteractPressed() && currentPlayerTile.hasTag("trigger3")) {
-                    // Show puzzle GUI
-                    gui.setComponent(new PuzzleGUI(rightCratePuzzle));
-                    paused = true;
-                }
-                // If not on any trigger anymore, remove floating text
-            } else if (currentPlayerTile.hasTag("trigger4")) {
-                if (!gui.hasComponent()) {
-                    // Show interact hint
-                    gui.setComponent(new FloatingScrollText("Press 'e' to interact"));
-                    // Check the exact trigger
-                }
-                if (KeyBinding.isInteractPressed() && currentPlayerTile.hasTag("trigger4")) {
-                    // Show puzzle GUI
-                    gui.setComponent(new PuzzleGUI(doorPuzzle));
-                    paused = true;
-                }
-                // If not on any trigger anymore, remove floating text
             } else if (currentPlayerTile.hasTag("gem")) {
-                entities.remove(gem);
-                currentPlayerTile.removeTag("gem");
-                levelController.setGemFound(LevelController.GEM.BLUE);
-            }else if (gui.hasComponent()) {
-                gui.removeComponent();
-            }
+                paused = true;
+                gui.setComponent(new ScrollingPopup("You found the blue gem! Quickly go back to the main room before the snake catches you!", () -> {
+                    gem.remove(() -> entitiesToRemove.add(gem));
+                    currentPlayerTile.removeTag("gem");
+                    levelController.setGemFound(LevelController.GEM.BLUE);
+                    paused = false;
+                }));
+            } else if (currentPlayerTile.hasTag("snake_trigger")) {
 
-            // Check end of level
-            if (Math.round(player.getPosition().x) == 23 && Math.round(player.getPosition().z) == 36) {
-                levelController.switchToMainRoom(MainRoomLevel.MAIN_ROOM_SPAWN.FROM_LEVEL_4);
+                paused = true;
+
+                gui.setComponent(new ScrollingPopup("Suddenly you notice the distinct hissing sound coming from the hallway behind you.", () -> {
+
+                    gui.setComponent(new ScrollingPopup("That can't be any good news, quickly try to get out of the room as soon as you can!", () -> {
+
+                        map.getTiles("snake_trigger").forEach((t) -> t.removeTag("snake_trigger"));
+
+                        Tile snakeSpawnTile = map.getTile("snake_spawn");
+
+                        //Mob Spawn
+                        mob = new Snake(mobMesh, map);
+                        mob.setScale(0.08f);
+                        mob.setPosition(snakeSpawnTile.getPosition().x, 0.49f, snakeSpawnTile.getPosition().y);
+                        mob.setSpeed(2.6f);
+                        mob.setTarget(player);
+                        mob.followOnSightOnly(false);
+                        entities.add(mob);
+
+                        paused = false;
+
+                    }));
+
+                }));
+            } else if (gui.hasComponent()) {
+                gui.removeComponent();
             }
         }
 
