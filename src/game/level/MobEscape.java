@@ -87,9 +87,7 @@ public class MobEscape extends Level {
         map = new MapFileLoader("/levels/mob_escape_level.lvl").load();
 
         // Make sure the shadows update
-        map.getTile("stone_1").getMesh().setIsStatic(false);
         map.getTile("arc").getMesh().setIsStatic(false);
-        map.getTile("stone_2").getMesh().setIsStatic(false);
 
         // Setup rendering
         renderer = new Renderer();
@@ -142,10 +140,13 @@ public class MobEscape extends Level {
                     // Remove the arc and replace the entire row with boulders to block the mob path
                     map.getTile("stone_1").setMesh(stone1Mesh);
                     map.getTile("stone_1").setSolid(true);
+                    map.getTile("stone_1").getMesh().setIsStatic(false);
                     map.getTile("arc").setMesh(stone2Mesh);
                     map.getTile("arc").setSolid(true);
+                    map.getTile("arc").getMesh().setIsStatic(false);
                     map.getTile("stone_2").setMesh(stone1Mesh);
                     map.getTile("stone_2").setSolid(true);
+                    map.getTile("stone_2").getMesh().setIsStatic(false);
                     // Remove tag
                     puzzle1Tile.removeTag("trigger");
                     // Remove indicator
