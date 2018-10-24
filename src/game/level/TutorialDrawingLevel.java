@@ -192,7 +192,7 @@ public class TutorialDrawingLevel extends Level {
 
         text3 = new ScrollingPopup("In this game you need to draw your solution to puzzles. Use the drawing interface to draw your solution.", () -> {
             gui.setComponent(new ScrollingPopup("You can see a list of possible options to your right and the timer in the right upper corner.", () -> {
-                gui.setComponent(new ScrollingPopup("When the timer hits zero, your drawing will be evaluated. Or you can fast forward this by pressing the enter key.", () -> {
+                gui.setComponent(new ScrollingPopup("When the timer hits zero, your drawing will be evaluated. Or you can fast forward this by pressing the space bar.", () -> {
                     gui.setComponent(new ScrollingPopup("In order to improve your results, make sure that your drawings are as big as possible. The bigger, the better the game is at recognising them.", () -> {
                         gui.setComponent(new ScrollingPopup("Some puzzles will only have one solution and you might even have to look for hints to figure out what the solution is. Others might have multiple, so let the creativity flow through you, young adventurer!", () -> {
                             gui.setComponent(new ScrollingPopup("If the game keeps mistaking your drawing for something else, try to draw the defining features of your object as well as possible.", () -> {
