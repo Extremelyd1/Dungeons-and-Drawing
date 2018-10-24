@@ -1,5 +1,7 @@
 package game.level;
 
+import engine.GameEngine;
+import engine.GameWindow;
 import engine.MouseInput;
 import engine.animation.ModelAnimation;
 import engine.camera.Camera;
@@ -109,9 +111,13 @@ public class TreasureRoomLevel extends Level {
         text1 = new ScrollingPopup("You did it, traveller! Your drawing skills are so magnificent. Bob Ross would be so proud of you.", () -> {
             gui.setComponent(new ScrollingPopup("Now, you can take a bath in these old coins. They are worth nothing but hey, it was at least a fine adventure, right? Right?", () -> {
                 gui.setComponent(new ScrollingPopup("Anyway, please don't forget to lock the doors when you leave. We don't want to spoil the treasure for the next *cough* ignorant, naive, soul.", () -> {
-                    gui.setComponent(new ScrollingPopup("So, yea, this is awkward. I think I'll crash the application to exit the game, so, any final words? No? Alright, bye!", () -> {
-                        this.terminate();
-                        System.exit(0);
+                    gui.setComponent(new ScrollingPopup("So, jump back to title screen? Yea? With that epic music? Sure thing!", () -> {
+                        levelController.restartGame();
+                        try {
+                            levelController.init();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }));
                 }));
             }));

@@ -6,7 +6,6 @@ import engine.input.KeyBinding;
 import engine.util.AssetStore;
 import engine.util.Timer;
 import game.level.*;
-import game.level.validation.HdrTestLevel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,19 +21,7 @@ public class LevelController implements IGameLogic {
     private MainRoomLevel mainRoomLevel;
 
     public LevelController() {
-        this.levels = new ArrayList<>(Arrays.asList(
-                new TitleScreenLevel(this),      // 0
-                new TutorialDrawingLevel(this),  // 1
-                new MobEscape(this),             // 2
-                new MainRoomLevel(this),         // 3
-                new DarknessLevel(this),         // 4
-                new MurderMysteryLevel(this),    // 5
-                new PrisonEscapeLevel(this),     // 6
-                new TunnelLevel(this),           // 7
-                new MobFastRun(this),            // 8
-                new TreasureRoomLevel(this)      // 9
-        ));
-        this.active = 0;
+        this.restartGame();
         this.timer = new Timer();
 
         this.mainRoomIndex = findMainRoom();
@@ -156,6 +143,25 @@ public class LevelController implements IGameLogic {
     }
 
     /**
+     * Initialises all levels
+     */
+    public void restartGame() {
+        this.levels = new ArrayList<>(Arrays.asList(
+                new TitleScreenLevel(this),      // 0
+                new TutorialDrawingLevel(this),  // 1
+                new MobEscape(this),             // 2
+                new MainRoomLevel(this),         // 3
+                new DarknessLevel(this),         // 4
+                new MurderMysteryLevel(this),    // 5
+                new PrisonEscapeLevel(this),     // 6
+                new TunnelLevel(this),           // 7
+                new MobFastRun(this),            // 8
+                new TreasureRoomLevel(this)      // 9
+        ));
+        this.active = 0;
+    }
+
+    /**
      * @return The index of the main room
      */
     private int findMainRoom() {
@@ -167,6 +173,7 @@ public class LevelController implements IGameLogic {
 
         throw new IllegalStateException("No main room level found in levels");
     }
+
 
     public enum GEM {
         GREEN,
