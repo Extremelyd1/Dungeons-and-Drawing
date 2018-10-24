@@ -630,7 +630,7 @@ public class MobFastRun extends Level {
                         mob = new Snake(mobMesh, map);
                         mob.setScale(0.08f);
                         mob.setPosition(snakeSpawnTile.getPosition().x, 0.49f, snakeSpawnTile.getPosition().y);
-                        mob.setSpeed(2.6f);
+                        mob.setSpeed(2f);
                         mob.setTarget(player);
                         mob.followOnSightOnly(false);
                         entities.add(mob);
