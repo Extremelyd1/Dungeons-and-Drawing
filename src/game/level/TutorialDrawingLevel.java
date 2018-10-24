@@ -34,6 +34,7 @@ import graphics.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -318,6 +319,14 @@ public class TutorialDrawingLevel extends Level {
     public void input(MouseInput mouseInput) {
         if (camera instanceof FreeCamera) {
             ((FreeCamera) camera).handleInput(mouseInput);
+        }
+
+        if (KeyBinding.isExposureIncreasePressed()) {
+            renderer.setHdrExposure(renderer.getHdrExposure() + 0.008f);
+        } else if (KeyBinding.isExposureDecreasePressed()) {
+            renderer.setHdrExposure(renderer.getHdrExposure() - 0.008f);
+        } else if (KeyBinding.isExposureResetPressed()) {
+            renderer.setHdrExposure(1.2f);
         }
     }
 
