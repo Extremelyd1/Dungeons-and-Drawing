@@ -45,8 +45,10 @@ public class NanoVG {
     public static final float FONT_SIZE_TITLE = 96.0f;
 
     public static void reload() {
-//        nanoVG = new NanoVG(nanoVG.imageReloadAction);
-//        nanoVG.imageReloadAction.execute();
+        if (nanoVG != null) {
+            nanoVG = new NanoVG(nanoVG.imageReloadAction);
+            nanoVG.imageReloadAction.execute();
+        }
     }
 
     /**
