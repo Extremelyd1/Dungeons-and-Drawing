@@ -9,6 +9,7 @@ import org.nd4j.linalg.factory.Nd4j;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.InputStream;
 import java.util.*;
 
 public class NeuralNetwork {
@@ -207,8 +208,8 @@ public class NeuralNetwork {
     public static void loadModel() throws Exception {
         // Load our model
         System.out.println("Loading model...");
-        File saveLocation = new File("trained_qd_model.zip");
-        model = ModelSerializer.restoreMultiLayerNetwork(saveLocation);
+        InputStream inputStream = NeuralNetwork.class.getClassLoader().getResourceAsStream("trained_qd_model.zip");
+        model = ModelSerializer.restoreMultiLayerNetwork(inputStream);
     }
 
 }
