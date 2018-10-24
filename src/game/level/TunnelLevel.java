@@ -209,7 +209,16 @@ public class TunnelLevel extends Level {
                 new String[]{},
                 new Solution[]{
                         new Solution("clock", (s) -> {
-                            gui.setComponent(new ScrollingPopup("Well played adventurer, that cost you " + attempts + " attempts. I will let you through now!", () -> {
+
+                            attempts++;
+                            String text;
+                            if (attempts == 1) {
+                                text = "Wow! Only one attempt you smarty pants! You must have studied at the TU/e, no? I will let you through now.";
+                            } else {
+                                text = "Well played adventurer, that cost you " + attempts + " attempts. I will let you through now.";
+                            }
+
+                            gui.setComponent(new ScrollingPopup(text, () -> {
                                 gui.removeComponent();
                                 ghostTile.setSolid(false);
                                 entitiesToRemove.add(puzzleGhost);
