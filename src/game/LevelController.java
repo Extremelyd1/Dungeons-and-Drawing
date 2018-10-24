@@ -12,7 +12,7 @@ import java.util.List;
 
 public class LevelController implements IGameLogic {
 
-    private List<Level> levels;
+    protected List<Level> levels;
     private int active;
     private Timer timer;
 
