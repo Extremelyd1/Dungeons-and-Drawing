@@ -34,6 +34,10 @@ public class AssetStore {
      */
     private static Map<String, Animation> loadedAnimations = new HashMap<>();
 
+    public static void clearMeshCache() {
+        loadedMeshes.clear();
+    }
+
     /**
      * Load a mesh from a folder
      *
