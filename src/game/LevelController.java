@@ -3,6 +3,7 @@ package game;
 import engine.IGameLogic;
 import engine.MouseInput;
 import engine.input.KeyBinding;
+import engine.util.AssetStore;
 import engine.util.Timer;
 import game.level.*;
 import game.level.validation.HdrTestLevel;
@@ -89,6 +90,9 @@ public class LevelController implements IGameLogic {
         // Unload level to release resources
         levels.get(active).terminate();
 
+        // Reset mesh cache
+        AssetStore.clearMeshCache();
+
         // Switch context
         try {
             levels.get(levelIndex).init();
@@ -131,6 +135,10 @@ public class LevelController implements IGameLogic {
     public void restart() {
         try {
             levels.get(active).terminate();
+
+            // Reset mesh cache
+            AssetStore.clearMeshCache();
+
             levels.get(active).init();
         } catch (Exception e) {
             System.err.println("Could not load level " + active);
