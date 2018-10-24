@@ -645,7 +645,7 @@ public class MobFastRun extends Level {
             }
         }
 
-        gui.update(interval);
+        gui.update(interval, mouseInput);
     }
 
     @Override

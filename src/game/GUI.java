@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class GUI {
 
-    private MouseInput mouse = new MouseInput();
     /**
      * The current component this GUI handles
      * Can only be one component
@@ -85,13 +84,12 @@ public class GUI {
      * Initialises nano vg
      */
     public void initialize() {
-        mouse.init();
     }
 
     /**
      * Updates the gui
      */
-    public void update(float delta) {
+    public void update(float delta, MouseInput mouse) {
         mouse.input();
 
         for (GUIComponent component : toRemove) {

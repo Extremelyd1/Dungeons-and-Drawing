@@ -108,7 +108,7 @@ public class TitleScreenLevel extends Level {
         gui = new GUI();
         gui.initialize();
         float imageSize = (float) GameWindow.getGameWindow().getWindowWidth() / 2f;
-        gui.addComponent(new GUIImage(imageSize, imageSize, Utilities.getResourcePath("textures/logo.png")));
+        gui.addComponent(new GUIImage(imageSize, imageSize, "/textures/logo.png"));
         gui.addComponent(new TitleScreenText("Press 'spacebar' to start..."));
 
         sceneLight.ambientLight = new AmbientLight(new Vector3f(0.2f));
@@ -158,7 +158,7 @@ public class TitleScreenLevel extends Level {
             entity.update(delta);
         }
 
-        gui.update(delta);
+        gui.update(delta, mouseInput);
         soundManager.updateListenerPosition(camera);
 
         if (KeyBinding.isStartPressed()) {

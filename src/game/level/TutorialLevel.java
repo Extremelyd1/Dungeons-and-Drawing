@@ -135,7 +135,7 @@ public class TutorialLevel extends Level {
         mob.update(interval);
         indicatorEntity.update(interval);
         sceneLight.directionalLight.setPosition(new Vector3f(player.getPosition()).add(new Vector3f(0.0f, 6.0f, 0.0f)));
-        gui.update(interval);
+        gui.update(interval, mouseInput);
     }
 
     @Override

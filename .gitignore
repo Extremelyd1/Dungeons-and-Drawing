@@ -2,6 +2,9 @@
 .idea/*
 nbproject/*
 
+# Manifest
+MANIFEST.MF
+
 # Compiled class file
 *.class
 

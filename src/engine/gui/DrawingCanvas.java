@@ -2,6 +2,7 @@ package engine.gui;
 
 import engine.GameWindow;
 import engine.MouseInput;
+import engine.input.KeyBinding;
 import engine.util.Utilities;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -111,11 +112,6 @@ public class DrawingCanvas extends Popup {
         // Center the canvas
         super.update(mouse, delta);
 
-        // For testing uncomment
-//        if (mouse.isRightButtonPressed()) {
-//            System.out.println(NeuralNetwork.getBestGuess(getImage()));
-//            System.out.println(NeuralNetwork.getBestGuess(getImage(), "key", "hat", "cactus")));
-//        }
     }
 
     @Override
