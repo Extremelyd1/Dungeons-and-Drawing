@@ -55,7 +55,7 @@ public class KeyBinding {
     }
 
     public static boolean isFinishedDrawingPressed() {
-        return glfwGetKey(windowHandle, GLFW_KEY_ENTER) == GLFW_PRESS;
+        return glfwGetKey(windowHandle, GLFW_KEY_SPACE) == GLFW_PRESS;
     }
 
     public static boolean isStartPressed() {
