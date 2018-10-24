@@ -1,17 +1,14 @@
 package engine;
 
 import game.LevelController;
-import sun.security.ssl.Debug;
-
-import java.lang.management.ManagementFactory;
-import java.util.concurrent.TimeUnit;
+import pathfinding.Pathfinding_Validator;
 
 /**
- * Main class of this Java Application to test the Light Weight Java Gaming
- * Library (LWJGT) and to to explore whether it can be applied for the
- * course 2IOE0 Interactive Intelligent Systems.
+ * Main class of this Java Application for the game produced for
+ * the course 2IOE0 Interactive Intelligent Systems Q1 year 2018/2019
+ * at the University of Eindhoven.
  * <p>
- * This application uses two libraries
+ * This application uses three libraries
  * <b> Java Light Weight Gaming Library (LWJGL) </b>
  * A low level API that gives access to, among others, OpenGL functionality.
  *
@@ -20,6 +17,9 @@ import java.util.concurrent.TimeUnit;
  *
  * <b> PNG Decoder </b>
  * To load and process a PNG image and its attributes to be used as a texture
+ *
+ * <b> Deep Learning 4 Java (dl4j) </b>
+ * dl4j is used to perform the image recognition.
  *
  * @author Yannick Scheepers (TU/e, 1002370)
  * @author Erik Ussin (TU/e, 1034012)
@@ -39,13 +39,21 @@ public class Launcher {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        try {
-            Debug.println("PID", ManagementFactory.getRuntimeMXBean().getName());
-            //TimeUnit.SECONDS.sleep(8);
-            (new GameEngine(new LevelController())).start();
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-            System.exit(-1);
+
+        if (args.length > 0 && args[0].equals("-validator=a_star")) {
+            // Startup A* validator
+            (new Pathfinding_Validator()).run();
+        } else if (args.length > 0 && args[0].equals("-validator=light-animation")) {
+            // Startup light and animation validator
+            // TODO: Implement light and animation validators
+        } else {
+            // Load the game
+            try {
+                (new GameEngine(new LevelController())).start();
+            } catch (Exception e) {
+                e.printStackTrace(System.out);
+                System.exit(-1);
+            }
         }
 
     }
