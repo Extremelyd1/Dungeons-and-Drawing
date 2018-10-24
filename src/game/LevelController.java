@@ -5,6 +5,7 @@ import engine.MouseInput;
 import engine.input.KeyBinding;
 import engine.util.Timer;
 import game.level.*;
+import game.level.validation.HdrTestLevel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
