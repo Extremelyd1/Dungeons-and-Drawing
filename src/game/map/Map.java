@@ -62,16 +62,24 @@ public class Map {
         int y = tile.getPosition().y;
 
         if (x > 0) {
-            neighbours.add(tiles[x - 1][y]);
+            if (tiles[x - 1][y] != null) {
+                neighbours.add(tiles[x - 1][y]);
+            }
         }
         if (x < width - 1) {
-            neighbours.add(tiles[x + 1][y]);
+            if (tiles[x + 1][y] != null) {
+                neighbours.add(tiles[x + 1][y]);
+            }
         }
         if (y > 0) {
-            neighbours.add(tiles[x][y - 1]);
+            if (tiles[x][y - 1] != null) {
+                neighbours.add(tiles[x][y - 1]);
+            }
         }
         if (y < height - 1) {
-            neighbours.add(tiles[x][y + 1]);
+            if (tiles[x][y + 1] != null) {
+                neighbours.add(tiles[x][y + 1]);
+            }
         }
 
         return neighbours.toArray(new Tile[]{});
