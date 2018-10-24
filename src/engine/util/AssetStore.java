@@ -131,7 +131,7 @@ public class AssetStore {
     public static Animator getAnimator(String name) {
         Animation animation = getAnimation(name);
 
-        if (name.equals("door")) {
+        if (name.equals("door") || name.equals("slowDoor")) {
             return new LinearAnimator(animation, false, false);
         } else if (name.equals("indicatorRotation")) {
             return new LinearAnimator(animation, true, true);
@@ -168,6 +168,13 @@ public class AssetStore {
             keyFrames[1] = new KeyFrame(3f, 90f);
 
             animation = new Animation(3f, keyFrames);
+            loadedAnimations.put(name, animation);
+        } else if (name.equals("slowDoor")) {
+            KeyFrame[] keyFrames = new KeyFrame[2];
+            keyFrames[0] = new KeyFrame(0f, 0f);
+            keyFrames[1] = new KeyFrame(12f, 90f);
+
+            animation = new Animation(12f, keyFrames);
             loadedAnimations.put(name, animation);
         } else if (name.equals("indicatorRotation")) {
             KeyFrame[] keyFrames = new KeyFrame[2];

@@ -1,5 +1,6 @@
 package engine.entities;
 
+import engine.animation.Animator;
 import engine.util.AssetStore;
 import game.map.tile.Tile;
 import graphics.Mesh;
@@ -35,6 +36,17 @@ public class DoorEntity extends AnimatedEntity {
 
     public DoorEntity(Mesh mesh, Vector3f position, Vector3f rotation, Vector3f scale, Tile tile, boolean invertedRotation) {
         super(mesh, position, rotation, scale, AssetStore.getAnimator("door"));
+        this.tile = tile;
+        this.invertedRotation = invertedRotation;
+        this.startRotation = rotation.y;
+    }
+
+    public DoorEntity(Mesh mesh, Vector3f position, Vector3f rotation, float scale, Tile tile, Animator animator) {
+        this(mesh, position, rotation, scale, tile, false, animator);
+    }
+
+    public DoorEntity(Mesh mesh, Vector3f position, Vector3f rotation, float scale, Tile tile, boolean invertedRotation, Animator animator) {
+        super(mesh, position, rotation, scale, animator);
         this.tile = tile;
         this.invertedRotation = invertedRotation;
         this.startRotation = rotation.y;
