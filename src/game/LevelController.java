@@ -22,10 +22,6 @@ public class LevelController implements IGameLogic {
 
     public LevelController() {
         this.restartGame();
-        this.timer = new Timer();
-
-        this.mainRoomIndex = findMainRoom();
-        this.mainRoomLevel = (MainRoomLevel) levels.get(mainRoomIndex);
     }
 
     @Override
@@ -159,6 +155,10 @@ public class LevelController implements IGameLogic {
                 new TreasureRoomLevel(this)      // 9
         ));
         this.active = 0;
+        this.timer = new Timer();
+
+        this.mainRoomIndex = findMainRoom();
+        this.mainRoomLevel = (MainRoomLevel) levels.get(mainRoomIndex);
     }
 
     /**
