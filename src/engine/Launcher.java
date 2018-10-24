@@ -1,6 +1,7 @@
 package engine;
 
 import game.LevelController;
+import game.LevelControllerValidation;
 import pathfinding.Pathfinding_Validator;
 
 /**
@@ -44,8 +45,8 @@ public class Launcher {
             // Startup A* validator
             (new Pathfinding_Validator()).run();
         } else if (args.length > 0 && args[0].equals("-validator=light-animation")) {
-            // Startup light and animation validator
-            // TODO: Implement light and animation validators
+            // Startup light and animation validators
+            (new GameEngine(new LevelControllerValidation())).start();
         } else {
             // Load the game
             try {
