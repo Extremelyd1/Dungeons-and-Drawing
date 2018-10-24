@@ -86,15 +86,17 @@ public class TitleScreenLevel extends Level {
         // Setup lights
         sceneLight = new SceneLight();
 
-        map.getTiles("crate_light").forEach(
-                t -> sceneLight.pointLights.add(new PointLight(
-                                new Vector3f(1f, 1f, 1f),
-                                new Vector3f(t.getPosition().x, 2.2f, t.getPosition().y),
-                                0.4f,
-                                new Vector2f(0.1f, 100f)
-                        )
-                )
-        );
+        map.getTiles("crate_light").forEach(t -> {
+            sceneLight.pointLights.add(
+                    new PointLight(
+                            new Vector3f(0.701f, 0.439f, 0f),
+                            new Vector3f(t.getPosition().x, 2.5f, t.getPosition().y),
+                            0.6f,
+                            new PointLight.Attenuation(0f, 0f, 0f),
+                            new Vector2f(0.1f, 100f)
+                    )
+            );
+        });
 
         sceneLight.directionalLight = new DirectionalLight(
                 new Vector3f(0.0f, 7.0f, 0.0f),       // position
@@ -118,18 +120,25 @@ public class TitleScreenLevel extends Level {
         doorMesh.setMaterial(new Material(0f));
 
         // Define tile and door entity
-        map.getTiles("door").forEach(t -> {
-            boolean inverted = t.hasTag("inverted");
-            DoorEntity door = new DoorEntity(
-                    doorMesh,
-                    new Vector3f(t.getPosition().x, 0f, t.getPosition().y + 0.5f),
-                    new Vector3f(t.getRotation()),
-                    0.5f,
-                    t,
-                    inverted
-            );
-            entities.add(door);
-        });
+        Tile doorTile1 = map.getTile("door1");
+        DoorEntity door1 = new DoorEntity(
+                doorMesh,
+                new Vector3f(doorTile1.getPosition().x, 0f, doorTile1.getPosition().y - 0.5f),
+                new Vector3f(doorTile1.getRotation()),
+                0.5f,
+                doorTile1
+        );
+        entities.add(door1);
+
+        Tile doorTile2 = map.getTile("door2");
+        DoorEntity door2 = new DoorEntity(
+                doorMesh,
+                new Vector3f(doorTile2.getPosition().x, 0f, doorTile2.getPosition().y + 0.5f),
+                new Vector3f(doorTile2.getRotation()),
+                0.5f,
+                doorTile2
+        );
+        entities.add(door2);
 
         // Setup sound
         soundManager = new SoundManager();
