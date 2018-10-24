@@ -1,4 +1,4 @@
-package game;
+package game.debug;
 
 import engine.entities.Entity;
 import graphics.Material;
