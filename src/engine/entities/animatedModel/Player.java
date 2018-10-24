@@ -121,7 +121,7 @@ public class Player extends LivingEntity {
             return;
         }
 
-        animatedModel.getAnimator().update(delta * getSpeed() * 3, false);
+        animatedModel.getAnimator().update(delta * getSpeed() * 6, false);
 
         if (!checkCollision) {
             getPosition().add(xChange, 0, zChange);
