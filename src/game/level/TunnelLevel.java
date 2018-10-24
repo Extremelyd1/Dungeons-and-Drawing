@@ -16,6 +16,7 @@ import engine.lights.AmbientLight;
 import engine.lights.DirectionalLight;
 import engine.lights.PointLight;
 import engine.lights.SceneLight;
+import engine.loader.PLYLoader;
 import engine.loader.animatedModelLoader.AnimatedModelLoader;
 import engine.loader.animatedModelLoader.AnimationLoader;
 import engine.util.AssetStore;
@@ -104,6 +105,9 @@ public class TunnelLevel extends Level {
         Mesh floorMesh = AssetStore.getTileMesh("stone_floor");
         floorMesh.setMaterial(new Material(0f));
 
+        //Mesh for skeletons
+        Mesh skeletonMesh = PLYLoader.loadMesh("/models/tiles/skeletons.ply");
+        skeletonMesh.setMaterial(new Material(0f));
         // Mesh for the pencil
         Mesh pencilMesh = AssetStore.getMesh("entities", "pencil");
         pencilMesh.setMaterial(new Material(0f));
@@ -130,6 +134,9 @@ public class TunnelLevel extends Level {
                 new Vector3f(45f, 90f, 45f),
                 null
         );
+
+        Tile skeletonTile = map.getTile("skeleton");
+        skeletonTile.setMesh(skeletonMesh);
 
         //Indicator Entities
         Tile puzzleTile = map.getTile("puzzle_ghost");

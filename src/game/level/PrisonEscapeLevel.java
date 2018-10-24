@@ -388,10 +388,10 @@ public class PrisonEscapeLevel extends Level{
                                 // Spawn new puzzle and cracked wall
                                 spawnInterior("interior5");
                                 try {
-                                    Mesh crackedWall = PLYLoader.loadMesh("/models/tiles/crate.ply");
+                                    Mesh crackedWall = PLYLoader.loadMesh("/models/tiles/brick_corner_cracked.ply");
                                     crackedWall.setMaterial(new Material(0f));
                                     crackedWall.setIsStatic(false);
-                                    wall.setMesh(crackedWall);//TODO: replace with cracked model
+                                    wall.setMesh(crackedWall);
                                 } catch (Exception e){}
                                 entities.add(puzzle1Indicator6);
                                 entities.add(textIndicator2);
@@ -689,7 +689,7 @@ public class PrisonEscapeLevel extends Level{
                     t.setMesh(bedMesh);
                 }
                 if (t.hasTag("skeleton")) {
-                    Mesh skeletonMesh = PLYLoader.loadMesh("/models/tiles/crate.ply");
+                    Mesh skeletonMesh = PLYLoader.loadMesh("/models/tiles/skeletons.ply");
                     skeletonMesh.setMaterial(new Material(0f));
                     t.setSolid(true);
                     t.setMesh(skeletonMesh);
