@@ -121,6 +121,7 @@ public class ShaderManager {
         hdrShader.link();
         // Create HDR Shader Variables
         hdrShader.createUniform("hdrTexture");
+        hdrShader.createUniform("exposure");
     }
 
     //
@@ -293,6 +294,9 @@ public class ShaderManager {
     //
     public void bindHDRShader(){
         hdrShader.bind();
+    }
+    public void setHDRExposure(float exposure) {
+        hdrShader.setUniform("exposure", exposure);
     }
     public void allocateTextureUnitsToHDRShader(int texture) {
         glActiveTexture(GL_TEXTURE0);

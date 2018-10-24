@@ -5,7 +5,7 @@ in vec2 TexCoords;
 
 uniform sampler2D hdrTexture;
 
-const float exposure = 1.2f;
+uniform float exposure = 1.2f;
 
 void main()
 {

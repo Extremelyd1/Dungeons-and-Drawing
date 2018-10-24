@@ -62,6 +62,18 @@ public class KeyBinding {
         return glfwGetKey(windowHandle, GLFW_KEY_SPACE) == GLFW_PRESS;
     }
 
+    public static boolean isExposureIncreasePressed() {
+        return glfwGetKey(windowHandle, GLFW_KEY_U) == GLFW_PRESS;
+    }
+
+    public static boolean isExposureDecreasePressed() {
+        return glfwGetKey(windowHandle, GLFW_KEY_I) == GLFW_PRESS;
+    }
+
+    public static boolean isExposureResetPressed() {
+        return glfwGetKey(windowHandle, GLFW_KEY_O) == GLFW_PRESS;
+    }
+
     public static boolean isKeyPressed(int key) {
         return glfwGetKey(windowHandle, key) == GLFW_PRESS;
     }

@@ -1,9 +1,9 @@
 package game;
 
-import engine.camera.Camera;
-import engine.entities.Entity;
 import engine.GameWindow;
 import engine.Transformation;
+import engine.camera.Camera;
+import engine.entities.Entity;
 import engine.entities.animatedModel.Player;
 import engine.gui.NanoVG;
 import engine.lights.SceneLight;
@@ -19,13 +19,11 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import sun.security.ssl.Debug;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
-
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.*;
 
@@ -49,6 +47,8 @@ public class Renderer {
 
     private final float specularPower;
     private boolean shadowEnable = true;
+    private boolean hdrEnable = true;
+    private float hdrExposure = 1.2f;
 
     public Renderer() {
         transformation = new Transformation();
@@ -113,11 +113,19 @@ public class Renderer {
 
         if (hdrManager == null) {
             hdrManager = new HDR(window.getWindowWidth(), window.getWindowHeight());
-            try {hdrManager.init();} catch (Exception e) { Debug.println("HDR", "FAILURE TO INITIALIZE");}
+            try {
+                hdrManager.init();
+            } catch (Exception e) {
+                Debug.println("HDR", "FAILURE TO INITIALIZE");
+            }
         } else if (hdrManager.getWidth() != window.getWindowWidth() || hdrManager.getHeight() != window.getWindowHeight()) {
             hdrManager.cleanup();
             hdrManager = new HDR(window.getWindowWidth(), window.getWindowHeight());
-            try {hdrManager.init();} catch (Exception e) { Debug.println("HDR", "FAILURE TO INITIALIZE");}
+            try {
+                hdrManager.init();
+            } catch (Exception e) {
+                Debug.println("HDR", "FAILURE TO INITIALIZE");
+            }
         }
 
         if (shadowEnable){
@@ -128,20 +136,25 @@ public class Renderer {
             shadowsManager.renderDynamicShadows(transformation, sceneLight, shaderManager, map, entities);
         }
 
-        glBindRenderbuffer(GL_RENDERBUFFER, hdrManager.getRender());
-        glBindFramebuffer(GL_FRAMEBUFFER, hdrManager.getHdrFBO());
-        clear();
-        renderScene(camera, entities, sceneLight, map);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        if (hdrEnable) {
+            glBindRenderbuffer(GL_RENDERBUFFER, hdrManager.getRender());
+            glBindFramebuffer(GL_FRAMEBUFFER, hdrManager.getHdrFBO());
+            clear();
+            renderScene(camera, entities, sceneLight, map);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-        clear();
-        glDisable(GL_CULL_FACE);
-        shaderManager.bindHDRShader();
-        shaderManager.allocateTextureUnitsToHDRShader(hdrManager.getHdr());
-        hdrManager.renderQuad();
-        shaderManager.unbindHDRShader();
-        glEnable(GL_CULL_FACE);
+            clear();
+            glDisable(GL_CULL_FACE);
+            shaderManager.bindHDRShader();
+            shaderManager.allocateTextureUnitsToHDRShader(hdrManager.getHdr());
+            shaderManager.setHDRExposure(hdrExposure);
+            hdrManager.renderQuad();
+            shaderManager.unbindHDRShader();
+            glEnable(GL_CULL_FACE);
+        } else {
+            renderScene(camera, entities, sceneLight, map);
+        }
     }
 
     public void renderScene(Camera camera,
@@ -224,5 +237,17 @@ public class Renderer {
 
     public void resetShadowMap(){
         firstRender = true;
+    }
+
+    public void setHdrEnable(boolean status) {
+        this.hdrEnable = status;
+    }
+
+    public void setHdrExposure(float exposure) {
+        this.hdrExposure = exposure;
+    }
+
+    public float getHdrExposure() {
+        return this.hdrExposure;
     }
 }

@@ -548,6 +548,14 @@ public class PrisonEscapeLevel extends Level{
         if (camera instanceof FreeCamera) {
             ((FreeCamera) camera).handleInput(mouseInput);
         }
+
+        if (KeyBinding.isExposureIncreasePressed()) {
+            renderer.setHdrExposure(renderer.getHdrExposure() + 0.008f);
+        } else if (KeyBinding.isExposureDecreasePressed()) {
+            renderer.setHdrExposure(renderer.getHdrExposure() - 0.008f);
+        } else if (KeyBinding.isExposureResetPressed()) {
+            renderer.setHdrExposure(1.2f);
+        }
     }
 
     @Override
