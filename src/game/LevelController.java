@@ -5,7 +5,6 @@ import engine.MouseInput;
 import engine.input.KeyBinding;
 import engine.util.Timer;
 import game.level.*;
-import game.level.validation.LightValidation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +21,6 @@ public class LevelController implements IGameLogic {
 
     public LevelController() {
         this.levels = new ArrayList<>(Arrays.asList(
-                new LightValidation(this),
                 new TitleScreenLevel(this),      // 0
                 new TutorialDrawingLevel(this),  // 1
                 new MobEscape(this),             // 2
