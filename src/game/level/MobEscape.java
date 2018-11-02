@@ -303,7 +303,7 @@ public class MobEscape extends Level {
             snake = new Snake(snakeMesh, map);
             snake.setScale(0.08f);
             Vector2i spawn = map.getTile("mob_spawn").getPosition();
-            snake.setPosition(spawn.x, 0.49f, spawn.y);
+            snake.setPosition(spawn.x, 0.53f, spawn.y);
             snake.setSpeed(2.5f);
             snake.setTarget(player);
             snake.followOnSightOnly(false);

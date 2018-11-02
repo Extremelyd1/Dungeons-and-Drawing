@@ -567,7 +567,7 @@ public class LightValidation extends Level {
 
         snake = new Snake(snakeMesh, map);
         snake.setScale(0.08f);
-        snake.setPosition(3, 0.49f, 0);
+        snake.setPosition(3, 0.53f, 0);
         snake.setSpeed(2.5f);
         snake.setTarget(target);
         snake.followOnSightOnly(false);
